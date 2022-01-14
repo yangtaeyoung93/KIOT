@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.readonly.DatacenterMapper">
+
+	<select id="selectDeviceType" parameterType="String" resultType="String">
+		SELECT DISTINCT
+			TDT.device_type
+		FROM
+			TB_DEVICE TD,
+			TB_DEVICE_TYPE TDT,
+			TB_MEMBER_DEVICE_MANAGE TMDM
+		WHERE
+			TD.idx = TMDM.device_idx
+		  AND
+			TDT.idx = TD.device_type_idx
+		  AND
+			TMDM.member_idx = (
+			SELECT
+				idx
+			FROM
+				TB_MEMBER
+			WHERE
+				user_id= #{userId}
+			)
+	</select>
+
+	<select id="selectGroupDeviceType" parameterType="String" resultType="String">
+		SELECT 
+			DISTINCT (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx=TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) AS device_type
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM
+		WHERE
+			TMDM.member_idx IN
+				(SELECT
+					(SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.idx = TGMM.member_idx)
+				FROM 
+					TB_GROUP_MEMBER_MANAGE AS TGMM
+				WHERE 
+					TGMM.group_idx=(SELECT TG.idx FROM TB_GROUP AS TG WHERE TG.group_id=#{groupId}))
+	</select>
+
+	<select id="selectUserDevice" parameterType="String" resultType="DatacenterConnectDto">
+		SELECT 
+			TMDM.member_idx,
+		    TMDM.device_idx,
+		    (SELECT GROUP_CONCAT( (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx=TMDCM.vent_device_idx) ) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM WHERE TMDCM.iaq_device_idx=TMDM.device_idx) AS vents_str,
+		    TMDM.space_idx,
+		    TMDM.station_name,
+            TMDM.lon,
+            TMDM.lat,
+		    (SELECT COUNT(TMDCM.vent_device_idx) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM WHERE TMDCM.iaq_device_idx=device_idx) AS vent_cnt,
+		    (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
+	        (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
+	        (SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_id,
+			(SELECT (SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx) FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS parent_space_name,
+    		(SELECT TSI.space_name FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS space_name,
+			(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDM.member_idx=TM.idx) AS user_id,
+		    (SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS test_yn,
+		    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS serial_num,
+		    (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS device_type,
+		    (SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS product_dt
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM
+		WHERE 
+			TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id=#{userId} AND TMDM.device_idx IS NOT NULL)
+	</select>
+
+	<select id="selectUserVentDevice" parameterType="String" resultType="DatacenterConnectDto">
+		SELECT
+			TMDCM.member_idx,
+			TMDCM.iaq_device_idx,
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDCM.iaq_device_idx) AS iaq_serial_num,
+			TMDCM.vent_device_idx AS device_idx,
+			TMDCM.ai_mode,
+			TMDCM.create_dt,
+			(SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_name,
+			(SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_id,
+			(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDCM.member_idx=TM.idx) AS user_id,
+			(SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS test_yn,
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
+		    (SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name, 
+			(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
+		FROM 
+			TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+		WHERE
+			TMDCM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id=#{userId})
+	</select>
+
+	<select id="selectGroupForUser" parameterType="String" resultType="String">
+		SELECT
+			(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TGMM.member_idx) AS user_id
+		FROM 
+			TB_GROUP_MEMBER_MANAGE AS TGMM
+		WHERE TGMM.group_idx=(SELECT TG.idx FROM TB_GROUP AS TG WHERE TG.group_id=#{groupId})
+	</select>
+
+	<select id="selectDeviceModelElements" parameterType="String" resultType="DeviceElements">
+		 SELECT
+	        TDE.kor_name,
+		    TDE.eng_name,
+		    TDE.element_unit,
+		    TDE.element_convert,
+	        TDE.view_name,
+            TD.device_type_idx
+		FROM 
+			TB_DEVICE_MODEL_ELEMENTS AS TDME JOIN 
+			TB_DEVICE_ELEMENTS AS TDE ON TDME.element_idx = TDE.idx JOIN 
+			TB_DEVICE AS TD 
+				ON TD.device_model_idx = TDME.device_model_idx
+		WHERE
+			TD.serial_num=#{serialNum}
+		ORDER BY
+			FIELD(TDE.eng_name, 'noise', 'humi', 'temp', 'voc', 'co2', 'pm25', 'pm10') DESC;
+	</select>
+
+	<select id="selectMemberDeviceSerialList" parameterType="String" resultType="String">
+		SELECT 
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) AS serial_num
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM
+		<where>
+			TMDM.member_idx IN (
+				<if test="type == 'member'">
+					SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId} AND TMDM.device_idx IS NOT NULL
+				</if>
+				<if test="type == 'group'">
+					SELECT TGMM.member_idx FROM TB_GROUP_MEMBER_MANAGE AS 
+					TGMM WHERE TGMM.group_idx = (SELECT TG.idx FROM TB_GROUP AS TG WHERE TG.group_id = #{userId})
+				</if>
+			)
+		</where>
+	</select>	
+</mapper>

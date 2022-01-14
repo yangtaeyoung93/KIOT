@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.dong.DongMapper">
+	<select id="selectDongOaqList" resultType="Dong">
+		SELECT
+		TDOI.serial,
+		TDOI.user_id,
+		TDOI.user_name,
+		TDOI.lat,
+		TDOI.lon,
+		TDOI.reg_date
+		FROM
+		TB_DONG_OAQ_INFO AS TDOI;
+	</select>
+
+	<!-- 시 데이터 -->
+	<select id="siList" resultType="SiData">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.sdcode,
+		TDH.sggcode,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat,
+		TDH.lon,
+		TDH.reg_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		WHERE
+		dtype=1
+	</select>
+
+	<!-- 구 데이터 -->
+	<select id="guList" parameterType="SearchDong"
+		resultType="GuData">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.sdcode,
+		TDH.sggcode,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat,
+		TDH.lon,
+		TDH.reg_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		WHERE
+		dtype=2 AND sdcode=#{searchSdcode}
+	</select>
+
+	<!-- 동 데이터 -->
+	<select id="dongList" parameterType="SearchDong"
+		resultType="DongData">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.sdcode,
+		TDH.sggcode,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat,
+		TDH.lon,
+		TDH.reg_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		WHERE
+		dtype=3 AND sdcode=#{searchSdcode} AND sggcode=#{searchSggcode}
+	</select>
+
+	<!-- 시/도 분류별 검색 -->
+	<select id="selectSiGunGuSearch" parameterType="SearchDong"
+		resultType="Dong">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat,
+		TDH.lon,
+		TDDD.map_type,
+		TDDD.pm10_value,
+		TDDD.pm10_grade,
+		TDDD.pm25_value,
+		TDDD.pm25_grade,
+		TDDD.up_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		JOIN TB_DONG_DUST_DATA AS TDDD
+		ON TDH.dtype=3 AND TDH.sdcode=#{searchSdcode} AND
+		TDH.sggcode=#{searchSggcode} AND TDH.dcode=TDDD.dcode
+		<where>
+			<if test="searchDongcode!=null and !searchDongcode.equals('')">
+				TDH.dcode = #{searchDongcode}
+			</if>
+		</where>
+	</select>
+
+	<!-- 동별 중심 검색 -->
+	<select id="selectDongSearch" parameterType="SearchDong"
+		resultType="Dong">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat,
+		TDH.lon,
+		TDDD.map_type,
+		TDDD.pm10_value,
+		TDDD.pm10_grade,
+		TDDD.pm25_value,
+		TDDD.pm25_grade,
+		TDDD.up_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		JOIN TB_DONG_DUST_DATA AS TDDD
+		ON TDH.dtype=3 AND TDH.dcode=TDDD.dcode AND TDH.dname LIKE CONCAT('%',
+		#{searchDname} ,'%')
+	</select>
+
+	<!-- 동별 중심 좌표 -->
+	<select id="selectDongList" resultType="DongGeo">
+		SELECT
+		TDH.dcode,
+		TDH.dtype,
+		TDH.sdcode,
+		TDH.sggcode,
+		TDH.dname,
+		TDH.lat,
+		TDH.lon,
+		TDDD.pm10_value,
+		TDDD.pm10_grade,
+		TDDD.pm25_value,
+		TDDD.pm25_grade,
+		TDDD.up_date
+		FROM
+		TB_DONG_HCODE AS TDH
+		LEFT JOIN TB_DONG_DUST_DATA AS TDDD
+		ON TDH.dcode=TDDD.dcode
+		WHERE
+		TDH.dtype=3
+	</select>
+
+	<!-- Air Equi 좌표 -->
+	<select id="selectAirEquiList" resultType="AirGeo">
+		SELECT
+		TDAI.air_code AS a_air_code,
+		TDAI.lat,
+		TDAI.lon,
+		TDMD.pm10_grade,
+		TDMD.pm25_grade,
+		TDMD.pm10_value,
+		TDMD.pm25_value
+		FROM
+		TB_DONG_AIRKOR_INFO AS TDAI
+		JOIN
+		(SELECT
+		*
+		FROM
+		(SELECT
+		pm10_value,
+		pm25_value,
+		map_code,
+		pm10_grade,
+		pm25_grade,
+		up_date,
+		(CASE
+		WHEN map_code THEN @RANKT:=@RANK + 1
+		ELSE @RANK:=1
+		END) AS RNUM,
+		(@GROUPING:=map_code)
+		FROM
+		TB_DONG_MAP_DATA, (SELECT @GROUPING:='', @RANK:=0) XX
+		WHERE
+		map_type = 'A') AS TDMD1
+		WHERE
+		RNUM = 1) AS TDMD ON TDAI.air_code = TDMD.map_code
+	</select>
+
+	<!-- OAQ Equi 좌표 -->
+	<select id="selectOaqEquiList" resultType="OaqGeo">
+		SELECT
+		TDOI.serial AS o_serial,
+		TDOI.lat,
+		TDOI.lon,
+		TDMD.pm10_grade,
+		TDMD.pm25_grade,
+		TDMD.pm10_value,
+		TDMD.pm25_value
+		FROM
+		TB_DONG_OAQ_INFO AS TDOI
+		JOIN
+		(SELECT
+		*
+		FROM
+		(SELECT
+		pm10_value,
+		pm25_value,
+		map_code,
+		pm10_grade,
+		pm25_grade,
+		up_date,
+		(CASE
+		WHEN map_code THEN @RANKT:=@RANK + 1
+		ELSE @RANK:=1
+		END) AS RNUM,
+		(@GROUPING:=map_code)
+		FROM
+		TB_DONG_MAP_DATA, (SELECT @GROUPING:='', @RANK:=0) XX
+		WHERE
+		map_type = 'O') AS TDMD1
+		WHERE
+		RNUM = 1) AS TDMD ON TDOI.serial = TDMD.map_code
+	</select>
+
+	<!-- 관측망 현황(Air Equi, COUNT) -->
+	<select id="selectAirEquiCnt" parameterType="String"
+		resultType="AirCity">
+		SELECT
+		R.*
+		FROM (
+		SELECT
+		air_city AS city,
+		COUNT(*) AS cnt
+		FROM
+		TB_DONG_AIRKOR_INFO
+		GROUP BY
+		air_city
+		) AS R
+		WHERE
+		R.city like CONCAT('%', #{searchValue}, '%')
+	</select>
+
+	<!-- 관측망 현황(OAQ Equi, COUNT) -->
+	<select id="selectOaqEquiCnt" parameterType="String"
+		resultType="OaqCity">
+		SELECT
+		'서울' AS city,
+		COUNT(*) AS cnt
+		FROM
+		TB_DONG_OAQ_INFO
+	</select>
+
+	<!-- 참조 관측망 -->
+	<select id="refAirEquiSearch" parameterType="SearchDong"
+		resultType="AirEqui">
+		SELECT
+		TDH.dcode,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat AS d_lat,
+		TDH.lon AS d_lon,
+		TDDD.map_type,
+		TDDD.pm10_value,
+		TDDD.pm10_grade,
+		TDDD.pm25_value,
+		TDDD.pm25_grade,
+		TDDD.up_date,
+		TDMD.map_code,
+		TDMD.distance,
+		TDMD.pm10_value AS ref_pm10_value,
+		TDMD.pm10_grade AS ref_pm10_grade,
+		TDMD.pm25_value AS ref_pm25_value,
+		TDMD.pm25_grade AS ref_pm25_grade,
+		TDMD.up_date AS ref_up_date,
+		TDAI.air_name AS ref_name,
+		TDAI.lat AS ref_lat,
+		TDAI.lon AS ref_lon
+		FROM
+		TB_DONG_HCODE AS TDH
+		JOIN TB_DONG_DUST_DATA AS TDDD
+		JOIN TB_DONG_MAP_DATA AS TDMD
+		JOIN TB_DONG_AIRKOR_INFO AS TDAI
+		ON TDH.dcode=#{searchDongcode} AND TDH.dcode=TDDD.dcode AND
+		TDH.dcode=TDMD.dcode AND TDMD.map_code=TDAI.air_code
+		ORDER BY
+		TDMD.distance
+	</select>
+
+	<select id="refOaqEquiSearch" parameterType="SearchDong"
+		resultType="OaqEqui">
+		SELECT
+		TDH.dcode,
+		TDH.dname,
+		TDH.dfname,
+		TDH.lat AS d_lat,
+		TDH.lon AS d_lon,
+		TDDD.map_type,
+		TDDD.pm10_value,
+		TDDD.pm10_grade,
+		TDDD.pm25_value,
+		TDDD.pm25_grade,
+		TDDD.up_date,
+		TDMD.map_code,
+		TDMD.distance,
+		TDMD.pm10_value AS ref_pm10_value,
+		TDMD.pm10_grade AS ref_pm10_grade,
+		TDMD.pm25_value AS ref_pm25_value,
+		TDMD.pm25_grade AS ref_pm25_grade,
+		TDMD.up_date AS ref_up_date,
+		TDOI.user_id AS ref_name,
+		TDOI.lat AS ref_lat,
+		TDOI.lon AS ref_lon
+		FROM
+		TB_DONG_HCODE AS TDH
+		JOIN TB_DONG_DUST_DATA AS TDDD
+		JOIN TB_DONG_MAP_DATA AS TDMD
+		JOIN TB_DONG_OAQ_INFO AS TDOI
+		ON TDH.dcode=#{searchDongcode} AND TDH.dcode=TDDD.dcode AND
+		TDH.dcode=TDMD.dcode AND TDMD.map_code=TDOI.serial
+		ORDER BY
+		TDMD.distance
+	</select>
+
+</mapper>

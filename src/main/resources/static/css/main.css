@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+body { background: url(../../images/img/bak_02.jpg); background-size: cover;  }
+.container { width: 1400px; max-width: none !important; }
+
+.list{ color: #fff; border-radius: 10px; background: rgba(0,0,0,0.5); }
+.list th{ padding:30px 5px; text-align: center; font-size: 1.1em; line-height: 1.5em; font-weight: bold; color: #fff; border-bottom: 1px solid #fff; }
+.list td{ padding:6px 5px; text-align: center; font-size: 1.2em; font-weight: 500; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.list td:nth-child(1){ font-size: 13pt; }
+.list td:nth-child(2){ font-size: 13pt; }
+.list tr:last-child td{ border-bottom: 0; }
+
+.co_g{ color: #8ed03e !important; }
+.co_y{ color: #f8bc0a !important; }
+.co_o{ color: #f8690a !important; }
+.co_b{ color: #4ac4ed !important; }
+
+.list_step01{ color: #ff0000 !important; }
+.list_step02{ color: #ff6700 !important; }
+.list_step03{ color: #ffc000 !important; }
+.list_step04{ color: #8dd638 !important; }
+.list_step05{ color: #44c7f4 !important; }

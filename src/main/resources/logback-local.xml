@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <!--로그 파일 저장 위치 -->
+    <property name="LOGS_PATH" value="/Work/KIOT/logs"/>
+
+    <appender name="ROOT_LOG_REF"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level %logger{35} -
+                %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="KWEATHER_PACKAGE_LOG_REF"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_PATH}/applicatoin-kiot-logback.log</file>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level %logger{35} -
+                %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="KWEATHER_PLATFORM_SERVICE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_PATH}/platform/applicatoin-kiot-platform-logback.log</file>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level %logger{35} -
+                %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/platform/platform-logback.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--JDBC-->
+    <!-- log4jdbc-log4j2 -->
+    <!-- log4jdbc 옵션 설정 -->
+    <!-- 커넥션 open close 이벤트를 로그로 남긴다. -->
+    <logger name="jdbc" level="OFF"/>
+
+    <!-- SQL문만을 로그로 남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 보여진다. -->
+    <logger name="jdbc.connection" level="OFF"/>
+    <!-- SQL문과 해당 SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다. -->
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <!-- ResultSet을 제외한 모든 JDBC 호출 정보를 로그로 남긴다. 많은 양의 로그가 생성되므로 특별히 JDBC 문제를 추적해야 할 필요가 있는 경우를 제외하고는 사용을 권장하지 않는다. -->
+    <logger name="jdbc.sqltiming" level="OFF"/>
+    <!-- ResultSet을 포함한 모든 JDBC 호출 정보를 로그로 남기므로 매우 방대한 양의 로그가 생성된다. -->
+    <logger name="jdbc.audit" level="ERROR"/>
+    <!-- SQL 결과 조회된 데이터의 table을 로그로 남긴다. -->
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="ERROR"/>
+
+    <logger name="com.zaxxer" level="INFO"/>
+    <logger name="log4jdbc" level="INFO"/>
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.boot.devtools.restart" level="INFO"/>
+    <logger name="org.springframework.boot.autoconfigure" level="ERROR"/>
+    <logger name="org.apache.http" level="INFO"/>
+
+    <logger name="com.airguard" level="INFO"/>
+
+    <logger name="com.airguard.com.airguard.service.platform" level="ERROR" />
+
+    <root level="INFO">
+        <appender-ref ref="ROOT_LOG_REF"/>
+    </root>
+
+</configuration>

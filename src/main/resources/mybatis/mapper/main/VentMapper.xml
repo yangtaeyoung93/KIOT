@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.app.VentMapper">
+
+	<!-- =========== 1) 환기청정기, 기기 등록 :: BEGIN =========== -->
+	<!-- 1-B) 환기청정기 연동 데이터 등록 -->
+	<insert id="addVent" parameterType="AppVent">
+		INSERT 
+			INTO TB_MEMBER_DEVICE_CONTROL_MANAGE
+				(
+					member_idx,
+		            iaq_device_idx,
+		            vent_device_idx,
+		            ai_mode
+		        ) VALUES (
+					#{memberIdx},
+		            #{iaqDeviceIdx},
+		            #{ventDeviceIdx},
+		            '1'
+		        )
+	</insert>
+	<!-- =========== 1) 환기청정기, 기기 등록 :: END =========== -->
+
+	<!-- =========== 2) 환기청정기, 기기 해제 :: BEGIN =========== -->
+	<!-- 2-A) 환기청정기 연동 데이터 삭제 -->
+	<delete id="delVent" parameterType="AppVent">
+		DELETE 
+			FROM 
+				TB_MEMBER_DEVICE_CONTROL_MANAGE
+			WHERE
+				vent_device_idx = #{ventDeviceIdx}
+	</delete>
+	<!-- =========== 2) 환기청정기, 기기 해제 :: END =========== -->
+</mapper>

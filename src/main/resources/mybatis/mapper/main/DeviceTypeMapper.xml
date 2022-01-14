@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.DeviceTypeMapper">
+
+    <!-- 장비 타입 정보 추가 -->
+	<insert id="insertCategory" parameterType="DeviceType">
+		INSERT INTO 
+			TB_DEVICE_TYPE(
+				device_type,
+				device_type_name,
+				description,
+				use_yn
+			) values(
+				#{deviceType}, 
+				#{deviceTypeName},
+				#{description}, 
+				'Y'
+			)
+	</insert>
+
+    <!-- 장비 타입 정보 수정 -->
+    <update id="updateCategory" parameterType="DeviceType">
+		UPDATE 
+			TB_DEVICE_TYPE 
+		SET 
+			device_type = #{deviceType}, 
+			device_type_name = #{deviceTypeName},
+			description = #{description}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 장비 타입 정보 삭제 -->
+	<update id="deleteCategory" parameterType="String">
+		UPDATE 
+			TB_DEVICE_TYPE 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx }
+	</update>
+</mapper>

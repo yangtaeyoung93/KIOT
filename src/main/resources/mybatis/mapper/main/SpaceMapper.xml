@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.SpaceMapper">
+
+    <!-- 설치 공간 카테고리 정보 추가 -->
+	<insert id="insertSpace" parameterType="Space">
+        INSERT INTO 
+			TB_SPACE_INFO(
+				device_type_idx,
+				parent_space_idx,
+				space_name,
+				space_level,
+                space_order,
+                use_yn
+			) VALUES (
+				#{deviceTypeIdx}, 
+				#{parentSpaceIdx},
+				#{spaceName},
+                #{spaceLevel},
+				#{spaceOrder},
+				'Y'
+			)
+	</insert>
+
+    <!-- 설치 공간 카테고리 정보 수정 -->
+    <update id="updateSpace" parameterType="Space">
+   		UPDATE 
+			TB_SPACE_INFO 
+		SET 
+			device_type_idx = #{deviceTypeIdx}, 
+			parent_space_idx = #{parentSpaceIdx},
+			space_name = #{spaceName},
+			space_level = #{spaceLevel},
+            space_order = #{spaceOrder}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 설치 공간 카테고리 정보 삭제 -->
+	<update id="deleteSpace" parameterType="String">
+		UPDATE 
+			TB_SPACE_INFO 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx }
+	</update>
+
+</mapper>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.MemberDeviceMapper">
+
+  <insert id="insertMemberDevice" parameterType="MemberDevice">
+    INSERT INTO TB_MEMBER_DEVICE_MANAGE(member_idx, device_idx, space_idx, equip_dt, equip_name,
+    equip_addr,
+    equip_addr2, station_name, lat, lon, etc, depart_name,
+    depart_phone_number,
+    sales_name, dcode, airmap_yn
+    <if test="!setTemp.equals('')">
+      , set_temp
+    </if>
+    <if test="!relatedDevice.equals('')">
+      , related_device_serial
+    </if>
+    )
+    VALUES (#{memberIdx}, #{deviceIdx},
+    #{spaceIdx}, #{equipDt}, #{equipName}, #{equipAddr},
+    #{equipAddr2},
+    #{stationName}, #{lat}, #{lon}, #{etc}, #{departName}, #{departPhoneNumber},
+    #{salesName}, #{dcode},
+    #{airMapYn}
+    <if test="!setTemp.equals('')">
+      , #{setTemp}
+    </if>
+    <if test="!relatedDevice.equals('')">
+      , #{relatedDevice}
+    </if>
+    )
+  </insert>
+
+  <delete id="deleteMemberDevice" parameterType="MemberDevice">
+    DELETE
+    FROM TB_MEMBER_DEVICE_MANAGE
+    WHERE device_idx = #{deviceIdx}
+      AND member_idx = #{memberIdx}
+  </delete>
+
+  <insert id="insertMemberDeviceVent" parameterType="String">
+    INSERT INTO TB_MEMBER_DEVICE_CONTROL_MANAGE(member_idx,
+                                                iaq_device_idx,
+                                                vent_device_idx,
+                                                ai_mode)
+    VALUES (#{memberIdx},
+            #{iaqDeviceIdx},
+            #{ventDeviceIdx},
+            0)
+  </insert>
+
+  <update id="updateMemberDeviceVent" parameterType="Vent">
+    UPDATE
+      TB_MEMBER_DEVICE_CONTROL_MANAGE
+    SET ai_mode = #{aiMode}
+    WHERE vent_device_idx = #{ventDeviceIdx}
+  </update>
+
+  <delete id="deleteMemberDeviceVent" parameterType="String">
+    DELETE
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE
+    WHERE vent_device_idx = #{idx}
+  </delete>
+
+  <delete id="deleteMemberDeviceVentAll" parameterType="Vent">
+    DELETE
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE
+    WHERE iaq_device_idx = #{iaqDeviceIdx}
+      AND member_idx = #{memberIdx}
+  </delete>
+
+  <insert id="fileUpload" parameterType="FileVo">
+    INSERT INTO TB_MEMBER_DEVICE_FILE(device_idx,
+                                      server_file_path,
+                                      server_file_name,
+                                      client_file_name,
+                                      file_ext,
+                                      file_type)
+    VALUES (#{deviceIdx},
+            #{serverFilePath},
+            #{serverFileName},
+            #{clientFileName},
+            #{fileExt},
+            #{fileType})
+  </insert>
+
+  <update id="updateFile" parameterType="FileVo">
+    UPDATE
+      TB_MEMBER_DEVICE_FILE
+    SET server_file_path = #{serverFilePath},
+        server_file_name = #{serverFileName},
+        client_file_name = #{clientFileName},
+        file_ext         = #{fileExt},
+        file_type        = #{fileType},
+        modify_date      = SYSDATE()
+    WHERE idx = #{idx}
+  </update>
+
+  <delete id="deleteFile" parameterType="String">
+    DELETE
+    FROM TB_MEMBER_DEVICE_FILE
+    WHERE idx = #{idx}
+  </delete>
+
+  <insert id="insertMemberDeviceApp" parameterType="HashMap">
+    INSERT INTO TB_MEMBER_DEVICE_MANAGE(member_idx,
+                                        device_idx,
+                                        station_name,
+                                        lon,
+                                        lat)
+    VALUES ((SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId}),
+            (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serial}),
+            #{stationName},
+            #{lon},
+            #{lat})
+  </insert>
+
+  <update id="updateMemberDevice" parameterType="HashMap">
+    UPDATE
+    TB_MEMBER_DEVICE_MANAGE AS TMDM
+    SET
+    etc = etc
+    <if test=" stationName != null ">
+      , station_name = #{stationName}
+    </if>
+    <if test=" lat != null ">
+      , lat = #{lat}
+    </if>
+    <if test=" lon != null ">
+      , lon = #{lon}
+    </if>
+    WHERE
+    TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId})
+    AND TMDM.device_idx = (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serial})
+  </update>
+
+  <update id="updateMemberDeviceBySerial" parameterType="MemberDevice">
+    update TB_MEMBER_DEVICE_MANAGE
+    SET depart_name         = #{departName},
+        depart_phone_number = #{departPhoneNumber},
+        equip_dt            = #{equipDt},
+        equip_name          = #{equipName},
+        equip_addr2         = #{equipAddr2}
+    WHERE device_idx =
+          (SELECT idx FROM TB_DEVICE WHERE serial_num = #{serialNum})
+  </update>
+
+  <select id="selectMemberDeviceList" parameterType="Search" resultType="MemberDevice">
+    <if test=' searchType == "userId" '>
+      CALL TMDM_LIST_VIEW_USERID(#{searchValue})
+    </if>
+    <if test=' searchType == "etc" '>
+      CALL TMDM_LIST_VIEW_ETC(#{searchValue})
+    </if>
+    <if test=' searchType == "serialNum" '>
+      CALL TMDM_LIST_VIEW_SERIAL(#{searchValue})
+    </if>
+  </select>
+</mapper>

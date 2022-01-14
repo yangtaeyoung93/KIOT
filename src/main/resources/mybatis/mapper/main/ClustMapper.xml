@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.custom.clust.ClustMapper">
+
+
+  <select id="selectInfoBySerial" resultType="DeviceInfoDto" parameterType="String">
+    SELECT TMDM.device_idx,
+           TMDM.station_name,
+           TMDM.lat,
+           TMDM.lon,
+           TMDM.dcode
+    FROM TB_MEMBER_DEVICE_MANAGE as TMDM where TMDM.device_idx=
+    (select TD.idx from TB_DEVICE as TD where TD.serial_num = #{serial})
+  </select>
+
+  
+  
+
+</mapper>

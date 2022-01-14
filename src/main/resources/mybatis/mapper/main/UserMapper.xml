@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.app.UserMapper">
+
+	<!-- 1-E) 사용자 등록 -->
+	<insert id="addUser" parameterType="AppUser" useGeneratedKeys="true" keyProperty="idx">
+		INSERT 
+			INTO TB_MEMBER(
+					user_id, 
+					user_pw, 
+					region, 
+					region_name, 
+					station_shared, 
+					use_yn
+				) VALUES (
+					#{userId}, 
+					#{userPw}, 
+					#{region}, 
+					#{regionName}, 
+					#{stationShared}, 
+					'Y'
+				)
+	</insert>
+
+	<!-- 1-F) 사용자 연동 장비 등록 -->
+	<insert id="addUserDeviceInfo" parameterType="AppUser">
+		INSERt 
+			INTO TB_MEMBER_DEVICE_MANAGE(
+				member_idx, 
+				device_idx, 
+				station_name, 
+				lat, 
+				lon
+			) VALUES (
+				#{idx}, 
+				#{deviceIdx}, 
+				#{stationName}, 
+				#{lat}, 
+				#{lon}
+			)
+	</insert>
+
+	<!-- 1-G) App 디바이스 정보 등록 -->
+	<insert id="addAppDeviceInfo" parameterType="AppUser">
+		INSERT 
+			INTO TB_APP_DEVICE_INFO(
+				device_imei,
+				member_idx, 
+				device_type
+			) VALUES (
+				#{appDeviceImei},
+				#{idx}, 
+				#{appDeviceType}
+			)
+	</insert>
+	<!-- =========== 1) 회원 가입 :: END   =========== -->
+
+	<!-- =========== 2) 회원 탈퇴 :: BEGIN =========== -->
+
+	<!-- 2-C) 사용자 정보 삭제 (use_yn) -->
+	<update id="delUser" parameterType="String">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			use_yn = 'N' 
+		WHERE 
+			user_id=#{userId}
+	</update>
+
+	<!-- 2-D) App 디바이스 정보 삭제 -->
+	<delete id="delAppDevice" parameterType="String">
+		DELETE FROM 
+			TB_APP_DEVICE_INFO
+		WHERE
+			member_idx = #{memberIdx}
+	</delete>
+
+	<!-- 2-E) 장비 삭제 (use_yn) -->
+	<update id="delDevice" parameterType="String">
+		UPDATE 
+			TB_DEVICE 
+		SET 
+			use_yn = 'N' 
+		WHERE 
+			serial_num=#{serialNum}
+	</update>
+
+	<!-- 2-F) 장비 연동 정보 삭제 -->
+	<delete id="delDeviceInfo" parameterType="String">
+		DELETE FROM 
+			TB_MEMBER_DEVICE_MANAGE
+		WHERE
+			member_idx = #{memberIdx}
+	</delete>
+
+	<!-- 2-G) IAQ 일 시 환기청정기 연동 정보 삭제 -->
+	<delete id="delVentDeviceInfo" parameterType="String">
+		DELETE FROM 
+			TB_MEMBER_DEVICE_CONTROL_MANAGE
+		WHERE
+			member_idx = #{memberIdx}
+	</delete>
+	<!-- =========== 2) 회원 탈퇴 :: END   =========== -->
+
+	<!-- =========== 3) 로그인 :: BEGIN =========== -->
+	
+	<!-- =========== 3) 로그인 :: END   =========== -->
+
+	<!-- =========== 4) 로그아웃 :: BEGIN =========== -->
+	<delete id="delAppDeviceInfo" parameterType="String">
+		DELETE FROM 
+			TB_APP_DEVICE_INFO
+		WHERE
+			device_imei = #{deviceImei}
+	</delete>
+	<!-- =========== 4) 로그아웃 :: END   =========== -->
+
+	<!-- =========== 7) 비밀번호 변경 :: BEGIN =========== -->
+	<update id="chgPasswd" parameterType="AppUser">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			user_pw = #{userPw}
+		WHERE 
+			user_id=#{userId}
+	</update>
+	<!-- =========== 7) 비밀번호 변경 :: END   =========== -->
+
+	<insert id="insertFcmTokenInfo" parameterType="HashMap">
+		INSERT 
+			INTO TB_PUSH_TOKEN(
+				user_id,
+				fcm_token
+			) VALUES (
+				#{userId},
+				#{token}
+			)
+	</insert>
+
+	<delete id="deleteFcmTokenInfo" parameterType="HashMap">
+		DELETE FROM 
+			TB_PUSH_TOKEN
+		WHERE
+			fcm_token = #{token}
+	</delete>
+
+	<insert id="insertUserInfo" parameterType="HashMap">
+		INSERT 
+			INTO TB_MEMBER(
+					user_id, 
+					user_pw, 
+					region, 
+					region_name, 
+					station_shared, 
+					user_name,
+					phone_number,
+					user_email,
+					use_yn
+			    	<if test='!telephone.equals("")'>
+						,telephone
+					</if>
+				) VALUES (
+					#{userId}, 
+					#{userPw}, 
+					#{region}, 
+					#{regionName}, 
+					'Y', 
+					#{userName},
+					#{phoneNumber},
+					#{userEmail},
+					'Y'
+					<if test='!telephone.equals("")'>
+						,#{telephone}
+					</if>
+				)
+	</insert>
+
+	<update id="updateUserInfo" parameterType="HashMap">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			user_id = #{userId}
+			<if test=" userPw != null ">
+				, user_pw = #{userPw}
+			</if>
+			<if test=" userName != null ">
+				, user_name = #{userName}
+			</if>
+			<if test=" phoneNumber != null ">
+				, phone_number = #{phoneNumber}
+			</if>
+			<if test=" region != null ">
+				, region = #{region}
+			</if>
+			<if test=" regionName != null ">
+				, region_name = #{regionName}
+			</if>
+			<if test=" userEmail != null ">
+				, user_email = #{userEmail}
+			</if>
+			<if test=" telephone != null ">
+				, telephone = #{telephone}
+			</if>
+		WHERE
+			user_id = #{userId}
+	</update>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.GroupMapper">
+
+    <!-- 그룹 계정  추가 -->
+	<insert id="insertGroup" parameterType="Group" useGeneratedKeys="true" keyProperty="idx">
+		INSERT INTO 
+			TB_GROUP(
+				group_id,
+				group_pw,
+				group_name,
+				group_company_name,
+				group_depart_name,
+				group_email,
+				group_phone_number,
+				group_custom_url,
+		        use_yn
+			) values(
+				#{groupId}, 
+				#{groupPw},
+				#{groupName},
+				#{groupCompanyName},
+				#{groupDepartName},
+				#{groupEmail},
+		        #{groupPhoneNumber},
+		        #{groupCustomUrl},
+				'Y'
+			)
+	</insert>
+
+    <!-- 그룹 계정  추가 (사용자 추가) -->
+	<insert id="insertGroupMember" parameterType="String">
+		INSERT INTO 
+			TB_GROUP_MEMBER_MANAGE(
+				group_idx,
+		        member_idx
+			) VALUES (
+				#{groupIdx}, 
+				#{memberIdx}
+			)
+	</insert>
+
+    <!-- 그룹 계정  수정 -->
+    <update id="updateGroup" parameterType="HashMap">
+	    UPDATE 
+			TB_GROUP
+		SET 
+			group_id = #{groupId}
+			<if test=' groupPw != null '>
+				, group_pw = #{groupPw}
+			</if>
+			<if test=" groupName != null ">
+				, group_name = #{groupName}
+			</if>
+			<if test=" groupEmail != null ">
+				, group_email = #{groupEmail}
+			</if>
+			<if test=" groupCompanyName != null ">
+				, group_company_name = #{groupCompanyName}
+			</if>
+			<if test=" groupDepartName != null ">
+				, group_depart_name = #{groupDepartName}
+			</if>
+			<if test=" groupPhoneNumber != null ">
+				, group_phone_number = #{groupPhoneNumber}
+			</if>
+			<if test=" groupCustomUrl != null ">
+				, group_custom_url = #{groupCustomUrl}
+			</if>
+			<if test=" groupTelephone != null ">
+				, group_telephone = #{groupTelephone}
+			</if>
+		WHERE
+			idx = #{idx}
+	</update>
+
+    <!-- 그룹 계정  삭제 -->
+	<update id="deleteGroup" parameterType="String">
+		UPDATE 
+			TB_GROUP
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx }
+	</update>
+
+	<!-- 그룹 사용자 삭제 -->
+	<delete id="deleteGroupMember" parameterType="String">
+		DELETE 
+			FROM TB_GROUP_MEMBER_MANAGE  
+		WHERE 
+			group_idx = #{searchValue}
+	</delete>
+
+</mapper>

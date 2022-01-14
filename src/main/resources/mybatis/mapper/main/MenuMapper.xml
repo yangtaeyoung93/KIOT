@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.MenuMapper">
+
+    <!-- 메뉴 추가 -->
+	<insert id="insertMenu" parameterType="Menu">
+		INSERT INTO 
+			TB_MENU(
+				menu_name,
+				menu_eng,
+				high_rank_menu,
+				menu_level,
+				menu_url,
+				menu_order,
+				menu_tag
+			) values(
+				#{menuName},
+				#{menuEng},
+				#{highRankMenu},
+				#{menuLevel},
+				#{menuUrl},
+				#{menuOrder},
+				#{menuTag}
+			)
+	</insert>
+
+    <!-- 메뉴 수정 -->
+    <update id="updateMenu" parameterType="Menu">
+    	UPDATE 
+			TB_MENU
+		SET 
+			menu_name = #{menuName}, 
+			menu_eng = #{menuEng},
+			high_rank_menu = #{highRankMenu},
+			menu_level = #{menuLevel},
+		    menu_url = #{menuUrl}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 메뉴 삭제 -->
+	<delete id="deleteMenu" parameterType="String">
+		DELETE 
+			FROM TB_MENU  
+		WHERE 
+			idx = #{idx} OR high_rank_menu = #{idx}
+	</delete>
+
+	<insert id="insertMenuAuth" parameterType="String">
+		INSERT INTO 
+			TB_MENU_AUTH (
+				admin_idx,
+				menu_idx
+			) VALUES (
+				#{adminIdx},
+				#{menuIdx}
+			)
+	</insert>
+
+	<delete id="deleteMenuAuth" parameterType="String">
+		DELETE 
+			FROM TB_MENU_AUTH 
+		WHERE 
+			admin_idx = #{adminIdx} 
+				AND menu_idx = #{menuIdx}
+	</delete>	
+</mapper>

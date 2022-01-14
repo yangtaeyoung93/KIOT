@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.readonly.DashboardMapper">
+
+	<select id="selectReceiveDashboard" parameterType="Search" resultType="DashboardReceiveDto">
+		SELECT 
+			TSP.stat_type,
+		    TSP.device_type,
+		    TSP.device_cnt,
+		    TSP.device_cnt_ok,
+		    TSP.device_cnt_nok,
+		    TSP.stat_date,
+		    TSP.reg_date
+		FROM 
+			TB_STAT_PLATFORM AS TSP
+		WHERE 
+			stat_type = #{searchValue}
+			AND	device_type = #{searchValue2}
+	</select>
+
+	<select id="selectReceiveCntDashboard" resultType="DashboardReceiveCntDto">
+		SELECT
+			TSPL.stat_type,
+		    TSPL.device_type,
+		    TSPL.device_cnt,
+		    TSPL.device_cnt_ok,
+		    TSPL.device_cnt_nok,
+		    TSPL.stat_date,
+		    TSPL.reg_date
+		FROM 
+			TB_STAT_PLATFORM_LAST AS TSPL
+	</select>
+
+	<select id="selectUserDashboardCnt" resultType="DashboardUserDto">
+		SELECT 
+			(SELECT COUNT(TM.idx) FROM TB_MEMBER AS TM WHERE TM.use_yn='Y') AS member_cnt,
+		    (SELECT COUNT(TG.idx) FROM TB_GROUP AS TG WHERE TG.use_yn='Y') AS group_cnt,
+		    (SELECT COUNT(TGMM.member_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM) AS group_member_cnt,
+		    (SELECT COUNT(TGD.idx) FROM TB_GROUP_DID AS TGD WHERE TGD.use_yn='Y') AS did_cnt,
+			(SELECT COUNT(TMDM.member_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+		        WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 1) AS con_iaq_cnt,
+			(SELECT COUNT(TMDM.member_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+		        WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 2) AS con_oaq_cnt,
+			(SELECT COUNT(TMDM.member_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+		        WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 3) AS con_dot_cnt,
+			(SELECT COUNT(TMDCM.vent_device_idx) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) AS con_vent_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=1 AND TD.use_yn='Y') AS all_iaq_cnt,
+		    (SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=2 AND TD.use_yn='Y') AS all_oaq_cnt,
+		    (SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=3 AND TD.use_yn='Y') AS all_dot_cnt,
+		    (SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=7 AND TD.use_yn='Y') AS all_vent_cnt
+	</select>
+
+	<select id="selectUserDashboardLoginCnt" resultType="DashboardUserLoginDto">
+		SELECT
+		    DATE_FORMAT(TM.login_dt, '%Y%m%d') AS last_login_date,
+			COUNT(TM.login_count) AS login_cnt
+		FROM 
+			TB_MEMBER AS TM
+		GROUP BY 
+			DATE_FORMAT(TM.login_dt, '%Y%m%d')
+		ORDER BY 
+			last_login_date
+	</select>
+
+	<select id="selectDeviceDashboardCnt" resultType="DashboardDeviceCntDto">
+		SELECT
+			(SELECT COUNT(TMDM.device_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM) + (SELECT COUNT(TMDCM.vent_device_idx) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) AS con_cnt,
+			(SELECT COUNT(TMDM.device_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+				WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 1) AS con_iaq_cnt,
+			(SELECT COUNT(TMDM.device_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+				WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 2) AS con_oaq_cnt,
+			(SELECT COUNT(TMDM.device_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM 
+				WHERE (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx) = 3) AS con_dot_cnt,
+			(SELECT COUNT(TMDCM.vent_device_idx) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) AS con_vent_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.use_yn='Y') AS all_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=1 AND TD.use_yn='Y') AS all_iaq_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=2 AND TD.use_yn='Y') AS all_oaq_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=3 AND TD.use_yn='Y') AS all_dot_cnt,
+			(SELECT COUNT(TD.idx) FROM TB_DEVICE AS TD WHERE TD.device_type_idx=7 AND TD.use_yn='Y') AS all_vent_cnt
+	</select>
+
+	<select id="selectDeviceDashboardHisCnt" resultType="DashboardDeviceHisDto">
+		SELECT
+			DATE_FORMAT(TMDM.create_dt, '%Y%m%d') AS connect_date,
+			COUNT(TMDM.device_idx) AS device_cnt,
+		    COUNT(TMDM.iaq_device_idx) AS iaq_device_cnt,
+		    COUNT(TMDM.oaq_device_idx) AS oaq_device_cnt,
+		    COUNT(TMDM.dot_device_idx) AS dot_device_cnt
+		FROM 
+			(SELECT
+				TMDM2.*, 
+				(SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.device_type_idx=1 AND TD.idx=TMDM2.device_idx) AS iaq_device_idx,
+		        (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.device_type_idx=2 AND TD.idx=TMDM2.device_idx) AS oaq_device_idx,
+		        (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.device_type_idx=3 AND TD.idx=TMDM2.device_idx) AS dot_device_idx
+			FROM 
+				TB_MEMBER_DEVICE_MANAGE AS TMDM2
+		    ) AS TMDM
+		GROUP BY 
+			DATE_FORMAT(TMDM.create_dt, '%Y%m%d')
+		ORDER BY 
+			connect_date
+	</select>
+
+	<select id="selectDeviceDashboardHisVentCnt" resultType="DashboardDeviceVentHisDto">
+		SELECT
+			DATE_FORMAT(TMDCM.create_dt, '%Y%m%d') AS connect_date,
+		    COUNT(TMDCM.vent_device_idx) AS ventDeviceCnt
+		FROM 
+			TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+		GROUP BY 
+			DATE_FORMAT(TMDCM.create_dt, '%Y%m%d')
+		ORDER BY 
+			connect_date
+	</select>
+</mapper>

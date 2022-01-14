@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.app.StationMapper">
+
+	<!-- =========== 1) 스테이션 이름 변경 :: BEGIN =========== -->
+	<!-- 1-B) 스테이션 이름 수정 -->
+	<update id="chgStationName" parameterType="AppStation">
+		UPDATE 
+			TB_MEMBER_DEVICE_MANAGE 
+		SET 
+			station_name=#{stationName}
+		WHERE 
+			device_idx=#{deviceIdx}
+	</update>
+	<!-- =========== 1) 스테이션 이름 변경 :: END   =========== -->
+
+	<!-- =========== 2) 스테이션 변경 :: BEGIN =========== -->
+	<!-- 2-B) 기존 장비 연동 정보 삭제 -->
+	<delete id="delStationInfo" parameterType="String">
+		DELETE FROM 
+			TB_MEMBER_DEVICE_MANAGE
+		WHERE
+			device_idx = #{oldDeviceIdx}
+	</delete>
+
+	<!-- 2-C) 기존 VENT 장비 연동 정보 삭제 -->
+	<delete id="delVentInfo" parameterType="String">
+		DELETE FROM 
+			TB_MEMBER_DEVICE_CONTROL_MANAGE
+		WHERE
+			iaq_device_idx = #{oldDeviceIdx}
+	</delete>
+
+	<!-- 2-E) 변경 연동 정보 등록 -->
+	<insert id="addStationInfo" parameterType="AppStation">
+		INSERT 
+			INTO TB_MEMBER_DEVICE_MANAGE(
+				member_idx,
+		        device_idx,
+		        space_idx,
+		        station_name,
+		        lat,
+		        lon,
+		        equip_dt,
+		        equip_name,
+		        equip_addr,
+		        equip_addr2,
+		        create_dt
+			) VALUES (
+				#{memberIdx},
+		        #{newDeviceIdx},
+		        #{spaceIdx},
+		        #{spaceName},
+		        #{lat},
+		        #{lon},
+		        #{equipDt},
+		        #{equipName},
+		        #{equipAddr},
+		        #{equipAddr2},
+		        #{createDt}
+		    )
+	</insert>
+	<!-- =========== 2) 스테이션 변경 :: END   =========== -->
+
+	<!-- =========== 3) 스테이션 공유 설정 :: BEGIN =========== -->
+	<!-- 3-A) 스테이션 공유 설정 (UPDATE) -->
+	<update id="stationShared" parameterType="AppStation">
+		UPDATE 
+			TB_MEMBER
+		SET 
+			station_shared=#{stationShared}
+		WHERE 
+			user_id=#{userId}
+	</update>
+	<!-- =========== 3) 스테이션 공유 설정 :: END   =========== -->
+
+	<!-- =========== 4) 스테이션 설치 장소 ( 수신용 ) :: BEGIN =========== -->
+
+	<!-- =========== 4) 스테이션 설치 장소 ( 수신용 ) :: END   =========== -->
+
+	<!-- =========== 5) 스테이션 설치 장소 설정 :: BEGIN =========== -->
+	<!-- 5-A) 스테이션 장소 설정 -->
+	<update id="setStationInfo" parameterType="AppStation">
+		UPDATE 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM, 
+			(SELECT TD2.idx AS idx FROM TB_DEVICE AS TD2 WHERE TD2.serial_num = #{stationNo}) AS TD
+		SET 
+			TMDM.space_idx = #{spaceIdx}
+		WHERE 
+			 TD.idx = TMDM.device_idx
+	</update>
+
+	<!-- =========== 5) 스테이션 설치 장소 설정 :: END   =========== -->
+
+	<!-- =========== 6) 위치(지역) 설정  :: BEGIN =========== -->
+	<!-- 6-A) 사용자 정보 수정 (region, regionName) -->
+	<update id="memberRegionUpdate" parameterType="AppStation">
+		UPDATE 
+			TB_MEMBER
+		SET 
+			region = #{region},
+            region_name = #{regionName}
+		WHERE 
+			user_id=#{userId}
+	</update>
+
+	<!-- 6-B) 사용자 장비 연동정보 수정 (lon, lat) -->
+	<update id="infoRegionUpdate" parameterType="AppStation">
+		UPDATE 
+			TB_MEMBER_DEVICE_MANAGE
+		SET 
+			lon = #{lon},
+			lat = #{lat}
+		WHERE 
+			device_idx=#{deviceIdx}
+	</update>
+
+	<!-- =========== 6) 위치(지역) 설정  :: END   =========== -->
+
+	<!-- =========== 7) 측정 항목 조회  :: BEGIN =========== -->
+	<select id="getElements" parameterType="String" resultType="HashMap">
+		SELECT
+			(SELECT TDE.kor_name FROM TB_DEVICE_ELEMENTS AS TDE WHERE TDE.idx = TDME.element_idx) AS korName,
+		    (SELECT TDE.eng_name FROM TB_DEVICE_ELEMENTS AS TDE WHERE TDE.idx = TDME.element_idx) AS engName,
+		    (SELECT TDE.element_unit FROM TB_DEVICE_ELEMENTS AS TDE WHERE TDE.idx = TDME.element_idx) AS elementUnit,
+			(SELECT TDE.element_convert FROM TB_DEVICE_ELEMENTS AS TDE WHERE TDE.idx = TDME.element_idx) AS elementConvert
+		FROM 
+			TB_DEVICE_MODEL_ELEMENTS AS TDME
+		WHERE 
+			TDME.device_model_idx = (SELECT TD.device_model_idx FROM TB_DEVICE AS TD WHERE TD.serial_num=#{stationNo})
+	</select>
+	<!-- =========== 7) 측정 항목 조회  :: END   =========== -->
+
+    <!-- 사용자 장비 삭제 -->
+	<delete id="delMemberDevice" parameterType="String">
+		DELETE FROM 
+			TB_MEMBER_DEVICE_MANAGE  
+		WHERE 
+			device_idx = #{deviceIdx}
+	</delete>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.DeviceAttributeMapper">
+
+    <!-- 장비 속성 추가 -->
+	<insert id="insertDeviceAttribute" parameterType="DeviceAttribute">
+		
+	</insert>
+
+    <!-- 장비 속성 수정 -->
+    <update id="updateDeviceAttribute" parameterType="DeviceAttribute">
+		
+	</update>
+
+    <!-- 장비 속성 삭제 -->
+	<update id="deleteDeviceAttribute" parameterType="String">
+		
+	</update>
+
+</mapper>

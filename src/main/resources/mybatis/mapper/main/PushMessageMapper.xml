@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.PushMessageMapper">
+
+	<insert id="pushMessageSave" parameterType="PushMessage">
+        INSERT INTO 
+			TB_PUSH_MESSAGE_MANAGE(
+				element,
+				pre_step,
+				cur_step,
+				message,
+                device_type
+			) VALUES (
+				#{element}, 
+				#{preStep},
+				#{curStep},
+                #{message},
+				#{deviceType}
+			)
+	</insert>
+
+    <update id="pushMessageUpdate" parameterType="PushMessage">
+   		UPDATE 
+			TB_PUSH_MESSAGE_MANAGE 
+		SET 
+            message = #{message}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+</mapper>

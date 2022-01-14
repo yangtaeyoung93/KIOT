@@ -1,0 +1,50 @@
+#login {
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+.custom-input {
+    width: 500px;
+    border: none;
+    border-bottom: 1px solid #dddddd;
+    padding: 15px;
+    padding-left: 40px;
+    transition: .3s all;
+}
+span.input-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color:#dddddd;
+    transition: .3s all;
+}
+.form-group{
+    position: relative;
+}
+.custom-input:focus + span {
+    color: black;
+}
+.form-custom {
+    width: 500px;
+    margin: auto;
+}
+form {
+    margin-top: 60px;
+}
+.common-btn {
+    width: 500px;
+    font-size: 23px;
+    padding: 14px;
+    margin-top:40px;
+    margin-bottom: 30px;
+}
+.row img {
+    margin: auto;
+}
+.row form {
+    margin: auto;
+    margin-top: 60px;
+}

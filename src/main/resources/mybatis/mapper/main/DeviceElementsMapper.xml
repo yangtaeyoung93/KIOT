@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.DeviceElementsMapper">
+
+    <!-- 측정 요소 추가 -->
+	<insert id="insertDeviceElements" parameterType="DeviceElements">
+		
+	</insert>
+
+    <!-- 측정 요소 수정 -->
+    <update id="updateDeviceElements" parameterType="DeviceElements">
+		
+	</update>
+
+    <!-- 측정 요소 삭제 -->
+	<update id="deleteDeviceElementsy" parameterType="String">
+		
+	</update>
+
+</mapper>

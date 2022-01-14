@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.MemberMapper">
+    <!-- 접속 사용자 정보 업데이트(IP, 접속시간) -->
+    <update id="memberLoginInfoUpdate" parameterType="Member">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			login_ip = #{loginIp},
+			login_dt = #{loginDt}
+		WHERE 
+			idx = #{idx }
+	</update>
+
+    <!-- 사용자 추가 -->
+	<insert id="insertMember" parameterType="Member">
+		INSERT INTO 
+			TB_MEMBER(
+				user_id,
+				user_pw,
+				region,
+				region_name,
+		        station_shared,
+		        login_count,
+		        use_yn
+			) values(
+				#{userId}, 
+				#{userPw},
+				#{region},
+		        #{regionName},
+				#{stationShared},
+				0,
+				'Y'
+			)
+	</insert>
+
+    <!-- 사용자 수정 -->
+    <update id="updateMember" parameterType="Member">
+	    UPDATE	 
+			TB_MEMBER
+		SET 
+			user_id = #{userId}, 
+			<if test='pwCheck == "1"'>
+				user_pw = #{userPw},
+			</if>
+			region = #{region},
+		    region_name = #{regionName},
+		    station_shared = #{stationShared}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 사용자 삭제 -->
+	<update id="deleteMember" parameterType="String">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx }
+	</update>
+
+	<update id="updateMemberPassword" parameterType="String">
+		UPDATE 
+			TB_MEMBER 
+		SET 
+			user_pw = #{password}
+		WHERE 
+			idx=#{idx}
+	</update>
+
+	<update id="updateMemberLoginCount" parameterType="String">
+		UPDATE
+			TB_MEMBER
+		<choose>
+			<when test="success == 1">
+			SET
+			    login_count = 0
+			</when>
+			<otherwise>
+				SET
+				login_count = login_count + 1
+			</otherwise>
+		</choose>
+		WHERE
+			user_id = #{userId}
+	</update>
+
+	<delete id="deleteAppDeviceInfo" parameterType="String">
+		DELETE FROM 
+			TB_APP_DEVICE_INFO  
+		WHERE 
+			member_idx = #{idx}
+	</delete>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.readonly.BiotMapper">
+	<!-- 사용자 인증 (TB_DATA_API_AUTH) -->
+	<select id="apiAuthCheck" parameterType="String" resultType="Integer">
+		SELECT 
+			CASE 
+				WHEN 
+					(SELECT COUNT(TDAA.allow_ip) FROM TB_DATA_API_AUTH AS TDAA WHERE TDAA.api_type=#{apiType} AND TDAA.id_type=#{idType} AND TDAA.id=#{id}) = 0
+				THEN 1
+		        WHEN 
+					(SELECT COUNT(TDAA.allow_ip) FROM TB_DATA_API_AUTH AS TDAA WHERE TDAA.api_type=#{apiType} AND TDAA.id_type=#{idType} AND TDAA.id=#{id} AND TDAA.allow_ip=#{allowIp}) = 0 -- IP 체크 실패
+				THEN 2
+				ELSE 0
+		END AS flag;
+	</select>
+
+	<!-- 개인 사용자 연동 Serial 조회,,, KIOT API 이용 -->
+	<select id="selectMemberDeviceList" parameterType="String" resultType="HashMap">
+		SELECT 
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+			TMDM.station_name AS station_name
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM
+		WHERE 
+			TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id=#{memberId})
+		AND
+			TMDM.device_idx IS NOT NULL
+	</select>
+
+	<!-- 그룹 사용자 연동 Serial 조회,,, KIOT API 이용 -->
+	<select id="selectGroupDeviceList" parameterType="String" resultType="HashMap">
+		SELECT 
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+			TMDM.station_name AS station_name
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM
+		WHERE 
+			TMDM.member_idx in 
+				(SELECT
+					(SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.idx = TGMM.member_idx)
+				FROM 
+					TB_GROUP_MEMBER_MANAGE AS TGMM
+				WHERE 
+					TGMM.group_idx=(SELECT TG.idx FROM TB_GROUP AS TG WHERE TG.group_id=#{groupId}))
+	</select>
+
+	<!-- 동 별 미세먼지 측정 수치 조회,,, DONG API 이용 -->
+	<select id="selectDongCollectionList" resultType="DongCollectionDto">
+		SELECT 
+			TDH.dcode, 
+			TDH.dtype, 
+			TDH.dname, 
+			TDH.sdcode, 
+			TDH.sggcode, 
+			TDDD.pm10_value, 
+			TDDD.pm25_value, 
+			TDDD.up_date
+		FROM 
+			TB_DONG_HCODE AS TDH
+				LEFT OUTER JOIN TB_DONG_DUST_DATA AS TDDD
+					ON TDH.dcode=TDDD.dcode
+		ORDER BY 
+			TDH.dcode
+	</select>
+
+	<!-- 동 별 좌표(Lon, Lat) 측정 수치 조회,,, DONG_MAST API 이용 -->
+	<select id="selectDongLocationList" resultType="DongCollectionDto">
+		SELECT 
+			TDH.dcode, 
+			TDH.dtype, 
+			TDH.sdcode, 
+			TDH.sggcode, 
+			TDH.dname, 
+			TDI.lon, 
+			TDI.lat,
+			DATE_FORMAT(TDH.reg_date ,'%Y%m%d%H%i') AS up_date
+		FROM 
+			TB_DONG_HCODE AS TDH
+				LEFT OUTER JOIN TB_DONG_INFO AS TDI
+					ON TDH.dcode=TDI.dcode
+		ORDER BY 
+			TDH.dcode
+	</select>
+</mapper>

@@ -1,0 +1,63 @@
+@font-face {
+    font-family: 'SeoulNamsanB';
+    src: url('/font/SeoulNamsanB.eot');
+    src: url('/font/SeoulNamsanB.eot?#iefix') format('embedded-opentype'),
+         url('/font/SeoulNamsanB.svg#SeoulNamsanB') format('svg'),
+         url('/font/SeoulNamsanB.woff') format('woff'),
+         url('/font/SeoulNamsanB.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+
+  .namsan {
+      font-family: 'SeoulNamsanB';
+  }
+  html,body {
+      margin:0;
+      padding:0;
+      min-height:100%;
+  }
+.common-btn {
+    background-color: #f3f9fe;
+    border: 1px solid #0c82e9;
+    color: #0c82e9;
+}
+.common-btn-black {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+}
+
+.content-box {
+    padding: 0;
+    margin-top: 110px;
+    background: white;
+    margin-bottom: 54px;
+}
+
+
+footer {
+    background: #ddd;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+footer .row {
+    padding: 15px 0;
+}
+
+.footer-info span {
+    font-family: 'SeoulNamsanB';
+    font-size: 13px;
+    font-weight: bold;
+    margin-right: 60px;
+}
+
+img.footer-logo {
+    position: relative;
+    top: -4px;
+    margin-right: 30px;
+}

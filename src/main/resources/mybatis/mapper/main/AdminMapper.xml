@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.common.AdminMapper">
+
+    <!-- 접속 관리자 정보 업데이트(IP, 접속시간) -->
+    <update id="adminLoginInfoUpdate" parameterType="Admin">
+		UPDATE 
+			TB_ADMIN 
+		SET 
+			login_ip = #{loginIp},
+			login_dt = #{loginDt}
+		WHERE 
+			user_id = #{userId}
+	</update>
+
+	<!-- 관리자 추가 -->
+	<insert id="insertAdmin" parameterType="Admin">
+		IMSERT INTO 
+			TB_ADMIN(
+				user_id, 
+				user_pw, 
+				user_name, 
+				use_yn
+			) VALUES (
+				#{userId},
+				#{userPw},
+				#{userName},
+				#{useYn}
+			)
+	</insert>
+
+	<!-- 관리자 수정 -->
+	<update id="updateAdmin" parameterType="Admin">
+		UPDATE 
+			TB_ADMIN 
+		SET 
+			user_id=#{userId},
+			user_pw=#{userPw},
+			user_name=#{userName},
+			use_yn=#{useYn}
+		WHERE 
+			idx=#{idx}
+	</update>
+
+	<!-- 관리자 삭제 -->
+	<update id="deleteAdmin" parameterType="String">
+		UPDATE 
+			TB_ADMIN 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx}
+	</update>
+
+</mapper>

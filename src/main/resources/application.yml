@@ -1,0 +1,124 @@
+spring:
+  application:
+    name: 케이웨더, 데이터센터
+  profiles:
+    active: prod
+  boot:
+    admin:
+      client:
+        url: http://localhost:8086
+        instance:
+          metadata:
+            user:
+              name: t_datacenter
+              password: 1111
+        username: kdk
+        password: kdk123
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+---
+# production
+server:
+  port: 8888
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  profiles: prod
+  main:
+    datasource:
+      jdbc-url: jdbc:log4jdbc:mysql://kiotmysqlrw.kweather.co.kr:3306/re_kiot?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+      username: kiot
+      password: zpdliot1!
+  read-only:
+    datasource:
+      jdbc-url: jdbc:log4jdbc:mysql://kiotmysql.kweather.co.kr:3306/re_kiot?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+      username: kiot
+      password: zpdliot1!
+logging:
+  config: classpath:logback.xml
+
+---
+# local
+server:
+  port: 8888
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  profiles: local
+  main:
+    datasource:
+      jdbc-url: jdbc:log4jdbc:mysql://kiotmysqlrw.kweather.co.kr:3306/re_kiot?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+      username: kiot
+      password: zpdliot1!
+  read-only:
+    datasource:
+      jdbc-url: jdbc:log4jdbc:mysql://kiotmysql.kweather.co.kr:3306/re_kiot?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+      username: kiot
+      password: zpdliot1!
+logging:
+  config: classpath:logback-local.xml
+
+---
+spring:
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    view-names: thymeleaf/*
+
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+  redis: 
+    port: 6379
+    host: 220.95.232.202
+    database: 0
+    password: zpdldnsdud1!
+    lettuce: 
+      pool: 
+        max-active: 10
+        max-idle: 10
+        min-idle: 2
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+restTemplate:
+  factory:
+    readTimeout: 300000
+    connectTimeout: 60000
+  httpClient:
+    maxConnTotal: 100
+    maxConnPerRoute: 5
+
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+
+
+file-folder:
+  path: /NAS2_NFS/IOT_KITECH/MEMBER_DEVICE/
+  suncheon: /NAS2_NFS/CUSTOM/SUNCHEON/IMAGES/
+#  path: C:\File\

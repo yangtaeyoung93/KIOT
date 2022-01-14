@@ -1,0 +1,2744 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.readonly.ReadOnlyMapper">
+  <select id="findAdminByLoginId" resultType="Admin">
+    SELECT
+    TA.user_id,
+    TA.user_pw,
+    TA.user_name,
+    TA.login_ip,
+    TA.login_dt,
+    TA.create_dt
+    FROM
+    TB_ADMIN AS TA
+    <where>
+      <if test=" userId != null and userId != '' ">
+        TA.user_id = #{userId}
+        and TA.use_yn = 'Y';
+      </if>
+    </where>
+  </select>
+
+  <select id="selectAdminList" parameterType="Search" resultType="Admin">
+    SELECT
+    @rownum:=@rownum+1 as row_num,
+    TA.idx,
+    TA.user_id,
+    TA.user_name,
+    TA.login_ip,
+    TA.login_dt,
+    TA.create_dt,
+    TA.use_yn
+    FROM
+    TB_ADMIN AS TA, (SELECT @rownum :=0) AS R
+    <where>
+      TA.use_yn=#{searchUseYn}
+      <if test='searchType == "user_id" '>
+        AND TA.user_id like CONCAT('%', #{searchValue}, '%')
+      </if>
+      <if test='searchType == "user_name" '>
+        AND TA.user_name like CONCAT('%', #{searchValue}, '%')
+      </if>
+    </where>
+  </select>
+
+  <select id="selectAdminOne" parameterType="String" resultType="Admin">
+    SELECT TA.idx,
+           TA.user_id,
+           TA.user_name,
+           TA.login_ip,
+           TA.login_dt,
+           TA.create_dt,
+           TA.use_yn
+    FROM TB_ADMIN AS TA
+    WHERE TA.idx = #{idx}
+  </select>
+
+  <select id="checkAdminUserId" parameterType="String" resultType="Integer">
+    SELECT COUNT(TA.idx)
+    FROM TB_ADMIN AS TA
+    WHERE TA.user_id = #{userId}
+  </select>
+
+  <select id="selectDeviceAttribute" resultType="DeviceAttribute">
+    SELECT
+    @rownum:=@rownum+1 AS row_num,
+    TDA.idx,
+    TDA.attribute_name,
+    TDA.attribute_code,
+    TDA.input_type
+    FROM
+    TB_DEVICE_ATTRIBUTE AS TDA, (SELECT @rownum :=0) AS R
+    WHERE  <!-- 환기청정기 구분용 -->
+    <![CDATA[ TDA.idx not in(8,9,10) ]]>
+  </select>
+
+  <select id="selectDeviceAttributeVent" resultType="DeviceAttribute">
+    SELECT
+    @rownum:=@rownum+1 AS row_num,
+    TDA.idx,
+    TDA.attribute_name,
+    TDA.attribute_code,
+    TDA.input_type
+    FROM
+    TB_DEVICE_ATTRIBUTE AS TDA, (SELECT @rownum :=0) AS R
+    WHERE  <!-- 환기청정기 구분용 -->
+    <![CDATA[ TDA.idx in(8,9,10) ]]>
+  </select>
+
+  <select id="selectDeviceAttributeAll" resultType="DeviceAttribute">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TDA.idx,
+		    TDA.attribute_name,
+		    TDA.attribute_code,
+		    TDA.input_type
+    FROM
+      TB_DEVICE_ATTRIBUTE AS TDA, (SELECT @rownum := 0) AS R
+
+  </select>
+
+  <select id="selectDeviceElements" resultType="DeviceElements">
+    SELECT
+    @rownum:=@rownum+1 as row_num,
+    TDE.idx,
+    TDE.kor_name,
+    TDE.eng_name,
+    TDE.element_unit,
+    TDE.element_convert
+    FROM
+    TB_DEVICE_ELEMENTS AS TDE, (SELECT @rownum :=0) AS R
+    WHERE  <!-- 환기청정기 구분용 -->
+    <![CDATA[ TDE.idx not in(28,29,31,32,33,34,36,37,44) ]]>
+  </select>
+
+  <select id="selectDeviceElementsVent" resultType="DeviceElements">
+    SELECT
+    @rownum:=@rownum+1 as row_num,
+    TDE.idx,
+    TDE.kor_name,
+    TDE.eng_name,
+    TDE.element_unit,
+    TDE.element_convert
+    FROM
+    TB_DEVICE_ELEMENTS AS TDE, (SELECT @rownum :=0) AS R
+    WHERE  <!-- 환기청정기 구분용 -->
+    <![CDATA[ TDE.idx in(28,29,31,32,33,34,36,37,44) ]]>
+  </select>
+
+  <select id="selectDeviceElementsAll" resultType="DeviceElements">
+    SELECT @rownum:=@rownum+1 as row_num,
+			TDE.idx,
+		    TDE.kor_name,
+		    TDE.eng_name,
+		    TDE.element_unit,
+		    TDE.valid_digits,
+		    TDE.element_convert,
+		    TDE.view_name
+    FROM
+      TB_DEVICE_ELEMENTS AS TDE, (SELECT @rownum := 0) AS R
+  </select>
+
+  <select id="selectDeviceList" parameterType="Search" resultType="Device">
+    SELECT @rownum:=@rownum+1 as row_num,
+			TD.idx,
+		    TD.device_model_idx,
+		    (SELECT TDM3.device_model FROM TB_DEVICE_MODEL AS TDM3 WHERE TDM3.idx = TD.device_model_idx) AS device_model,
+		    TD.serial_num,
+		    TD.product_dt,
+		    TD.create_dt,
+		    TD.test_yn,
+		    TD.use_yn
+    FROM
+      (SELECT @rownum := 0) AS R, TB_DEVICE AS TD
+      JOIN
+      (SELECT idx,
+      device_model,
+      (SELECT device_type AS dt FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx=TDM2.device_type_idx) AS dt
+      FROM TB_DEVICE_MODEL AS TDM2) AS TDM
+    ON TD.device_model_idx=TDM.idx
+    WHERE
+      TD.use_yn=#{searchUseYn}
+      AND TDM.dt=#{searchValue}
+      AND TDM.device_model LIKE CONCAT('%'
+        , #{searchValue2}
+        , '%')
+      AND TD.serial_num LIKE CONCAT('%'
+        , #{searchValue3}
+        , '%')
+  </select>
+
+  <select id="selectDeviceOne" parameterType="String" resultType="Device">
+    SELECT TD.idx,
+           TD.device_model_idx,
+           (SELECT TDM3.device_model
+            FROM TB_DEVICE_MODEL AS TDM3
+            WHERE TDM3.idx = TD.device_model_idx) AS device_model,
+           TD.serial_num,
+           TD.product_dt,
+           TD.create_dt,
+           TD.test_yn,
+           TD.use_yn
+    FROM TB_DEVICE AS TD
+    WHERE TD.idx = #{idx}
+  </select>
+
+  <select id="checkSerialNum" parameterType="String" resultType="Integer">
+    SELECT COUNT(TD.idx)
+    FROM TB_DEVICE AS TD
+    WHERE TD.serial_num = #{serialNum}
+  </select>
+
+  <select id="deleteDeviceMemberCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDM.member_idx) AS cnt
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.device_idx = #{deviceIdx}
+  </select>
+
+  <select id="deleteDeviceVentCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDCM.vent_device_idx) AS cnt
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE TMDCM.iaq_device_idx = #{deviceIdx}
+  </select>
+
+  <select id="deleteDeviceVentCheck2" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDCM.vent_device_idx) AS cnt
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE TMDCM.vent_device_idx = #{deviceIdx}
+  </select>
+
+  <select id="selectDeviceModel" parameterType="Search" resultType="DeviceModel">
+    SELECT
+    @rownum:=@rownum+1 AS row_num,
+    idx,
+    (SELECT device_type FROM TB_DEVICE_TYPE WHERE idx = device_type_idx) AS device_type,
+    device_model,
+    description,
+    image_file,
+    create_dt,
+    use_yn
+    FROM
+    TB_DEVICE_MODEL, (SELECT @rownum :=0) AS R
+    <where>
+      use_yn = #{searchUseYn}
+      <if test='searchType != ""'>
+        AND device_type_idx = #{searchType}
+      </if>
+      <if test='searchValue != ""'>
+        AND device_model LIKE CONCAT('%', #{searchValue}, '%')
+      </if>
+    </where>
+  </select>
+
+  <select id="selectDeviceModelOne" parameterType="String" resultType="DeviceModel">
+    SELECT idx,
+           device_type_idx,
+           (SELECT device_type_idx FROM TB_DEVICE_TYPE WHERE idx = device_type_idx) AS device_type,
+           device_model,
+           description,
+           image_file,
+           create_dt,
+           use_yn
+    FROM TB_DEVICE_MODEL
+    WHERE idx = #{idx}
+  </select>
+
+  <select id="selectTypeNameDeviceModel" parameterType="String" resultType="DeviceModel">
+    SELECT TDM.idx          AS idx,
+           TDM.device_model AS device_model,
+           TDT.idx          AS device_type_idx
+    FROM TB_DEVICE_MODEL AS TDM
+           LEFT JOIN TB_DEVICE_TYPE AS TDT
+                     ON TDM.device_type_idx = TDT.idx
+    WHERE TDM.use_yn = 'Y'
+      AND TDT.device_type = #{deviceType}
+  </select>
+
+  <select id="selectOneDeviceModelAttribute" parameterType="String" resultType="DeviceAttribute">
+    SELECT DISTINCT da.idx              AS idx,
+                    da.attribute_name   AS attribute_name,
+                    da.input_type       AS input_type,
+                    dma.attribute_value AS attribute_value,
+                    CASE
+                      WHEN dma.device_model_idx = #{idx} THEN
+                        CASE
+                          WHEN da.idx = dma.attribute_idx THEN '1'
+                          ELSE '3' END
+                      ELSE '0' END      AS gubun
+    FROM TB_DEVICE_ATTRIBUTE AS da
+           LEFT JOIN TB_DEVICE_MODEL_ATTRIBUTE AS dma
+                     ON da.idx = dma.attribute_idx
+                       AND dma.device_model_idx = #{idx}
+		<![CDATA[ WHERE da.idx not in (8, 9, 10) ]]>
+		ORDER BY da.idx ASC
+  </select>
+
+  <select id="selectOneDeviceModelAttributeVent" parameterType="String"
+    resultType="DeviceAttribute">
+    SELECT DISTINCT da.idx              AS idx,
+                    da.attribute_name   AS attribute_name,
+                    da.input_type       AS input_type,
+                    dma.attribute_value AS attribute_value,
+                    CASE
+                      WHEN dma.device_model_idx = #{idx} THEN
+                        CASE
+                          WHEN da.idx = dma.attribute_idx THEN '1'
+                          ELSE '3' END
+                      ELSE '0' END      AS gubun
+    FROM TB_DEVICE_ATTRIBUTE AS da
+           LEFT JOIN TB_DEVICE_MODEL_ATTRIBUTE AS dma
+                     ON da.idx = dma.attribute_idx
+                       AND dma.device_model_idx = #{idx}
+		<![CDATA[ WHERE da.idx in (8, 9, 10) ]]>
+		ORDER BY da.idx ASC
+  </select>
+
+  <select id="selectOneDeviceModelElements" parameterType="String" resultType="DeviceElements">
+    SELECT DISTINCT de.idx         AS idx,
+                    de.kor_name    as kor_name,
+                    de.eng_name    as eng_name,
+                    CASE
+                      WHEN dme.device_model_idx = #{idx} THEN
+                        CASE
+                          WHEN de.idx = dme.element_idx THEN '1'
+                          ELSE '3' END
+                      ELSE '0' END AS gubun
+    FROM TB_DEVICE_ELEMENTS AS de
+           LEFT JOIN TB_DEVICE_MODEL_ELEMENTS AS dme
+                     ON de.idx = dme.element_idx
+                       AND dme.device_model_idx = #{idx}
+		<![CDATA[ WHERE de.idx not in (28, 29, 31, 32, 33, 34, 36, 37, 44) ]]>
+		ORDER BY de.idx ASC
+  </select>
+
+  <select id="selectOneDeviceModelElementsVent" parameterType="String" resultType="DeviceElements">
+    SELECT DISTINCT de.idx         AS idx,
+                    de.kor_name    as kor_name,
+                    CASE
+                      WHEN dme.device_model_idx = #{idx} THEN
+                        CASE
+                          WHEN de.idx = dme.element_idx THEN '1'
+                          ELSE '3' END
+                      ELSE '0' END AS gubun
+    FROM TB_DEVICE_ELEMENTS AS de
+           LEFT JOIN TB_DEVICE_MODEL_ELEMENTS AS dme
+                     ON de.idx = dme.element_idx
+                       AND dme.device_model_idx = #{idx}
+		<![CDATA[ WHERE de.idx in (28, 29, 31, 32, 33, 34, 36, 37, 44) ]]>
+		ORDER BY de.idx ASC
+  </select>
+
+  <select id="checkDeviceModel" parameterType="String" resultType="Integer">
+    SELECT COUNT(TDM.idx)
+    FROM TB_DEVICE_MODEL AS TDM
+    WHERE TDM.device_model = #{deviceModel}
+      AND TDM.device_type_idx = #{deviceTypeIdx}
+  </select>
+
+  <select id="deleteDeviceModelCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TD.idx) AS cnt
+    FROM TB_DEVICE AS TD
+    WHERE TD.device_model_idx = #{deviceModelIdx}
+  </select>
+
+  <select id="selectCategoryList" parameterType="String" resultType="DeviceType">
+    SELECT @rownum:=@rownum+1 as row_num,
+			idx,
+			device_type,
+			device_type_name,
+			description,
+			create_dt,
+			use_yn
+    FROM
+      TB_DEVICE_TYPE, (SELECT @rownum := 0) AS R
+    WHERE
+      use_yn = #{useYn}
+  </select>
+
+  <select id="checkDeviceType" parameterType="String" resultType="Integer">
+    SELECT COUNT(TDT.idx)
+    FROM TB_DEVICE_TYPE AS TDT
+    WHERE TDT.device_type = #{deviceType}
+  </select>
+
+  <select id="checkDeviceTypeName" parameterType="String" resultType="Integer">
+    SELECT COUNT(TDT.idx)
+    FROM TB_DEVICE_TYPE AS TDT
+    WHERE TDT.device_type_name = #{deviceTypeName}
+  </select>
+
+  <select id="findGroupByLoginId" resultType="Group" parameterType="String">
+    SELECT
+    TG.idx,
+    TG.group_id,
+    TG.group_pw,
+    TG.group_name,
+    TG.group_email,
+    TG.group_phone_number,
+    TG.group_telephone,
+    TG.group_telephone,
+    TG.create_dt,
+    TG.group_depart_name
+    FROM
+    TB_GROUP AS TG
+    <if test='groupId != null or groupId == ""'>
+      WHERE
+      TG.group_id = #{groupId}
+      AND
+      TG.use_yn = 'Y';
+    </if>
+  </select>
+
+  <select id="findGroupList" resultType="Group" parameterType="String">
+    SELECT TG.idx,
+           TG.group_id,
+           TG.group_pw,
+           TG.group_name,
+           TG.group_email,
+           TG.group_phone_number,
+           TG.group_telephone,
+           TG.create_dt,
+           TG.group_depart_name
+    FROM TB_GROUP AS TG
+  </select>
+
+  <select id="selectGroupList" parameterType="Search" resultType="Group">
+    SELECT
+    @rownum:=@rownum+1 as row_num,
+    TG.idx,
+    TG.group_id,
+    TG.group_name,
+    TG.group_email,
+    TG.group_company_name,
+    TG.group_depart_name,
+    TG.group_phone_number,
+    TG.group_custom_url,
+    TG.create_dt,
+    TG.use_yn,
+    COUNT(TGMM.member_idx) AS member_cnt
+    FROM
+    (SELECT @rownum :=0) AS R,
+    TB_GROUP AS TG
+    LEFT JOIN (
+    SELECT
+    (
+    SELECT
+    GROUP_CONCAT(
+    DISTINCT(
+    SELECT
+    (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx)
+    FROM
+    TB_DEVICE AS TD
+    WHERE
+    TD.idx = TMDM.device_idx
+    )
+    )
+    FROM
+    TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE
+    TMDM.member_idx = TGMM.member_idx
+    ) AS device_types,
+    TGMM.member_idx,
+    TGMM.group_idx
+    FROM
+    TB_GROUP_MEMBER_MANAGE AS TGMM
+    ) AS TGMM
+    ON TG.idx=TGMM.group_idx
+    <where>
+      TG.use_yn=#{searchUseYn}
+      <if test=" searchValue2 != null">
+        AND TGMM.device_types LIKE CONCAT('%', #{searchValue2}, '%')
+      </if>
+      <if test='searchType == "GN"'>
+        AND TG.group_name LIKE CONCAT('%', #{searchValue}, '%')
+      </if>
+      <if test='searchType == "GC"'>
+        AND TG.group_id LIKE CONCAT('%', #{searchValue}, '%')
+      </if>
+    </where>
+    GROUP BY TG.idx
+    ORDER BY TG.group_name
+  </select>
+
+  <select id="selectGroupCustomList" parameterType="String" resultType="Group">
+    SELECT @rownum:=@rownum+1 as row_num,
+			M.*
+    FROM (SELECT
+      TG.idx,
+      TG.group_id,
+      TG.group_name,
+      TG.group_email,
+      TG.group_company_name,
+      TG.group_depart_name,
+      TG.group_phone_number,
+      TG.group_custom_url,
+      TG.create_dt,
+      TG.use_yn
+      FROM
+      TB_GROUP AS TG
+      WHERE
+      TG.group_custom_url != '' AND TG.group_custom_url IS NOT NULL
+      AND TG.group_name LIKE CONCAT('%', #{searchValue}, '%')
+      ) AS M, (SELECT @rownum := 0) AS R
+  </select>
+
+  <select id="selectGroupOne" parameterType="String" resultType="Group">
+    SELECT TG.idx,
+           TG.group_id,
+           TG.group_name,
+           TG.group_email,
+           TG.group_company_name,
+           TG.group_depart_name,
+           TG.group_phone_number,
+           TG.group_custom_url,
+           TG.create_dt,
+           TG.use_yn
+    FROM TB_GROUP AS TG
+    WHERE TG.idx = #{idx}
+      AND use_yn = 'Y'
+  </select>
+
+  <select id="selectGroupMembers" parameterType="String" resultType="HashMap">
+    SELECT TM.idx          AS memberIdx,
+           TM.user_id      AS userId,
+           TM.region       AS region,
+           TM.region_name  AS regionName,
+           TM.user_name    AS userName,
+           TM.phone_number AS phoneNumber,
+           TM.telephone    AS telephone,
+           TM.user_email   AS userEmail,
+           TM.user_addr    AS userAddr,
+           TM.create_dt    AS createDt
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+           LEFT JOIN TB_MEMBER AS TM ON TGMM.member_idx = TM.idx
+    WHERE TGMM.group_idx = #{idx}
+  </select>
+
+  <select id="selectGroupMemberList" resultType="Group">
+    SELECT CASE WHEN TG.idx IS NULL THEN '0' ELSE TG.idx END      AS group_idx,
+           TM.idx                                                 AS member_idx,
+           TM.user_id                                             AS user_id,
+           TM.use_yn                                              AS use_yn,
+           CASE WHEN TGMM.group_idx IS NULL THEN 'N' ELSE 'Y' END AS gubun
+    FROM TB_MEMBER AS TM
+           LEFT JOIN TB_GROUP_MEMBER_MANAGE AS TGMM
+                     ON TM.idx = TGMM.member_idx
+           LEFT JOIN TB_GROUP AS TG
+                     ON TGMM.group_idx = TG.idx
+    WHERE TM.use_yn = 'Y'
+  </select>
+
+  <select id="checkGroupId" parameterType="String" resultType="Integer">
+    SELECT COUNT(TG.idx)
+    FROM TB_GROUP AS TG
+    WHERE TG.group_id = #{groupId}
+  </select>
+
+  <select id="deleteGroupDidCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TGD.idx) AS cnt
+    FROM TB_GROUP_DID AS TGD
+    WHERE TGD.group_idx = #{groupIdx}
+      AND TGD.use_yn = 'Y'
+  </select>
+
+  <select id="deleteGroupMemberCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TGMM.member_idx) AS cnt
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE TGMM.group_idx = #{groupIdx}
+  </select>
+
+  <select id="selectGroupDidList" parameterType="Search" resultType="GroupDid">
+    SELECT
+    @rownum:=@rownum+1 AS row_num,
+    R.*
+    FROM (SELECT @rownum :=0) AS RO, (
+    SELECT
+    TG.idx,
+    TG.idx AS str_idx,
+    TG.group_id,
+    TG.group_name,
+    TG.group_email,
+    TG.group_phone_number,
+    TG.create_dt,
+    TG.use_yn,
+    GROUP_CONCAT(TGD.did_name) AS group_did_name,
+    GROUP_CONCAT(TGD.did_code) AS group_did_code,
+    COUNT(TGD.idx) AS did_cnt,
+    COALESCE(SUM(TGD.member_cnt),0) AS did_member_cnt
+    FROM
+    TB_GROUP AS TG
+    LEFT JOIN (
+    SELECT
+    TGD2.idx,
+    TGD2.group_idx,
+    TGD2.did_code,
+    TGD2.did_name,
+    count(TGDMM.member_idx) as member_cnt
+    FROM
+    TB_GROUP_DID AS TGD2 LEFT JOIN TB_GROUP_DID_MEMBER_MANAGE AS TGDMM ON
+    TGD2.idx=TGDMM.group_did_idx
+    WHERE
+    TGD2.use_yn='Y'
+    GROUP BY
+    TGD2.idx
+    ) AS TGD
+    ON TG.idx=TGD.group_idx
+    WHERE
+    TG.use_yn= #{searchUseYn}
+    <if test='searchType == "group_id"'>
+      AND TG.group_id LIKE CONCAT('%', #{searchValue}, '%')
+    </if>
+    <if test='searchType == "group_name"'>
+      AND TG.group_name LIKE CONCAT('%', #{searchValue}, '%')
+    </if>
+    GROUP BY
+    TG.idx
+    ) AS R
+    <where>
+      R.did_cnt !=0
+      <if test='searchType == "group_did_name"'>
+        AND R.group_did_name LIKE CONCAT('%', #{searchValue}, '%')
+      </if>
+      <if test='searchType == "group_did_code"'>
+        AND R.group_did_code LIKE CONCAT('%', #{searchValue}, '%')
+      </if>
+    </where>
+  </select>
+
+  <select id="selectGroupDidOne" parameterType="String" resultType="GroupDid">
+    SELECT TGD.idx,
+           TGD.idx                                                              AS str_idx,
+           TGD.group_idx,
+           (SELECT group_name FROM TB_GROUP AS TG WHERE TG.idx = TGD.group_idx) AS group_name,
+           (SELECT COUNT(*)
+            FROM TB_GROUP_DID_MEMBER_MANAGE AS TGDMM
+            WHERE TGDMM.group_did_idx = TGD.idx)                                AS did_member_cnt,
+           TGD.did_name,
+           TGD.did_code,
+           TGD.create_dt,
+           TGD.use_yn
+    FROM TB_GROUP_DID AS TGD
+    WHERE TGD.group_idx = #{idx}
+      AND use_yn = 'Y'
+  </select>
+
+  <select id="groupDidMemberCheck" parameterType="GroupDid" resultType="GroupDid">
+    SELECT TGDMM.group_idx,
+           TGDMM.group_did_idx,
+           TGDMM.member_idx,
+           (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TGDMM.member_idx) user_id,
+           TGDMM.create_dt
+    FROM TB_GROUP_DID_MEMBER_MANAGE AS TGDMM
+    WHERE TGDMM.group_did_idx = #{groupDidIdx}
+      AND TGDMM.member_idx = #{memberIdx}
+  </select>
+
+  <select id="selectInsertGroupList" resultType="GroupDid">
+    SELECT TG.idx,
+           TG.group_name,
+           TG.use_yn
+    FROM TB_GROUP AS TG
+    WHERE use_yn = 'Y'
+  </select>
+
+  <select id="selectInsertGroupMemberList" parameterType="String" resultType="GroupDid">
+    SELECT TGMM.group_idx,
+           TGMM.member_idx,
+           (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TGMM.member_idx) AS user_id
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE TGMM.group_idx = #{idx}
+  </select>
+
+  <select id="selectGroupDidMemberList" parameterType="String" resultType="GroupDid">
+    SELECT GDMM.group_idx,
+           GDMM.group_did_idx,
+           GDMM.member_idx,
+           (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = GDMM.member_idx) AS user_id,
+           GDMM.create_dt
+    FROM TB_GROUP_DID_MEMBER_MANAGE AS GDMM
+    WHERE GDMM.group_did_idx = #{idx}
+  </select>
+
+  <select id="checkDidCode" parameterType="String" resultType="Integer">
+    SELECT COUNT(TGD.idx)
+    FROM TB_GROUP_DID AS TGD
+    WHERE TGD.did_code = #{didCode}
+  </select>
+
+  <select id="findMemberByLoginId" resultType="Member">
+    SELECT
+    TM.idx,
+    TM.user_id,
+    TM.user_pw,
+    TM.login_count,
+    TM.login_ip,
+    TM.login_dt,
+    TM.create_dt,
+    TM.region,
+    TM.region_name,
+    TM.user_name,
+    TM.phone_number,
+    TM.telephone,
+    TM.user_email,
+    TM.user_addr,
+    (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM
+    TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx=TM.idx) AS group_name
+    FROM
+    TB_MEMBER AS TM
+    <if test=" userId != null and userId != '' ">
+      WHERE
+      BINARY TM.user_id = #{userId}
+      and TM.use_yn = 'Y'
+    </if>
+  </select>
+
+  <select id="loginCheckMemberId" parameterType="Member" resultType="Integer">
+    SELECT CASE
+             WHEN
+                 (SELECT count(TM.idx) FROM TB_MEMBER AS TM WHERE BINARY TM.user_id = #{userId}) = 0
+               THEN
+               1
+             WHEN
+               (select TM.user_pw
+                FROM TB_MEMBER AS TM
+                WHERE BINARY TM.user_id = #{userId}
+                  AND TM.use_yn = 'Y') != #{userPw}
+               THEN
+               2
+             WHEN
+                 (select TM.user_pw
+                  FROM TB_MEMBER AS TM
+                  WHERE BINARY TM.user_id = #{userId}
+                    AND TM.use_yn = 'Y'
+                    AND TM.login_count <![CDATA[<]]> 5) = #{userPw}
+               THEN
+               3
+             WHEN
+                 (select TM.user_pw
+                  FROM TB_MEMBER AS TM
+                  WHERE BINARY TM.user_id = #{userId}
+                    AND TM.use_yn = 'Y'
+                    AND TM.login_count <![CDATA[>=]]> 5) = #{userPw}
+               THEN
+               4
+             WHEN
+                 (SELECT count(TM.idx)
+                  FROM TB_MEMBER AS TM
+                  WHERE BINARY TM.user_id = #{userId}
+                    AND TM.use_yn = 'Y') = 0
+               THEN
+               5
+             END AS result
+  </select>
+
+  <select id="loginCheckGroupId" parameterType="Group" resultType="Integer">
+    SELECT CASE
+             WHEN
+                 (SELECT count(TG.idx) FROM TB_GROUP AS TG WHERE BINARY TG.group_id = #{groupId}) = 0
+               THEN
+               1
+             WHEN
+               (select TG.group_pw
+                FROM TB_GROUP AS TG
+                WHERE BINARY TG.group_id = #{groupId}
+                  AND TG.use_yn = 'Y') != #{groupPw}
+               THEN
+               2
+             WHEN
+                 (select TG.group_pw
+                  FROM TB_GROUP AS TG
+                  WHERE BINARY TG.group_id = #{groupId}
+                    AND TG.use_yn = 'Y') = #{groupPw}
+               THEN
+               3
+             WHEN
+                 (SELECT count(TG.idx)
+                  FROM TB_GROUP AS TG
+                  WHERE BINARY TG.group_id = #{groupId}
+                    AND TG.use_yn = 'Y') = 0
+               THEN
+               5
+             END AS result
+  </select>
+
+  <select id="loginCheckAdminId" parameterType="Admin" resultType="Integer">
+    SELECT CASE
+             WHEN
+                 (SELECT count(TA.idx) FROM TB_ADMIN AS TA WHERE BINARY TA.user_id = #{userId}) = 0
+               THEN
+               1
+             WHEN
+                 (select user_pw FROM TB_ADMIN WHERE BINARY user_id = #{userId}) != #{userPw}
+               THEN
+               2
+             WHEN
+                   (select user_pw FROM TB_ADMIN WHERE BINARY user_id = #{userId}) = #{userPw}
+               THEN
+               3
+             END AS result
+  </select>
+
+  <select id="selectMemberList" parameterType="Search" resultType="Member">
+    SELECT @rownum:=@rownum+1 as row_num,
+			TM.idx,
+		    TM.user_id,
+		    TM.user_pw,
+		    TM.region,
+		    TM.region_name,
+		    TM.station_shared,
+		    TM.login_count,
+		    TM.login_ip,
+		    TM.login_dt,
+		    TM.create_dt,
+            TM.user_name,
+            TM.phone_number,
+            TM.telephone,
+            TM.user_email,
+            TM.user_addr,
+		    TM.use_yn,
+		    (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) AS group_name
+    FROM
+      TB_MEMBER AS TM LEFT JOIN TB_GROUP_MEMBER_MANAGE AS TGMM
+    ON TM.idx = TGMM.member_idx, (SELECT @rownum := 0) AS R
+    WHERE
+      TM.use_yn = #{searchUseYn}
+      AND TM.user_id like CONCAT('%'
+        , #{searchValue}
+        , '%')
+  </select>
+
+  <select id="selectMemberOne" parameterType="String" resultType="Member">
+    SELECT TM.idx,
+           TM.user_id,
+           TM.user_pw,
+           TM.region,
+           TM.region_name,
+           TM.station_shared,
+           TM.login_count,
+           TM.login_ip,
+           TM.login_dt,
+           TM.create_dt,
+           TM.use_yn
+    FROM TB_MEMBER AS TM
+    WHERE TM.idx = #{idx}
+  </select>
+
+  <select id="selectMemberAppDevice" parameterType="String" resultType="Member">
+    SELECT TAD.device_imei AS app_device_idx,
+           TAD.member_idx  AS member_idx,
+           TAD.device_type AS app_device_type,
+           TAD.create_dt   AS app_device_create_dt
+    FROM TB_APP_DEVICE_INFO AS TAD
+    WHERE TAD.member_idx = #{idx}
+  </select>
+
+  <select id="checkUserId" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN (SELECT COUNT(TM.idx)
+                   FROM TB_MEMBER AS TM
+                   WHERE TM.user_id = #{userId}
+                     AND TM.use_yn = 'Y')
+               THEN 2
+             WHEN (SELECT COUNT(TM.idx)
+                   FROM TB_MEMBER AS TM
+                   WHERE TM.user_id = #{userId}
+                     AND TM.use_yn = 'N')
+               THEN 3
+             ELSE 1
+             END AS result
+  </select>
+
+  <select id="memberDeviceCheck" parameterType="String" resultType="Integer">
+    SELECT
+    COUNT(TMDM.member_idx) AS cnt
+    FROM
+    TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE
+    TMDM.member_idx = #{memberIdx}
+    <if test="deviceIdx != null">
+      AND TMDM.device_idx = #{deviceIdx}
+    </if>
+  </select>
+
+  <select id="deleteMemberGroupCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TGMM.member_idx) AS cnt
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE TGMM.member_idx = #{memberIdx}
+  </select>
+
+  <select id="selectMemberDeviceList" parameterType="Search" resultType="MemberDevice">
+    SELECT
+    @rownum:=@rownum+1 AS row_num,
+    R.*
+    FROM (
+    SELECT
+    TM.idx,
+    TM.user_id,
+    TM.station_shared,
+    TM.use_yn,
+    (COUNT( DISTINCT TMDM.device_idx) + COUNT(TMDCM.vent_device_idx)) AS device_count,
+    COUNT( DISTINCT (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx AND
+    TD.device_type_idx=1) ) AS iaq_device_count,
+    COUNT( (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx AND
+    TD.device_type_idx=2) ) AS oaq_device_count,
+    COUNT( (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx AND
+    TD.device_type_idx=3) ) AS dot_device_count,
+    COUNT( (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.idx=TMDCM.vent_device_idx) ) AS
+    vent_device_count,
+    GROUP_CONCAT( DISTINCT (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx=TMDM.device_idx)
+    ) AS group_serial_num,
+    GROUP_CONCAT( (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx=TMDCM.vent_device_idx) )
+    AS group_serial_num2,
+    COUNT( DISTINCT(SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE
+    TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'report') ) AS file_cnt
+    FROM
+    TB_MEMBER AS TM
+    LEFT JOIN TB_MEMBER_DEVICE_MANAGE AS TMDM
+    ON TM.idx = TMDM.member_idx LEFT JOIN TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    ON TMDM.device_idx=TMDCM.iaq_device_idx
+    <if test=' searchType == "userId" '>
+      WHERE
+      TM.user_id LIKE CONCAT('%', #{searchValue} ,'%')
+    </if>
+    <if test=' searchType == "etc" '>
+      WHERE TMDM.etc LIKE CONCAT('%', #{searchValue},'%')
+    </if>
+    GROUP BY TM.idx
+    ) AS R, (SELECT @rownum :=0) AS Ro
+    WHERE
+    R.device_count != 0
+    <if test=' searchType == "serialNum" '>
+      AND R.group_serial_num LIKE CONCAT('%', #{searchValue}, '%') OR R.group_serial_num2 LIKE
+      CONCAT('%', #{searchValue}, '%')
+    </if>
+  </select>
+
+  <select id="selectMemberDeviceListAi365" resultType="HashMap">
+    SELECT TMDM.station_name                                                          AS stationName,
+           TMDM.member_idx                                                            AS memberIdx,
+           TMDM.device_idx                                                            AS deviceIdx,
+           (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TMDM.member_idx)    AS memberId,
+           (SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx)
+            FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+            WHERE TGMM.member_idx = TMDM.member_idx)                                  AS groupId,
+           (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx)
+            FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+            WHERE TGMM.member_idx = TMDM.member_idx)                                  AS groupName,
+           (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serialNum,
+           (SELECT (SELECT TDT.device_type
+                    FROM TB_DEVICE_TYPE AS TDT
+                    WHERE TDT.idx = TD.device_type_idx)
+            FROM TB_DEVICE AS TD
+            WHERE TD.idx = TMDM.device_idx)                                           AS deviceType
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+
+  </select>
+
+  <select id="selectMemberDeviceCnt" parameterType="String" resultType="MemberDevice">
+    SELECT TM.idx,
+           (COUNT(DISTINCT TMDM.device_idx) + COUNT(TMDCM.vent_device_idx)) AS device_count,
+           COUNT(DISTINCT (SELECT TD.idx
+                           FROM TB_DEVICE AS TD
+                           WHERE TD.idx = TMDM.device_idx
+                             AND TD.device_type_idx = 1))                   AS iaq_device_count,
+           COUNT((SELECT TD.idx
+                  FROM TB_DEVICE AS TD
+                  WHERE TD.idx = TMDM.device_idx
+                    AND TD.device_type_idx = 2))                            AS oaq_device_count,
+           COUNT((SELECT TD.idx
+                  FROM TB_DEVICE AS TD
+                  WHERE TD.idx = TMDM.device_idx
+                    AND TD.device_type_idx = 3))                            AS dot_device_count,
+           COUNT((SELECT TD.idx
+                  FROM TB_DEVICE AS TD
+                  WHERE TD.idx = TMDCM.vent_device_idx))                    AS vent_device_count
+    FROM TB_MEMBER AS TM
+           LEFT JOIN TB_MEMBER_DEVICE_MANAGE AS TMDM
+                     ON TM.idx = TMDM.member_idx
+           LEFT JOIN TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                     ON TMDM.device_idx = TMDCM.iaq_device_idx
+    WHERE TM.idx = #{memberIdx}
+    GROUP BY TM.idx
+  </select>
+
+  <select id="selectMemberDeviceOne" parameterType="String" resultType="MemberDevice">
+    SELECT TMDM.member_idx,
+           TMDM.device_idx,
+           (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+           TMDM.space_idx,
+           (SELECT CONCAT((SELECT TSI2.space_name
+                           FROM TB_SPACE_INFO AS TSI2
+                           WHERE TSI2.idx = TSI.parent_space_idx), '>', TSI.space_name)
+            FROM TB_SPACE_INFO AS TSI
+            WHERE TSI.idx = TMDM.space_idx) AS space,
+			TMDM.station_name,
+            CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'report') is null
+                THEN 0
+                WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'report') is not null
+                THEN 1
+    END
+    AS file_flag,
+		    CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'main') is null
+				THEN 0
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'main') is not null
+				THEN 1
+    END
+    AS main_image_flag,
+		    CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'east') is null
+				THEN 0
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'east') is not null
+				THEN 1
+    END
+    AS east_image_flag,
+			CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'west') is null
+				THEN 0
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'west') is not null
+				THEN 1
+    END
+    AS west_image_flag,
+			CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'south') is null
+				THEN 0
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'south') is not null
+				THEN 1
+    END
+    AS south_image_flag,
+			CASE
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'north') is null
+				THEN 0
+				WHEN (SELECT TMDF.idx FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'north') is not null
+				THEN 1
+    END
+    AS north_image_flag,
+			(SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'report') AS file_name,
+			(SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'main') AS main_image_name,
+            (SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'east') AS east_image_name,
+            (SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'west') AS west_image_name,
+            (SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'south') AS south_image_name,
+            (SELECT TMDF.client_file_name FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'north') AS north_image_name,
+			(SELECT CONCAT(TMDF.server_file_path, TMDF.server_file_name, '.' , TMDF.file_ext) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'main') AS main_image_file_path,
+            (SELECT CONCAT(TMDF.server_file_path, TMDF.server_file_name, '.' , TMDF.file_ext) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'east') AS east_image_file_path,
+            (SELECT CONCAT(TMDF.server_file_path, TMDF.server_file_name, '.' , TMDF.file_ext) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'west') AS west_image_file_path,
+            (SELECT CONCAT(TMDF.server_file_path, TMDF.server_file_name, '.' , TMDF.file_ext) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'south') AS south_image_file_path,
+            (SELECT CONCAT(TMDF.server_file_path, TMDF.server_file_name, '.' , TMDF.file_ext) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDF.device_idx=TMDM.device_idx AND TMDF.file_type = 'north') AS north_image_file_path,
+			TMDM.set_temp,
+			TMDM.related_device_serial as related_device,
+			TMDM.lat,
+			TMDM.lon,
+			TMDM.etc,
+			TMDM.equip_dt,
+			TMDM.equip_name,
+			TMDM.equip_addr,
+			TMDM.equip_addr2,
+			TMDM.create_dt,
+			TMDM.etc,
+            TMDM.depart_name,
+            TMDM.depart_phone_number,
+            TMDM.sales_name,
+			TMDM.dcode,
+			TMDM.airmap_yn,
+		    TDTDM.tdmidx AS device_model_idx,
+		    TDTDM.tdtidx AS device_type_idx,
+		    TDTDM.tdtdevicetype AS device_type,
+            TDTDM.tdmdm as device_model,
+            TDTDM.tdmif as imgage_file
+		FROM 
+			TB_MEMBER_DEVICE_MANAGE AS TMDM JOIN (
+				SELECT 
+					TD.idx AS tdidx, 
+		            TDMDT.tdmidx AS tdmidx,
+		            TDMDT.tdtidx AS tdtidx,
+		            TDMDT.tdtdevicetype AS tdtdevicetype,
+                    TDMDT.tdmdm AS tdmdm,
+                    TDMDT.tdmif AS tdmif
+				FROM 
+					TB_DEVICE AS TD 
+						JOIN (
+							SELECT 
+								TDM.idx AS tdmidx,
+                                TDM.device_model AS tdmdm,
+                                TDM.image_file AS tdmif,
+								TDT.idx AS tdtidx, 
+		                        TDT.device_type AS tdtdevicetype
+							FROM 
+								TB_DEVICE_MODEL AS TDM 
+									JOIN TB_DEVICE_TYPE AS TDT 
+										ON TDM.device_type_idx=TDT.idx
+							) AS TDMDT 
+								ON TD.device_model_idx = TDMDT.tdmidx
+			) AS TDTDM ON TMDM.device_idx=TDTDM.tdidx
+		WHERE
+			TMDM.member_idx=
+    #{idx}
+    ORDER
+    BY
+    TMDM
+    .
+    create_dt
+  </select>
+
+  <select id="selectDeviceTypeList" resultType="MemberDevice">
+    SELECT TDT.idx AS device_type_idx,
+           TDT.device_type,
+           TDT.device_type_name
+    FROM TB_DEVICE_TYPE AS TDT
+    WHERE TDT.use_yn = 'Y'
+  </select>
+
+  <select id="selectDeviceModelList" parameterType="String" resultType="MemberDevice">
+    SELECT TDM.idx          AS device_model_idx,
+           TDM.device_model AS device_model_name
+    FROM TB_DEVICE_MODEL AS TDM
+    WHERE TDM.use_yn = 'Y'
+      AND TDM.device_type_idx = #{idx}
+  </select>
+
+  <select id="selectDeviceSerialList" parameterType="String" resultType="MemberDevice">
+    SELECT TD.idx        AS device_idx,
+           TD.serial_num AS serial_num,
+           TD.test_yn    AS test_yn
+    FROM TB_DEVICE AS TD
+           LEFT JOIN TB_MEMBER_DEVICE_MANAGE AS TMDM
+                     ON TD.idx = TMDM.device_idx
+    WHERE TD.use_yn = 'Y'
+      AND TMDM.device_idx IS NULL
+      AND TD.device_model_idx = #{idx}
+  </select>
+
+  <select id="selectDeviceVentList" resultType="MemberDevice">
+    SELECT TD.idx        AS device_idx,
+           TD.serial_num AS serial_num,
+           TD.test_yn    AS test_yn
+    FROM (
+           SELECT TD2.*,
+                  (SELECT TDT.device_type AS device_type
+                   FROM TB_DEVICE_TYPE AS TDT
+                   WHERE TDT.idx = TD2.device_type_idx) AS device_type
+           FROM TB_DEVICE AS TD2
+         ) AS TD
+           LEFT JOIN TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                     ON TD.idx = TMDCM.vent_device_idx
+    WHERE TD.use_yn = 'Y'
+      AND TMDCM.vent_device_idx IS NULL
+      AND TD.device_type = 'VENT'
+  </select>
+
+  <select id="selectSpaceList" parameterType="String" resultType="Space">
+    SELECT TSI.idx,
+           TSI.device_type_idx,
+           TSI.parent_space_idx,
+           TSI.space_name,
+           TSI.space_level,
+           TSI.space_order,
+           TSI.create_dt,
+           TSI.use_yn
+    FROM TB_SPACE_INFO AS TSI
+    WHERE TSI.parent_space_idx = 0
+      AND TSI.use_yn = 'Y'
+      AND TSI.device_type_idx = #{idx}
+  </select>
+
+  <select id="selectParantSpaceList" parameterType="String" resultType="Space">
+    SELECT TSI.idx,
+           TSI.device_type_idx,
+           TSI.parent_space_idx,
+           TSI.space_name,
+           TSI.space_level,
+           TSI.space_order,
+           TSI.create_dt,
+           TSI.use_yn
+    FROM TB_SPACE_INFO AS TSI
+    WHERE TSI.parent_space_idx = #{idx}
+      AND TSI.use_yn = 'Y'
+    ORDER BY TSI.parent_space_idx, TSI.space_order
+  </select>
+
+  <select id="selectMemberDeviceVentOne" parameterType="String" resultType="Vent">
+    SELECT TMDCM.member_idx,
+           TMDCM.iaq_device_idx,
+           TMDCM.vent_device_idx,
+           TMDCM.ai_mode,
+           (SELECT serial_num
+            from TB_DEVICE AS TD
+            where TD.idx = TMDCM.vent_device_idx)            AS serial_num,
+           (SELECT device_model
+            FROM TB_DEVICE_MODEL
+            WHERE idx = (SELECT device_model_idx
+                         FROM TB_DEVICE
+                         WHERE idx = TMDCM.vent_device_idx)) AS device_model,
+           TMDCM.create_dt
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE TMDCM.iaq_device_idx = #{idx}
+  </select>
+
+  <select id="checkStationName" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDM.station_name)
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.member_idx = #{memberIdx}
+      AND TMDM.station_name = #{stationName}
+  </select>
+
+  <select id="selectVentSerialIdx" parameterType="String" resultType="String">
+    SELECT TD.serial_num
+    FROM TB_DEVICE AS TD
+    WHERE TD.idx = #{idx}
+  </select>
+
+  <select id="selectFileInfo" parameterType="String" resultType="FileVo">
+    SELECT TMDF.idx,
+           TMDF.device_idx,
+           TMDF.server_file_path,
+           TMDF.server_file_name,
+           TMDF.client_file_name,
+           TMDF.file_ext,
+           TMDF.reg_date,
+           TMDF.modify_date,
+           (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDF.device_idx) AS serial_num
+    FROM TB_MEMBER_DEVICE_FILE AS TMDF
+    WHERE TMDF.device_idx = #{deviceIdx}
+      AND file_type = #{fileType}
+  </select>
+
+  <select id="selectMenuList" parameterType="String" resultType="Menu">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TM.idx,
+		    TM.menu_order,
+		    TM.menu_eng,
+		    TM.menu_tag,
+			TM.menu_name,
+			TM.high_rank_menu,
+            CASE 
+				WHEN
+					(SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu) IS null
+				THEN
+					'-'
+                WHEN
+					(SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu) IS NOT NULL
+                THEN
+					(SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu)
+    END
+    AS high_rank_menu_name,
+			CASE
+				WHEN
+					TM.menu_level = 1
+				THEN
+					TM.menu_name
+				WHEN
+					TM.menu_level = 2
+		        THEN
+					(SELECT CONCAT( (SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu), '>', TM.menu_name))
+				WHEN
+					TM.menu_level = 3
+                THEN
+					'-'
+    END
+    AS full_menu_name,
+			TM.menu_level,
+			TM.menu_url
+		FROM 
+			TB_MENU AS TM, (SELECT @rownum :=0) AS R
+  </select>
+
+  <select id="selectHighRankMenuList" resultType="Menu">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TM.idx,
+		    TM.menu_order,
+		    TM.menu_eng,
+		    TM.menu_tag,
+			TM.menu_name,
+		    CASE
+				WHEN
+					TM.menu_level = 1
+				THEN
+					TM.menu_name
+				WHEN
+					TM.menu_level = 2
+		        THEN
+					(SELECT CONCAT( (SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu), '>', TM.menu_name))
+    END
+    AS full_menu_name,
+		    (SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu) AS full_menu_name,
+			TM.high_rank_menu,
+			TM.menu_level,
+			TM.menu_url
+		FROM 
+			TB_MENU AS TM, (SELECT @rownum :=0) AS R
+		WHERE
+			TM.menu_level != 3
+  </select>
+
+  <select id="selectMenuAuthList" parameterType="String" resultType="Menu">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TM.idx,
+			TM.menu_tag,
+			TM.menu_order,
+			TM.menu_eng,
+			TM.menu_name,
+			TM.high_rank_menu,
+		    (SELECT TM2.menu_name FROM TB_MENU AS TM2 WHERE TM2.idx=TM.high_rank_menu) AS high_rank_menu_name,
+			TM.menu_level,
+			TM.menu_url,
+		   CASE
+		    WHEN (SELECT COUNT(TMA.menu_idx) FROM TB_MENU_AUTH AS TMA WHERE TMA.admin_idx=
+				(SELECT TA.idx FROM TB_ADMIN AS TA WHERE TA.user_id=#{adminId}) AND menu_idx=TM.idx) != 0
+      THEN 1
+      WHEN
+      (SELECT COUNT(TMA.menu_idx) FROM TB_MENU_AUTH AS TMA WHERE TMA.admin_idx=
+      (SELECT TA.idx FROM TB_ADMIN AS TA WHERE TA.user_id=#{adminId}) AND menu_idx=TM.idx) = 0
+      THEN 0
+    END
+    AS menu_auth
+		FROM 
+			TB_MENU AS TM, (SELECT @rownum :=0) AS R
+		ORDER BY TM.menu_order
+  </select>
+
+  <select id="selectMenuOne" parameterType="String" resultType="Menu">
+    SELECT TM.idx,
+           TM.menu_name,
+           TM.high_rank_menu,
+           (SELECT TM2.menu_name
+            FROM TB_MENU AS TM2
+            WHERE TM2.idx = TM.high_rank_menu) AS high_rank_menu_name,
+           TM.menu_level,
+           TM.menu_url
+    FROM TB_MENU AS TM
+    WHERE TM.idx = #{idx}
+  </select>
+
+  <select id="selectAdminMenuLIst" resultType="Admin">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TA.idx,
+		    TA.user_id,
+			TA.user_name,
+		    (SELECT COUNT(TMA.menu_idx) FROM TB_MENU_AUTH AS TMA WHERE TMA.admin_idx=TA.idx) AS menu_cnt,
+		    (SELECT COUNT(TM.idx) FROM TB_MENU AS TM) AS total_menu_cnt
+    FROM
+      TB_ADMIN AS TA, (SELECT @rownum := 0) AS R
+    WHERE
+      TA.use_yn = 'Y'
+  </select>
+
+  <select id="selectAdminMenuOne" parameterType="String" resultType="Menu">
+    SELECT TM.idx,
+           TM.high_rank_menu,
+           TM.menu_name,
+           TM.menu_level,
+           TM.menu_url,
+           TM.menu_tag,
+           TM.menu_order,
+           TM.menu_eng,
+           CASE
+             WHEN
+               TM.menu_level = 1
+               THEN
+               TM.menu_name
+             WHEN
+               TM.menu_level = 2
+               THEN
+               (SELECT CONCAT((SELECT TM2.menu_name
+                               FROM TB_MENU AS TM2
+                               WHERE TM2.idx = TM.high_rank_menu), '>', TM.menu_name))
+             WHEN
+               TM.menu_level = 3
+               THEN
+               (SELECT CONCAT(
+                         (SELECT (SELECT TM3.menu_name
+                                  FROM TB_MENU AS TM3
+                                  WHERE TM3.idx = TM2.high_rank_menu)
+                          FROM TB_MENU AS TM2
+                          WHERE TM2.idx = TM.high_rank_menu), '>',
+                         (SELECT TM2.menu_name
+                          FROM TB_MENU AS TM2
+                          WHERE TM2.idx = TM.high_rank_menu), '>', TM.menu_name)
+               )
+             END AS full_menu_name,
+           CASE
+             WHEN
+               (SELECT COUNT(TMA.menu_idx)
+                FROM TB_MENU_AUTH AS TMA
+                WHERE TMA.admin_idx = #{adminIdx}
+                  AND TMA.menu_idx = TM.idx) != 0
+				THEN 1
+             WHEN
+                 (SELECT COUNT(TMA.menu_idx)
+                  FROM TB_MENU_AUTH AS TMA
+                  WHERE TMA.admin_idx = #{adminIdx}
+                    AND TMA.menu_idx = TM.idx) = 0
+               THEN
+               0
+             END AS auth_flag
+    FROM TB_MENU AS TM
+    ORDER BY menu_level, full_menu_name
+  </select>
+
+  <select id="selectSpaceSearchList" parameterType="Search" resultType="Space">
+    SELECT @rownum:=@rownum+1 AS row_num, A.* FROM(
+    SELECT
+    TSI.idx,
+    TSI.device_type_idx,
+    (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TSI.device_type_idx) AS
+    device_type,
+    TSI.parent_space_idx,
+    TSI.space_level,
+    TSI.space_order,
+    TSI.create_dt,
+    TSI.use_yn,
+    (SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx) AS
+    parent_space_name,
+    TSI.space_name,
+    CASE
+    WHEN
+    TSI.space_level=2
+    THEN
+    CONCAT((SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx),
+    '/')
+    WHEN
+    TSI.space_level=1
+    THEN
+    TSI.space_name
+    END AS full_space_name,
+    CASE
+    WHEN
+    TSI.space_level=2
+    THEN
+    (SELECT TSI2.space_order FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx)
+    WHEN
+    TSI.space_level=1
+    THEN
+    TSI.space_order
+    END AS parent_space_order
+    FROM
+    TB_SPACE_INFO AS TSI
+    <where>
+      TSI.use_yn = #{searchUseYn}
+      AND TSI.device_type_idx = #{searchValue}
+      AND TSI.space_name LIKE CONCAT('%', #{searchValue2}, '%')
+      <if test=" searchValue3 != null and searchValue3 != '' ">
+        AND (TSI.parent_space_idx = #{searchValue3} OR TSI.idx = #{searchValue3})
+      </if>
+    </where>
+    ORDER BY
+    parent_space_order, TSI.space_level, TSI.space_order, full_space_name
+    ) AS A, (SELECT @rownum :=0) AS R
+  </select>
+
+  <select id="selectLowSpaceAuth" parameterType="String" resultType="int">
+    SELECT count(*) AS cnt
+    FROM TB_SPACE_INFO AS TSI
+    WHERE TSI.parent_space_idx = #{idx}
+      AND TSI.use_yn = 'Y'
+  </select>
+
+  <select id="selectHighSpace" resultType="Space" parameterType="String">
+    SELECT TSI.idx,
+           TSI.space_level,
+           TSI.space_order,
+           TSI.create_dt,
+           TSI.use_yn,
+           TSI.space_name
+    FROM TB_SPACE_INFO AS TSI
+    WHERE TSI.parent_space_idx = 0
+      AND TSI.use_yn = 'Y'
+      AND TSI.device_type_idx = #{searchValue}
+  </select>
+
+  <select id="checkSpaceName" parameterType="Space" resultType="Integer">
+    SELECT CASE
+             WHEN (SELECT COUNT(TSI.idx)
+                   FROM TB_SPACE_INFO AS TSI
+                   WHERE TSI.device_type_idx = #{deviceTypeIdx}
+                     AND parent_space_idx = #{parentSpaceIdx}
+                     AND TSI.space_name = #{spaceName}
+                     AND TSI.use_yn = 'Y')
+               THEN 2
+             WHEN (SELECT COUNT(TSI.idx)
+                   FROM TB_SPACE_INFO AS TSI
+                   WHERE TSI.device_type_idx = #{deviceTypeIdx}
+                     AND parent_space_idx = #{parentSpaceIdx}
+                     AND TSI.space_name = #{spaceName}
+                     AND TSI.use_yn = 'N')
+               THEN 3
+             ELSE 1
+             END AS result
+  </select>
+
+  <!-- App -->
+  <select id="stationNameCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDM.device_idx)
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.station_name = #{stationName}
+      AND TMDM.member_idx = #{memberIdx}
+  </select>
+
+  <select id="selectDeviceIdxs" parameterType="AppStation" resultType="AppStation">
+    SELECT (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId}) AS member_idx,
+           (SELECT TD.idx
+            FROM TB_DEVICE AS TD
+            WHERE TD.serial_num = #{oldStationNo})                           AS old_device_idx,
+           (SELECT TD.idx
+            FROM TB_DEVICE AS TD
+            WHERE TD.serial_num = #{newStationNo})                           AS new_device_idx
+  </select>
+
+  <select id="selectInfoSave" parameterType="String" resultType="AppStation">
+    SELECT TMDM.member_idx,
+           TMDM.device_idx,
+           TMDM.space_idx,
+           TMDM.station_name,
+           TMDM.lat,
+           TMDM.lon,
+           TMDM.equip_dt,
+           TMDM.equip_name,
+           TMDM.equip_addr,
+           TMDM.equip_addr2,
+           TMDM.create_dt,
+           TMDM.depart_name,
+           TMDM.depart_phone_number,
+           TMDM.sales_name
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.device_idx = #{oldDeviceIdx}
+  </select>
+
+  <select id="getStationInfoOne" parameterType="AppStation" resultType="AppStation">
+    SELECT (SELECT (SELECT TDT.device_type
+                    FROM TB_DEVICE_TYPE AS TDT
+                    WHERE TDT.idx = TSI.device_type_idx) AS device_type
+            FROM TB_SPACE_INFO AS TSI
+            WHERE TSI.idx = TMDM.space_idx) AS station_type,
+           (SELECT TSI.parent_space_idx
+            FROM TB_SPACE_INFO AS TSI
+            WHERE TSI.idx = TMDM.space_idx) AS main_category,
+           (SELECT TSI.idx
+            FROM TB_SPACE_INFO AS TSI
+            WHERE TSI.idx = TMDM.space_idx) AS sub_category
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+           JOIN (
+      SELECT TD2.*
+      FROM TB_DEVICE AS TD2
+      WHERE TD2.serial_num = #{stationNo}
+    ) AS TD ON TMDM.device_idx = TD.idx
+  </select>
+
+  <select id="getStationInfoList" resultType="AppStation">
+    SELECT COUNT(TSI.parent_space_idx) AS count,
+			TSI.parent_space_idx AS main_category_idxs,
+			GROUP_CONCAT(TSI.idx) AS sub_category_idxs,
+			GROUP_CONCAT(TSI.space_name) AS sub_category_names
+    FROM
+      TB_SPACE_INFO AS TSI
+    WHERE
+      TSI.use_yn = 'Y'
+    GROUP BY
+      TSI.parent_space_idx
+    ORDER BY
+      TSI.parent_space_idx
+  </select>
+
+  <select id="getDeviceType" parameterType="String" resultType="String">
+    SELECT (SELECT TDT.device_type
+            FROM TB_DEVICE_TYPE AS TDT
+            WHERE TD.device_type_idx = TDT.idx) AS device_type
+    FROM TB_DEVICE AS TD
+    WHERE TD.serial_num = #{serial}
+  </select>
+
+  <select id="getDeviceInfoBySerial" parameterType="String" resultType="Device">
+    SELECT idx,
+           device_type_idx,
+           device_model_idx,
+           serial_num,
+           product_dt,
+           test_yn,
+           create_dt,
+           use_yn
+    FROM TB_DEVICE
+    WHERE serial_num = #{serial}
+  </select>
+
+  <select id="getStationInfo" parameterType="String" resultType="AppStation">
+    SELECT CASE
+             WHEN (SELECT COUNT(TMDCM.vent_device_idx)
+                   FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                   WHERE TMDCM.iaq_device_idx = TMDM.device_idx) = 0 THEN 'NA'
+             ELSE (SELECT GROUP_CONCAT((SELECT TD.serial_num
+                                        FROM TB_DEVICE AS TD
+                                        WHERE TD.idx = TMDCM.vent_device_idx) SEPARATOR '#')
+                   FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                   WHERE TMDCM.iaq_device_idx = TMDM.device_idx)
+             END                                       AS vent_stations,
+           CASE
+             WHEN (SELECT TSI.parent_space_idx
+                   FROM TB_SPACE_INFO AS TSI
+                   WHERE TSI.idx = TMDM.space_idx) IS NULL THEN 'NA'
+             ELSE (SELECT TSI.parent_space_idx
+                   FROM TB_SPACE_INFO AS TSI
+                   WHERE TSI.idx = TMDM.space_idx) END AS high_space_idx,
+           CASE
+             WHEN (SELECT TSI.idx FROM TB_SPACE_INFO AS TSI WHERE TSI.idx = TMDM.space_idx) IS NULL
+               THEN 'NA'
+             ELSE (SELECT TSI.idx
+                   FROM TB_SPACE_INFO AS TSI
+                   WHERE TSI.idx = TMDM.space_idx) END AS space_idx,
+           (SELECT TM.station_shared
+            FROM TB_MEMBER AS TM
+            WHERE TM.idx = TMDM.member_idx)            AS station_shared
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.device_idx = (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serial})
+  </select>
+
+  <select id="getGroupDid" parameterType="String" resultType="AppGroupDid">
+    SELECT (SELECT (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx)
+            FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+            WHERE TMDM.member_idx = TGDMM.member_idx LIMIT 1) AS station_no,
+			(SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TGDMM.member_idx LIMIT 1) AS station_name,
+		    (SELECT TM.region FROM TB_MEMBER AS TM WHERE TM.idx=TGDMM.member_idx) AS region_no,
+			(SELECT TM.region_name FROM TB_MEMBER AS TM WHERE TM.idx=TGDMM.member_idx) AS region_name
+    FROM
+      TB_GROUP_DID_MEMBER_MANAGE AS TGDMM
+    WHERE
+      TGDMM.group_did_idx = (SELECT TGD.idx FROM TB_GROUP_DID AS TGD WHERE TGD.did_code = #{groupNo})
+  </select>
+
+  <select id="selectUserList" parameterType="String" resultType="AppUser">
+    SELECT TM.idx,
+           TM.user_id,
+           TM.user_pw,
+           TM.region,
+           TM.region_name,
+           TM.station_shared,
+           TM.login_count,
+           TM.login_ip,
+           TM.login_dt,
+           TM.create_dt
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+  </select>
+
+  <select id="findByUsername" parameterType="String" resultType="AppUser">
+    SELECT TM.idx,
+           TM.user_id,
+           TM.user_pw,
+           TM.region,
+           TM.region_name,
+           TM.station_shared,
+           TM.login_count,
+           TM.login_ip,
+           TM.login_dt,
+           TM.create_dt
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+  </select>
+
+  <select id="userIdCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TM.idx) AS cnt
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+  </select>
+
+  <select id="serialCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDM.serial_num) AS cnt
+    FROM (SELECT (SELECT TD.serial_num AS serial_num
+                  FROM TB_DEVICE AS TD
+                  WHERE TD.idx = TMDM2.device_idx) AS serial_num
+          FROM TB_MEMBER_DEVICE_MANAGE AS TMDM2) AS TMDM
+    WHERE TMDM.serial_num = #{serialNum}
+  </select>
+
+  <select id="userStationNameCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMDM.device_idx)
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.station_name = #{stationName}
+      AND TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId})
+  </select>
+
+  <select id="userMatchCheck" parameterType="AppUser" resultType="Integer">
+    SELECT COUNT(TM.idx) AS CNT
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+      AND TM.user_pw = #{userPw}
+      AND TM.use_yn = 'Y'
+  </select>
+
+  <select id="groupUserMatchCheck" parameterType="AppUser" resultType="Integer">
+    SELECT COUNT(TG.idx) AS CNT
+    FROM TB_GROUP AS TG
+    WHERE TG.group_id = #{userId}
+      AND TG.group_pw = #{userPw}
+      AND TG.use_yn = 'Y'
+  </select>
+
+  <select id="userSerialMatchCheck" parameterType="AppUser" resultType="AppUser">
+    SELECt TD.member_idx,
+           TD.device_idx  AS device_idx,
+           TD.device_type AS device_type
+    FROM (SELECT (SELECT TMDM.member_idx
+                  FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+                  WHERE TMDM.device_idx = TD2.idx)     AS member_idx,
+                 TD2.idx                               AS device_idx,
+                 (SELECT TDT.device_type
+                  FROM TB_DEVICE_TYPE AS TDT
+                  WHERE TDT.idx = TD2.device_type_idx) AS device_type
+          FROM TB_DEVICE AS TD2
+          WHERE TD2.serial_num = #{stationNo}
+         ) AS TD
+  </select>
+
+  <select id="selectUserIdx" parameterType="String" resultType="String">
+    SELECT TM.idx
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+  </select>
+
+  <select id="selectGroupUserIdx" parameterType="String" resultType="String">
+    SELECT TG.idx
+    FROM TB_GROUP AS TG
+    WHERE TG.group_id = #{userId}
+  </select>
+
+  <select id="selectResLoginInfo" parameterType="String" resultType="ResponseLoginModel">
+    SELECT TM.region                        AS region_id,
+           TM.region_name                   AS region_name,
+           TM.station_shared,
+           (SELECT GROUP_CONCAT((SELECT TD.serial_num
+                                 FROM TB_DEVICE AS TD
+                                 WHERE TD.idx = TMDM.device_idx) order by TMDM.device_idx SEPARATOR '#')
+            FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+            WHERE TMDM.member_idx = TM.idx) AS station_no,
+           (SELECT GROUP_CONCAT(TMDM.station_name order by TMDM.device_idx SEPARATOR '#')
+            FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+            WHERE TMDM.member_idx = TM.idx) AS station_name,
+           CASE
+             WHEN (SELECT (SELECT TSI.parent_space_idx
+                           FROM TB_SPACE_INFO AS TSI
+                           WHERE TSI.idx = TMDM.space_idx)
+                   FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+                   WHERE TMDM.member_idx = TM.idx LIMIT 1)
+		    IS NULL THEN '1' ELSE (SELECT (SELECT TSI.parent_space_idx FROM TB_SPACE_INFO AS TSI WHERE TSI.idx = TMDM.space_idx) FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TM.idx LIMIT 1)
+    END
+    AS main_category,
+			CASE WHEN (SELECT TMDM.space_idx FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TM.idx LIMIT 1) IS NULL THEN '1' ELSE 
+		    (SELECT TMDM.space_idx FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TM.idx LIMIT 1)
+    END
+    AS sub_category,
+		    CASE WHEN (SELECT COUNT(TMDCM.vent_device_idx) FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM WHERE TMDCM.member_idx=TM.idx) = 0 THEN 'NA' ELSE 
+		    (SELECT GROUP_CONCAT( (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx=TMDCM.vent_device_idx)  SEPARATOR '#') FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM WHERE TMDCM.member_idx=TM.idx)
+    END
+    AS kweather
+		FROM 
+			TB_MEMBER AS TM
+		WHERE 
+			TM.user_id=
+    #{userId}
+  </select>
+
+  <select id="findId" parameterType="String" resultType="String">
+    SELECT TM.user_id
+    FROM TB_MEMBER AS TM
+    WHERE TM.idx = (
+      SELECT (SELECT TMDM.member_idx
+              FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+              WHERE TMDM.device_idx = TD.idx) AS member_idx
+      FROM TB_DEVICE AS TD
+      WHERE TD.serial_num = #{serialNum}
+    )
+  </select>
+
+  <select id="findPw" parameterType="AppUser" resultType="Integer">
+    SELECT COUNT(TMDM.member_idx) AS cnt
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) = #{stationNo}
+      AND (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TMDM.member_idx) = #{userId}
+  </select>
+
+  <select id="selectObjectIdxs" parameterType="AppVent" resultType="AppVent">
+    SELECT (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId})        AS member_idx,
+           (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{stationNo})  AS iaqDeviceIdx,
+           (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{ventSerial}) AS ventDeviceIdx
+  </select>
+
+  <select id="selectVentConnectCheck" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN
+               (SELECT TMDCM.vent_device_idx
+                FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                WHERE TMDCM.vent_device_idx = #{ventIdx})
+               THEN 0
+             ELSE 1
+             END flag
+  </select>
+
+  <select id="ventForIaq" parameterType="String" resultType="String">
+    SELECT (SELECT TD.serial_num
+            FROM TB_DEVICE AS TD
+            WHERE TD.idx = TMDCM.iaq_device_idx) AS serial_num
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx = TD.idx) =
+          #{ventSerial}
+  </select>
+
+  <select id="getVentAiMode" parameterType="String" resultType="String">
+    SELECT TMDCM.ai_mode AS ai_mode
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx = TD.idx) =
+          #{ventSerial}
+  </select>
+
+  <select id="getUserIdToGroupId" parameterType="String" resultType="String">
+    SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) AS group_id
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE (
+            SELECT TM.idx
+            FROM TB_MEMBER AS TM
+            WHERE TM.user_id = #{userId}
+          ) = TGMM.member_idx
+  </select>
+
+  <!-- 동별미세먼지 -->
+  <select id="selectDongOaqList" resultType="Dong">
+    SELECT TDOI.serial,
+           TDOI.user_id,
+           TDOI.user_name,
+           TDOI.lat,
+           TDOI.lon,
+           TDOI.reg_date
+    FROM TB_DONG_OAQ_INFO AS TDOI;
+  </select>
+
+  <!-- 시 데이터 -->
+  <select id="siList" resultType="SiData">
+    SELECT TDH.dcode,
+           TDH.dtype,
+           TDH.sdcode,
+           TDH.sggcode,
+           TDH.dname,
+           TDH.dfname,
+           TDH.lat,
+           TDH.lon,
+           TDH.reg_date
+    FROM TB_DONG_HCODE AS TDH
+    WHERE dtype = 1
+  </select>
+
+  <!-- 구 데이터 -->
+  <select id="guList" parameterType="SearchDong" resultType="GuData">
+    SELECT TDH.dcode,
+           TDH.dtype,
+           TDH.sdcode,
+           TDH.sggcode,
+           TDH.dname,
+           TDH.dfname,
+           TDH.lat,
+           TDH.lon,
+           TDH.reg_date
+    FROM TB_DONG_HCODE AS TDH
+    WHERE dtype = 2
+      AND sdcode = #{searchSdcode}
+    ORDER BY dname
+  </select>
+
+  <!-- 동 데이터 -->
+  <select id="dongList" parameterType="SearchDong" resultType="DongData">
+    SELECT
+    TDH.dcode,
+    TDH.dtype,
+    TDH.sdcode,
+    TDH.sggcode,
+    TDH.dname,
+    TDH.dfname,
+    TDH.lat,
+    TDH.lon,
+    TDH.reg_date
+    FROM
+    TB_DONG_HCODE AS TDH
+    WHERE
+    <choose>
+      <when test="isCode == 2">
+        dtype=3 AND sdcode=#{search.searchSdcode} AND sggcode=#{search.searchSggcode}
+      </when>
+      <when test="isCode == 1">
+        dtype=3 AND sggcode=#{search.searchSggcode}
+      </when>
+      <otherwise>
+        dtype=3
+      </otherwise>
+    </choose>
+    ORDER BY
+    dname
+  </select>
+
+  <!-- 시/도 분류별 검색 -->
+  <select id="selectSiGunGuSearch" parameterType="SearchDong" resultType="Dong">
+    SELECT
+    TDH.dcode,
+    TDH.dtype,
+    TDH.dname,
+    TDH.dfname,
+    TDH.lat,
+    TDH.lon,
+    TDDD.map_type,
+    TDDD.pm10_value,
+    TDDD.pm10_grade,
+    TDDD.pm25_value,
+    TDDD.pm25_grade,
+    TDDD.up_date
+    FROM
+    TB_DONG_HCODE AS TDH
+    JOIN TB_DONG_DUST_DATA AS TDDD
+    ON TDH.dtype=3 AND TDH.sdcode=#{searchSdcode} AND TDH.sggcode=#{searchSggcode} AND
+    TDH.dcode=TDDD.dcode
+    <where>
+      <if test="searchDongcode!=null and !searchDongcode.equals('')">
+        TDH.dcode = #{searchDongcode}
+      </if>
+    </where>
+  </select>
+
+  <!-- 동별 중심 검색 -->
+  <select id="selectDongSearch" parameterType="SearchDong" resultType="Dong">
+    SELECT TDH.dcode,
+           TDH.dtype,
+           TDH.dname,
+           TDH.dfname,
+           TDH.lat,
+           TDH.lon,
+           TDDD.map_type,
+           TDDD.pm10_value,
+           TDDD.pm10_grade,
+           TDDD.pm25_value,
+           TDDD.pm25_grade,
+           TDDD.up_date
+    FROM TB_DONG_HCODE AS TDH
+           JOIN TB_DONG_DUST_DATA AS TDDD
+                ON TDH.dtype = 3 AND TDH.dcode = TDDD.dcode AND
+                   TDH.dname LIKE CONCAT('%', #{searchDname}, '%')
+  </select>
+
+  <!-- 동별 중심 좌표 -->
+  <select id="selectDongList" resultType="DongGeo">
+    SELECT TDH.dcode,
+           TDH.dtype,
+           TDH.sdcode,
+           TDH.sggcode,
+           TDH.dname,
+           TDH.lat,
+           TDH.lon,
+           TDDD.pm10_value,
+           TDDD.pm10_grade,
+           TDDD.pm25_value,
+           TDDD.pm25_grade,
+           TDDD.up_date
+    FROM TB_DONG_HCODE AS TDH
+           LEFT JOIN TB_DONG_DUST_DATA AS TDDD
+                     ON TDH.dcode = TDDD.dcode
+    WHERE TDH.dtype = 3
+  </select>
+
+  <!-- Air Equi 좌표 -->
+  <select id="selectAirEquiList" resultType="AirGeo">
+    SELECT TDAI.air_code AS a_air_code,
+           TDAI.lat,
+           TDAI.lon,
+           TDMD.pm10_grade,
+           TDMD.pm25_grade,
+           TDMD.pm10_value,
+           TDMD.pm25_value
+    FROM TB_DONG_AIRKOR_INFO AS TDAI
+           JOIN
+         (SELECT *
+          FROM (SELECT pm10_value,
+                       pm25_value,
+                       map_code,
+                       pm10_grade,
+                       pm25_grade,
+                       up_date,
+                       (CASE
+                          WHEN map_code THEN @RANKT:=@RANK + 1
+                          ELSE @RANK:=1
+                         END) AS RNUM,
+                       (@GROUPING:=map_code)
+                FROM TB_DONG_MAP_DATA,
+                     (SELECT @GROUPING:='', @RANK:=0) XX
+                WHERE map_type = 'A') AS TDMD1
+          WHERE RNUM = 1) AS TDMD ON TDAI.air_code = TDMD.map_code
+
+  </select>
+
+  <!-- OAQ Equi 좌표 -->
+  <select id="selectOaqEquiList" resultType="OaqGeo">
+    SELECT TDOI.serial AS o_serial,
+           TDOI.lat,
+           TDOI.lon,
+           TDMD.pm10_grade,
+           TDMD.pm25_grade,
+           TDMD.pm10_value,
+           TDMD.pm25_value
+    FROM TB_DONG_OAQ_INFO AS TDOI
+           JOIN
+         (SELECT *
+          FROM (SELECT pm10_value,
+                       pm25_value,
+                       map_code,
+                       pm10_grade,
+                       pm25_grade,
+                       up_date,
+                       (CASE
+                          WHEN map_code THEN @RANKT:=@RANK + 1
+                          ELSE @RANK:=1
+                         END) AS RNUM,
+                       (@GROUPING:=map_code)
+                FROM TB_DONG_MAP_DATA,
+                     (SELECT @GROUPING:='', @RANK:=0) XX
+                WHERE map_type = 'O') AS TDMD1
+          WHERE RNUM = 1) AS TDMD ON TDOI.serial = TDMD.map_code
+  </select>
+
+  <!-- 관측망 현황(Air Equi, COUNT) -->
+  <select id="selectAirEquiCnt" parameterType="String" resultType="AirCity">
+    SELECT R.*
+    FROM (
+           SELECT air_city AS city,
+                  COUNT(*) AS cnt
+           FROM TB_DONG_AIRKOR_INFO
+           GROUP BY air_city
+         ) AS R
+    WHERE R.city like CONCAT('%', #{searchValue}, '%')
+  </select>
+
+  <!-- 관측망 현황(OAQ Equi, COUNT) -->
+  <select id="selectOaqEquiCnt" parameterType="String" resultType="OaqCity">
+    SELECT '서울'     AS city,
+           COUNT(*) AS cnt
+    FROM TB_DONG_OAQ_INFO
+  </select>
+
+  <!-- 참조 관측망 -->
+  <select id="refAirEquiSearch" parameterType="SearchDong" resultType="AirEqui">
+    SELECT TDH.dcode,
+           TDH.dname,
+           TDH.dfname,
+           TDH.lat         AS d_lat,
+           TDH.lon         AS d_lon,
+           TDDD.map_type,
+           TDDD.pm10_value,
+           TDDD.pm10_grade,
+           TDDD.pm25_value,
+           TDDD.pm25_grade,
+           TDDD.up_date,
+           TDMD.map_code,
+           TDMD.distance,
+           TDMD.pm10_value AS ref_pm10_value,
+           TDMD.pm10_grade AS ref_pm10_grade,
+           TDMD.pm25_value AS ref_pm25_value,
+           TDMD.pm25_grade AS ref_pm25_grade,
+           TDMD.up_date    AS ref_up_date,
+           TDAI.air_name   AS ref_name,
+           TDAI.lat        AS ref_lat,
+           TDAI.lon        AS ref_lon
+    FROM TB_DONG_HCODE AS TDH
+           JOIN TB_DONG_DUST_DATA AS TDDD
+           JOIN TB_DONG_MAP_DATA AS TDMD
+           JOIN TB_DONG_AIRKOR_INFO AS TDAI
+                ON TDH.dcode = #{searchDongcode} AND TDH.dcode = TDDD.dcode AND
+                   TDH.dcode = TDMD.dcode AND TDMD.map_code = TDAI.air_code
+    ORDER BY TDMD.distance
+  </select>
+
+  <select id="refOaqEquiSearch" parameterType="SearchDong" resultType="OaqEqui">
+    SELECT TDH.dcode,
+           TDH.dname,
+           TDH.dfname,
+           TDH.lat         AS d_lat,
+           TDH.lon         AS d_lon,
+           TDDD.map_type,
+           TDDD.pm10_value,
+           TDDD.pm10_grade,
+           TDDD.pm25_value,
+           TDDD.pm25_grade,
+           TDDD.up_date,
+           TDMD.map_code,
+           TDMD.distance,
+           TDMD.pm10_value AS ref_pm10_value,
+           TDMD.pm10_grade AS ref_pm10_grade,
+           TDMD.pm25_value AS ref_pm25_value,
+           TDMD.pm25_grade AS ref_pm25_grade,
+           TDMD.up_date    AS ref_up_date,
+           TDOI.user_id    AS ref_name,
+           TDOI.lat        AS ref_lat,
+           TDOI.lon        AS ref_lon
+    FROM TB_DONG_HCODE AS TDH
+           JOIN TB_DONG_DUST_DATA AS TDDD
+           JOIN TB_DONG_MAP_DATA AS TDMD
+           JOIN TB_DONG_OAQ_INFO AS TDOI
+                ON TDH.dcode = #{searchDongcode} AND TDH.dcode = TDDD.dcode AND
+                   TDH.dcode = TDMD.dcode AND TDMD.map_code = TDOI.serial
+    ORDER BY TDMD.distance
+  </select>
+
+  <select id="selectDongDataList" resultType="Dong">
+    SELECT @rownum:=@rownum+1 AS row_num,
+			TDI.dcode,
+		    TDI.dname,
+		    TDI.dfname,
+		    TDI.lat,
+		    TDI.lon
+    FROM
+      TB_DONG_INFO AS TDI, (SELECT @rownum := 0) AS R
+  </select>
+
+  <select id="selectDongPmList" parameterType="String" resultType="OaqGeo">
+    SELECT TPD.serial      AS o_serial,
+           TPD.map_type,
+           TPD.pm10_idw,
+           TPD.pm10_3h_avg AS pm10_avg3,
+           TPD.pm10_ratio,
+           TPD.pm10_offset,
+           TPD.pm10_ratio_raw,
+           TPD.pm25_idw,
+           TPD.pm25_3h_avg AS pm25_avg3,
+           TPD.pm25_ratio,
+           TPD.pm25_offset,
+           TPD.pm25_ratio_raw,
+           TDOI.lat,
+           TDOI.lon,
+           TPD.up_date
+    FROM TB_PMCOR_DATA AS TPD,
+         TB_DONG_OAQ_INFO AS TDOI
+    WHERE TPD.map_type = #{deviceType}
+      AND TPD.serial = TDOI.serial
+  </select>
+
+  <select id="refOaqEquiPmSearch" parameterType="String" resultType="OaqGeo">
+    SELECT TPD.serial      AS serial,
+           TPD.map_type,
+           TPD.pm10_idw,
+           TPD.pm10_3h_avg AS pm10_avg3,
+           TPD.pm10_ratio,
+           TPD.pm10_offset,
+           TPD.pm10_ratio_raw,
+           TPD.pm25_idw,
+           TPD.pm25_3h_avg AS pm25_avg3,
+           TPD.pm25_ratio,
+           TPD.pm25_offset,
+           TPD.pm25_ratio_raw,
+           TDOI.lat        AS lat,
+           TDOI.lon        AS lon,
+           TPD.up_date     AS up_date
+    FROM TB_PMCOR_DATA AS TPD,
+         TB_DONG_OAQ_INFO AS TDOI
+    WHERE TPD.serial = #{serialNum}
+      AND TPD.serial = TDOI.serial
+  </select>
+
+  <select id="refAirEquiPmSearch" parameterType="String" resultType="AirGeo">
+    SELECT TPMD.serial      AS serial,
+           TPMD.map_code,
+           TPMD.map_type,
+           TPMD.distance,
+           TPMD.pm10_3h_avg AS pm10_avg3,
+           TPMD.pm25_3h_avg AS pm25_avg3,
+           TPMD.up_date,
+           TDAI.air_name    AS a_air_name,
+           TDAI.lat         AS lat,
+           TDAI.lon         AS lon,
+           TPMD.up_date     AS up_date
+    FROM TB_PMCOR_MAP_DATA AS TPMD,
+         TB_DONG_AIRKOR_INFO AS TDAI
+    WHERE TPMD.serial = #{serialNum}
+      AND TPMD.map_code = TDAI.air_code
+  </select>
+
+  <select id="selectOaqGeo" resultType="AirGeoInfo">
+    SELECT
+    air_code AS a_air_code,
+    air_name AS a_air_name,
+    air_city AS a_air_city,
+    air_addr AS a_air_addr,
+    lat AS lat,
+    lon AS lon,
+    use_yn,
+    dcode
+    FROM
+    TB_DONG_AIRKOR_INFO
+    <where>
+       use_yn = 'Y'
+      <if test='!dCode.equals("0000000000")'>
+       AND dcode = #{dCode}
+      </if>
+    </where>
+  </select>
+
+	<select id="selectOpenApiDongList" resultType="HashMap">
+		SELECT
+			TDH.dcode AS 'dcode',
+			TDH.dname AS 'dname',
+			TDH.dfname AS 'dfname',
+			TDH.lat AS 'lat',
+			TDH.lon AS 'lon',
+			TDDD.pm10_value AS 'pm10Value',
+			TDDD.pm10_grade AS 'pm10Grade',
+			TDDD.pm25_value AS 'pm25Value',
+			TDDD.pm25_grade AS 'pm25Grade',
+			TDDD.up_date AS 'updateDt'
+		FROM
+			(SELECT TDH2.* FROM TB_DONG_HCODE AS TDH2 WHERE TDH2.dtype='3' AND (TDH2.dfname LIKE '%양천구%' OR TDH2.dfname LIKE '%금천구%' OR TDH2.dfname LIKE '%구로구%' 
+					OR TDH2.dfname LIKE '%금천구%' OR TDH2.dfname LIKE '%영등포구%' OR TDH2.dfname LIKE '%동작구%' 
+					OR TDH2.dfname LIKE '%소사구%' OR TDH2.dfname LIKE '%광명시%' OR TDH2.dfname LIKE '%관악구%')) AS TDH
+				LEFT JOIN TB_DONG_DUST_DATA AS TDDD ON TDH.dcode=TDDD.dcode
+		ORDER BY dfname
+	</select>
+
+  <select id="excelUploadCheckUserId" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN COUNT(TM.idx) = 0
+               THEN 0
+             WHEN COUNT(TM.idx) != 0
+				THEN TM.idx
+             END AS r
+    FROM TB_MEMBER AS TM
+    WHERE TM.use_yn = 'Y'
+      AND TM.user_id = #{userId}
+  </select>
+
+  <select id="excelUploadCheckSerialNum" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN COUNT(TD.idx) = 0
+               THEN 0
+             WHEN COUNT(TD.idx) != 0
+				THEN CASE
+                                               WHEN (SELECT COUNT(TMDM.device_idx)
+                                                     FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+                                                     WHERE TMDM.device_idx = TD.idx) != 0
+	                THEN 0
+                                               WHEN (SELECT COUNT(TMDM.device_idx)
+                                                     FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+                                                     WHERE TMDM.device_idx = TD.idx) = 0
+                                                 THEN TD.idx
+               END
+             END AS r
+    FROM TB_DEVICE AS TD
+    WHERE TD.use_yn = 'Y'
+      AND TD.serial_num = #{serialNum}
+  </select>
+
+  <select id="excelUploadCheckVentSerialNum" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN COUNT(TD.idx) = 0
+               THEN 0
+             WHEN COUNT(TD.idx) != 0
+				THEN CASE
+                                               WHEN (SELECT COUNT(TMDCM.vent_device_idx)
+                                                     FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                                                     WHERE TMDCM.vent_device_idx = TD.idx) != 0
+					THEN 0
+                                               WHEN (SELECT COUNT(TMDCM.vent_device_idx)
+                                                     FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                                                     WHERE TMDCM.vent_device_idx = TD.idx) = 0
+                                                 THEN TD.idx
+               END
+             END AS r
+    FROM TB_DEVICE AS TD
+    WHERE TD.use_yn = 'Y'
+      AND TD.serial_num = #{serialNum}
+  </select>
+
+  <select id="excelUploadGetParentSpaceIdx" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN (
+                    SELECT COUNT(TSI.idx)
+                    FROM TB_SPACE_INFO AS TSI
+                    WHERE TSI.space_name = #{spaceName}
+                      AND TSI.device_type_idx = (SELECT TD.device_type_idx
+                                                 FROM TB_DEVICE AS TD
+                                                 WHERE TD.idx = #{deviceIdx})
+                      AND TSI.space_level = 1
+                  ) = 0
+               THEN 0
+             WHEN (
+               SELECT COUNT(TSI.idx)
+               FROM TB_SPACE_INFO AS TSI
+               WHERE TSI.space_name = #{spaceName}
+                 AND TSI.device_type_idx =
+                     (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx = #{deviceIdx})
+                 AND TSI.space_level = 1
+             ) != 0
+		        THEN (
+               SELECT TSI.idx
+               FROM TB_SPACE_INFO AS TSI
+               WHERE TSI.space_name = #{spaceName}
+                 AND TSI.device_type_idx =
+                     (SELECT TD.device_type_idx FROM TB_DEVICE AS TD WHERE TD.idx = #{deviceIdx})
+                 AND TSI.space_level = 1)
+             END AS r
+  </select>
+
+  <select id="excelUploadGetSpaceIdx" parameterType="String" resultType="Integer">
+    SELECT CASE
+             WHEN (
+                    SELECT COUNT(TSI.idx)
+                    FROM TB_SPACE_INFO AS TSI
+                    WHERE TSI.space_name = #{spaceName}
+                      AND TSI.parent_space_idx = #{parentSpaceIdx}
+                      AND TSI.space_level = 2
+                  ) = 0
+               THEN 0
+             WHEN (
+               SELECT COUNT(TSI.idx)
+               FROM TB_SPACE_INFO AS TSI
+               WHERE TSI.space_name = #{spaceName}
+                 AND TSI.parent_space_idx = #{parentSpaceIdx}
+                 AND TSI.space_level = 2
+             ) != 0
+		        THEN (
+               SELECT TSI.idx
+               FROM TB_SPACE_INFO AS TSI
+               WHERE TSI.space_name = #{spaceName}
+                 AND TSI.parent_space_idx = #{parentSpaceIdx}
+                 AND TSI.space_level = 2)
+             END AS r
+  </select>
+
+  <select id="appSelectGroupMember" parameterType="String" resultType="String">
+    SELECT (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TGMM.member_idx) AS member_id
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE (SELECT TG.idx FROM TB_GROUP AS TG WHERE TG.group_id = #{groupId}) = TGMM.group_idx
+  </select>
+
+  <select id="appSelectMemberDevice" parameterType="String" resultType="HashMap">
+    SELECT DISTINCT (SELECT TD.serial_num
+                     FROM TB_DEVICE AS TD
+                     WHERE TD.idx = TMDM.device_idx) AS serial_num,
+                    TMDM.station_name                AS station_name,
+                    CASE
+                      WHEN (SELECT COUNT(TD.serial_num)
+                            FROM TB_DEVICE AS TD
+                            WHERE TD.idx = TMDCM.vent_device_idx) != 0
+				THEN "1"
+                      ELSE "0"
+                      END                            AS vent_yn
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+           LEFT JOIN TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+                     ON TMDM.device_idx = TMDCM.iaq_device_idx
+    WHERE (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TMDM.member_idx) = #{userId}
+      AND TMDM.device_idx IS NOT NULL
+  </select>
+
+  <select id="appSelectMemberVentDevice" parameterType="String" resultType="String">
+    SELECT (SELECT TD.serial_num
+            FROM TB_DEVICE AS TD
+            WHERE TD.idx = TMDCM.vent_device_idx) AS vent_serial
+    FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+    WHERE (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDCM.iaq_device_idx) =
+          #{iaqSerialNum}
+  </select>
+
+  <select id="selectDataDownloadList" resultType="Device">
+    SELECT (SELECT (SELECT TDT.device_type
+                    FROM TB_DEVICE_TYPE AS TDT
+                    WHERE TDT.idx = TDM3.device_type_idx)
+            FROM TB_DEVICE_MODEL AS TDM3
+            WHERE TDM3.idx = TD.device_model_idx) AS device_type,
+           TD.serial_num
+    FROM (SELECT @rownum :=0) AS R,
+         TB_DEVICE AS TD
+           JOIN
+         (SELECT idx,
+                 device_model,
+                 (SELECT device_type AS dt
+                  FROM TB_DEVICE_TYPE AS TDT
+                  WHERE TDT.idx = TDM2.device_type_idx) AS dt
+          FROM TB_DEVICE_MODEL AS TDM2) AS TDM
+         ON TD.device_model_idx = TDM.idx
+  </select>
+
+  <select id="findAdminIdx" parameterType="String" resultType="Long">
+    SELECT TA.idx AS idx
+    FROM TB_ADMIN AS TA
+    WHERE TA.user_id = #{adminId}
+  </select>
+
+  <select id="findGroupIdx" parameterType="String" resultType="Long">
+    SELECT TG.idx AS idx
+    FROM TB_GROUP AS TG
+    WHERE TG.group_id = #{groupId}
+  </select>
+
+  <select id="findMemberIdx" parameterType="String" resultType="Long">
+    SELECT TM.idx AS idx
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{memberId}
+  </select>
+
+  <select id="selectExcelDownDongList" parameterType="String" resultType="Dong">
+    SELECT
+    TDH.dcode,
+    TDH.dtype,
+    TDH.sdcode,
+    TDH.sggcode,
+    TDH.dname,
+    TDH.dfname,
+    TDH.lat,
+    TDH.lon,
+    TDH.reg_date
+    FROM
+    TB_DONG_HCODE AS TDH
+    <where>
+      dtype=3 AND sdcode=#{scode}
+      <if test="searchType == 'gu'">
+        AND sggcode=#{gcode}
+      </if>
+      <if test="searchType == 'dong'">
+        AND dcode=#{dcode}
+      </if>
+      ORDER BY dfname
+    </where>
+  </select>
+
+  <select id="getUserIdToUserIdx" parameterType="String" resultType="String">
+    SELECT TM.idx AS member_idx
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_id = #{userId}
+  </select>
+
+  <select id="getSerialToDeviceIdx" parameterType="String" resultType="String">
+    SELECT TD.idx AS device_idx
+    FROM TB_DEVICE AS TD
+    WHERE TD.serial_num = #{serialNum}
+  </select>
+
+  <select id="getGroupIdToGroupIdx" parameterType="String" resultType="String">
+    SELECT TG.idx AS group_idx
+    FROM TB_GROUP AS TG
+    WHERE TG.group_id = #{groupId}
+  </select>
+
+  <select id="getGroupIdxToUserIdxs" parameterType="String" resultType="String">
+    SELECT TGMM.member_idx AS member_idx
+    FROM TB_GROUP_MEMBER_MANAGE AS TGMM
+    WHERE TGMM.group_idx = #{groupIdx}
+  </select>
+
+  <select id="getDeviceIdxToUserIdx" parameterType="String" resultType="String">
+    SELECT TMDM.member_idx AS member_idx
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE TMDM.device_idx = #{deviceIdx}
+  </select>
+
+  <select id="getSerialListToFcmToken" parameterType="String" resultType="HashMap">
+    SELECT (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+           (SELECT (SELECT TDT.device_type
+                    FROM TB_DEVICE_TYPE AS TDT
+                    WHERE TDT.idx = TD.device_type_idx)
+            FROM TB_DEVICE AS TD
+            WHERE TD.idx = TMDM.device_idx)                                           AS device_type
+    FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+    WHERE (TMDM.member_idx =
+           (SELECT TM.idx
+            FROM TB_MEMBER AS TM
+            WHERE TM.user_id =
+                  (SELECT TPT.USER_ID
+                   FROM TB_PUSH_TOKEN AS TPT
+                   WHERE TPT.USER_ID = #{userId}
+                     AND TPT.FCM_TOKEN = #{token} LIMIT 1)
+      )
+			OR TMDM.member_idx IN(SELECT TGMM.member_idx FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.group_idx = 
+				(SELECT TG.idx FROM TB_GROUP AS TG WHERE CONCAT('g-', TG.group_id) = (SELECT TPT.USER_ID FROM TB_PUSH_TOKEN AS TPT WHERE TPT.USER_ID = concat('g-', #{userId})
+      AND TPT.FCM_TOKEN = #{token} LIMIT 1))))
+      AND
+      TMDM.device_idx IS NOT NULL
+  </select>
+
+  <select id="getAdminStatisticsData" resultType="HashMap">
+    SELECT (SELECT COUNT(TM.idx) FROM TB_MEMBER AS TM WHERE TM.use_yn = 'Y')   AS member_cnt,
+           (SELECT COUNT(TGMM.member_idx)
+            FROM TB_GROUP_MEMBER_MANAGE AS TGMM)                               AS group_member_cnt,
+           (SELECT COUNT(TG.idx)
+            FROM TB_GROUP AS TG
+            WHERE TG.use_yn = 'Y')                                             AS group_cnt,
+           (SELECT COUNT(TD.idx)
+            FROM TB_DEVICE AS TD
+            WHERE TD.use_yn = 'Y'
+              AND TD.device_type_idx = '1')                                    AS iaq_cnt,
+           (SELECT COUNT(TD.idx)
+            FROM TB_DEVICE AS TD
+            WHERE TD.use_yn = 'Y'
+              AND TD.device_type_idx = '2')                                    AS oaq_cnt,
+           (SELECT COUNT(TD.idx)
+            FROM TB_DEVICE AS TD
+            WHERE TD.use_yn = 'Y'
+              AND TD.device_type_idx = '7')                                    AS vent_cnt,
+           (SELECT COUNT(TMDM.device_idx)
+            FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+            WHERE TMDM.device_idx in ((SELECT TD.idx
+                                       FROM TB_DEVICE AS TD
+                                       WHERE TD.use_yn = 'Y'
+                                         AND TD.device_type_idx = '1')))       AS member_iaq_cnt,
+           (SELECT COUNT(TMDM.device_idx)
+            FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
+            WHERE TMDM.device_idx in ((SELECT TD.idx
+                                       FROM TB_DEVICE AS TD
+                                       WHERE TD.use_yn = 'Y'
+                                         AND TD.device_type_idx = '2')))       AS member_oaq_cnt,
+           (SELECT COUNT(TMDCM.vent_device_idx)
+            FROM TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+            WHERE TMDCM.vent_device_idx in ((SELECT TD.idx
+                                             FROM TB_DEVICE AS TD
+                                             WHERE TD.use_yn = 'Y'
+                                               AND TD.device_type_idx = '7'))) AS member_vent_cnt
+  </select>
+
+  <select id="findMemberIdList" parameterType="String" resultType="HashMap">
+    SELECT TM.user_id                                  AS user_id,
+           'member'                                    AS user_type,
+           DATE_FORMAT(TM.create_dt, '%Y-%m-%d %H:%i') AS create_dt
+    FROM TB_MEMBER AS TM
+    WHERE TM.user_name = #{userName}
+      AND TM.phone_number = #{phoneNumber}
+      AND TM.use_yn = 'Y'
+  </select>
+
+  <select id="findGroupIdList" parameterType="String" resultType="HashMap">
+    SELECT TG.group_id                                 AS user_id,
+           'group'                                     AS user_type,
+           DATE_FORMAT(TG.create_dt, '%Y-%m-%d %H:%i') AS create_dt
+    FROM TB_GROUP AS TG
+    WHERE TG.group_name = #{userName}
+      AND TG.group_phone_number = #{phoneNumber}
+      AND TG.use_yn = 'Y'
+  </select>
+
+  <select id="selectPushHistoryList" parameterType="String" resultType="HashMap">
+    SELECT A.row_num   AS row_num,
+           A.message   AS message,
+           A.serial    AS serial,
+           A.user_id   AS user_id,
+           A.push_date AS push_date
+    FROM (
+           SELECT TPH.idx,
+                  @rownum:=@rownum+1 AS row_num,
+					TPH.MESSAGE,
+		            TPH.serial,
+		            TPH.user_id,
+		            TPH.push_date
+           FROM
+             TB_PUSH_HISTORY AS TPH, (SELECT @rownum := 0) AS R
+           WHERE
+             TPH.serial = #{serial}
+             AND TPH.USER_ID = #{userId}
+           ORDER BY TPH.idx ASC
+         ) AS A
+    WHERE
+			<![CDATA[ A.row_num <= #{hisIdx} ]]>
+			ORDER BY A.row_num DESC LIMIT 10
+  </select>
+
+  <select id="selectPushHistoryListCnt" parameterType="String" resultType="Integer">
+    SELECT COUNT(A.row_num) AS cnt
+    FROM (
+           SELECT TPH.idx,
+                  @rownum:=@rownum+1 AS row_num,
+					TPH.MESSAGE,
+		            TPH.serial,
+		            TPH.user_id,
+		            TPH.push_date
+           FROM
+             TB_PUSH_HISTORY AS TPH, (SELECT @rownum := 0) AS R
+           WHERE
+             TPH.serial = #{serial}
+             AND TPH.USER_ID = #{userId}
+           ORDER BY TPH.idx DESC
+         ) AS A
+  </select>
+
+  <select id="selectPushMessageList" resultType="PushMessage">
+    SELECT @rownum:=@rownum+1 as row_num,
+			TPMM.idx,
+		    TPMM.element,
+		    TPMM.pre_step,
+		    TPMM.cur_step,
+		    TPMM.message,
+		    TPMM.device_type
+    FROM
+      TB_PUSH_MESSAGE_MANAGE AS TPMM, (SELECT @rownum := 0) AS R
+  </select>
+
+  <select id="selectPushMessageSearch" parameterType="String" resultType="PushMessage">
+    SELECT TPMM.idx,
+           TPMM.element,
+           TPMM.pre_step,
+           TPMM.cur_step,
+           TPMM.message,
+           TPMM.device_type
+    FROM TB_PUSH_MESSAGE_MANAGE AS TPMM
+    WHERE TPMM.idx = #{idx}
+  </select>
+
+  <select id="checkFcmToken" parameterType="String" resultType="Integer">
+    SELECT COUNT(TPK.user_id) AS cnt
+    FROM TB_PUSH_TOKEN AS TPK
+    WHERE TPK.fcm_token = #{token}
+  </select>
+
+  <select id="checkFcmTokenUserId" parameterType="String" resultType="Integer">
+    SELECT COUNT(TPK.user_id) AS cnt
+    FROM TB_PUSH_TOKEN AS TPK
+    WHERE TPK.user_id = #{userId}
+      AND TPK.fcm_token = #{token}
+  </select>
+
+  <select id="selectDeviceToSerial" parameterType="String" resultType="HashMap">
+    SELECT (SELECT TDT.device_type
+            FROM TB_DEVICE_TYPE AS TDT
+            WHERE TDT.idx = TD.device_type_idx) AS device_type
+    FROM TB_DEVICE AS TD
+    WHERE TD.idx = #{deviceIdx}
+  </select>
+
+  <select id="getMemberDeviceInfoBySerial" parameterType="String" resultType="MemberDevice">
+    SELECT
+           member_idx,
+           device_idx,
+           set_temp,
+           dcode,
+           related_device_serial as related_device
+    FROM TB_MEMBER_DEVICE_MANAGE
+    WHERE device_idx = (SELECT idx FROM TB_DEVICE WHERE serial_num = #{serialNum})
+  </select>
+  
+  <select id="selectMemberDeviceInfo" parameterType="String" resultType="HashMap">
+	SELECT
+		TMDM.member_idx,
+		TMDM.device_idx,
+	    TMDM.station_name,
+	    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+	    (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS device_type
+	FROM 
+		TB_MEMBER_DEVICE_MANAGE AS TMDM
+	WHERE
+		TMDM.device_idx =  (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serialNum})
+  </select>
+
+  <select id="selectAirMapDeviceInfoKweather" parameterType="String" resultType="HashMap">
+	  SELECT 
+		TMDM.station_name,
+		TMDM.lat,
+		TMDM.lon,
+		TMDM.dcode,
+		TMDM.airmap_yn,
+		TMDM.equip_addr,
+		TMDM.equip_addr2,
+		(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS serial_num,
+		(SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS device_type,
+		CASE 
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'Main') = 0 THEN null
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'Main') != 0 
+			THEN (SELECT CONCAT('https://datacenter.kweather.co.kr/system/member/device/ajax/fileDownload/', TMDM.device_idx, '?type=Main') FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'Main')
+		END AS 'main_image',
+		CASE 
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'East') = 0 THEN null
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'East') != 0 
+			THEN (SELECT CONCAT('https://datacenter.kweather.co.kr/system/member/device/ajax/fileDownload/', TMDM.device_idx, '?type=East') FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'East')
+		END AS 'east_image',
+		CASE 
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'West') = 0 THEN null
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'West') != 0 
+			THEN (SELECT CONCAT('https://datacenter.kweather.co.kr/system/member/device/ajax/fileDownload/', TMDM.device_idx, '?type=West') FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'West')
+		END AS 'west_image',
+		CASE 
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'South') = 0 THEN null
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'South') != 0 
+			THEN (SELECT CONCAT('https://datacenter.kweather.co.kr/system/member/device/ajax/fileDownload/', TMDM.device_idx, '?type=South') FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'South')
+		END AS 'south_image',
+		CASE 
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'North') = 0 THEN null
+			WHEN (SELECT COUNT(TMDF.idx) FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'North') != 0 
+			THEN (SELECT CONCAT('https://datacenter.kweather.co.kr/system/member/device/ajax/fileDownload/', TMDM.device_idx, '?type=North') FROM TB_MEMBER_DEVICE_FILE AS TMDF WHERE TMDM.device_idx = TMDF.device_idx AND TMDF.file_type = 'North')
+		END AS 'north_image'
+	FROM 
+		TB_MEMBER_DEVICE_MANAGE AS TMDM
+	WHERE
+		TMDM.device_idx IS NOT NULL
+	    AND (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) = #{serialNum}
+  </select>
+
+  <select id="selectAirMapDeviceInfoAirKorea" parameterType="String" resultType="HashMap">
+	SELECT
+		TDA.air_code AS a_air_code,
+		TDA.air_name AS a_air_name,
+		TDA.air_city AS a_air_city,
+		TDA.air_addr AS a_air_addr,
+		TDA.lat AS lat,
+		TDA.lon AS lon,
+		TDA.use_yn,
+		TDA.dcode
+	FROM
+		TB_DONG_AIRKOR_INFO AS TDA
+	WHERE
+		TDA.air_code = #{airCode}
+  </select>
+
+  <select id="selectOaqList" parameterType="String" resultType="Device">
+	SELECT
+		serial_num
+	FROM
+		TB_DEVICE
+	WHERE
+		device_type_idx = 2
+  </select>
+
+  <select id="selectGroupPushHistoryCnt" parameterType="String" resultType="Integer">
+    SELECT COUNT(A.row_num) AS cnt
+    FROM (
+           SELECT TPH.idx,
+                  @rownum:=@rownum+1 AS row_num,
+					TPH.MESSAGE,
+		            TPH.serial,
+		            TPH.user_id,
+		            TPH.push_date
+           FROM
+             TB_PUSH_HISTORY AS TPH, (SELECT @rownum := 0) AS R
+           WHERE
+             TPH.USER_ID = #{groupId }
+           ORDER BY TPH.idx DESC
+         ) AS A
+  </select>
+
+  <select id="selectGroupPushHistory" parameterType="String" resultType="HashMap">
+    SELECT A.row_num   AS row_num,
+           A.message   AS message,
+           A.serial    AS serial,
+           A.user_id   AS user_id,
+           A.push_date AS push_date
+    FROM (
+           SELECT TPH.idx,
+                  @rownum:=@rownum+1 AS row_num,
+					TPH.MESSAGE,
+		            TPH.serial,
+		            TPH.user_id,
+		            TPH.push_date
+           FROM
+             TB_PUSH_HISTORY AS TPH, (SELECT @rownum := 0) AS R
+           WHERE
+             TPH.USER_ID = #{groupId }
+           ORDER BY TPH.idx ASC
+         ) AS A
+	WHERE
+		push_date BETWEEN DATE_ADD(now(), INTERVAL - 1 month) AND now()
+	ORDER BY 
+		A.row_num DESC 
+  </select>
+
+	<select id="selectSeochoNoticeList" resultType="HashMap">
+		SELECT
+			TCB.IDX AS 'idx',
+		    TCB.TITLE AS 'title',
+		    TCB.CONTENT AS 'content',
+  		    date_format(TCB.CREATE_DATE, '%Y-%m-%d %T') AS 'createDate'
+		FROM
+			TB_CUSTOM_BOARD AS TCB
+	</select>
+</mapper>

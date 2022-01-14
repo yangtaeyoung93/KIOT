@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.common.DamperMapper">
+	<!-- 1-A) Damper List -->
+	<select id="selectDamper" resultType="DamperDto">
+		SELECT 
+		    TSDR.step, 
+		    TSDR.oa, 
+		    TSDR.ea, 
+		    TSDR.sa,
+		    TSDR.ra, 
+		    TSDR.up_date
+		FROM
+		    TB_SDC_DAMPER_RATE AS TSDR
+	</select>
+
+	<!-- 1-B) Damper Update -->
+	<update id="updateDamper" parameterType="DamperDto">
+		UPDATE 
+			TB_SDC_DAMPER_RATE
+		SET
+			<if test="oa != null and oa != ''">
+				oa = #{oa},
+			</if>
+			<if test="ea != null and ea != ''">
+			    ea = #{ea},
+		    </if>
+		    <if test="ra != null and ra != ''">
+			    ra = #{ra},
+			</if>
+		    up_date = SYSDATE()
+		WHERE
+			step = #{step}
+	</update>
+</mapper>

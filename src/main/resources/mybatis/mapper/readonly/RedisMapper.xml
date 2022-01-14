@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.readonly.RedisMapper">
+
+	<select id="selectIaqSerial" parameterType="String" resultType="String">
+		SELECT
+			TD.serial_num
+		FROM 
+			TB_DEVICE AS TD
+		WHERE
+			TD.idx=#{iaqDeviceIdx}
+	</select>
+
+	<select id="selectVentList" parameterType="String" resultType="RedisVentDto">
+		SELECT 
+			TMDCM.member_idx,
+		    TMDCM.iaq_device_idx,
+		    TMDCM.vent_device_idx,
+		    TMDCM.ai_mode,
+		    (SELECT 
+				(SELECT TDMA.attribute_value FROM TB_DEVICE_MODEL_ATTRIBUTE AS TDMA WHERE TDMA.attribute_idx = 10 AND TDMA.device_model_idx = TD.device_model_idx) 
+			FROM 
+				TB_DEVICE AS TD 
+			WHERE 
+				TD.idx=TMDCM.vent_device_idx) AS req
+		FROM 
+			TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM 
+		WHERE 
+			TMDCM.iaq_device_idx = #{iaqDeviceIdx}
+	</select>
+</mapper>

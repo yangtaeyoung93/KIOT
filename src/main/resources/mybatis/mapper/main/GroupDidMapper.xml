@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.GroupDidMapper">
+
+    <!-- 그룹 DID 추가 -->
+	<insert id="insertGroupDid" parameterType="GroupDid" useGeneratedKeys="true" keyProperty="idx">
+		INSERT INTO 
+			TB_GROUP_DID(
+				group_idx, did_name, did_code
+			) VALUES (
+				#{groupIdx}, #{didName}, (SELECT LPAD(MAX(TG.idx)+1, 5, 0) FROM TB_GROUP_DID AS TG)
+			)
+	</insert>
+
+	<!-- 그룹 DID 사용자 추가 -->
+	<insert id="insertGroupDidMember" parameterType="String">
+		INSERT INTO 
+			TB_GROUP_DID_MEMBER_MANAGE(
+					group_idx, 
+					group_did_idx, 
+					member_idx
+				) VALUES (
+					#{groupIdx},
+					#{didGroupIdx},
+					#{memberIdx}
+				)
+	</insert>
+
+    <!-- 그룹 DID 수정 -->
+    <update id="updateGroupDid" parameterType="GroupDid">
+		UPDATE 
+			TB_GROUP_DID 
+		SET 
+			did_name = #{didName}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 그룹 DID 삭제 -->
+	<delete id="deleteGroupDid" parameterType="String">
+		UPDATE 
+			TB_GROUP_DID 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx}
+	</delete>
+
+	<!-- 그룹 DID 사용자 삭제 -->
+	<delete id="deleteGroupDidMember" parameterType="String">
+		DELETE 
+			FROM TB_GROUP_DID_MEMBER_MANAGE  
+		WHERE 
+			group_did_idx = #{idx} 
+	</delete>
+
+	<!-- 그룹 DID 단일 사용자 추가 -->
+	<delete id="insertGroupDidMemberOne" parameterType="GroupDid">
+		INSERT INTO 
+			TB_GROUP_DID_MEMBER_MANAGE (
+				group_idx, 
+		        group_did_idx, 
+		        member_idx
+			) VALUES (
+				#{groupIdx},
+				#{groupDidIdx},
+				#{memberIdx}
+			)
+	</delete>
+
+	<!-- 그룹 DID 단일 사용자 삭제 -->
+	<delete id="deleteGroupDidMemberOne" parameterType="String">
+		DELETE 
+			FROM TB_GROUP_DID_MEMBER_MANAGE  
+		WHERE 
+			group_did_idx = #{groupDidIdx} AND 
+			member_idx = #{memberIdx}
+	</delete>
+
+</mapper>

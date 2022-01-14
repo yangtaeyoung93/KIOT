@@ -1,0 +1,75 @@
+@charset "utf-8";
+
+/* 노토 */
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 200;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-Thin-Hestia.eot'),
+  url('../../font/NotoSansKR-Thin-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-Thin-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-Thin-Hestia.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 300;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-DemiLight-Hestia.eot'),
+  url('../../font/NotoSansKR-DemiLight-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-DemiLight-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-DemiLight-Hestia.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 400;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-Light-Hestia.eot'),
+  url('../../font/NotoSansKR-Light-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-Light-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-Light-Hestia.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 500;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-Regular-Hestia.eot'),
+  url('../../font/NotoSansKR-Regular-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-Regular-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-Regular-Hestia.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 700;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-Bold-Hestia.eot'),
+  url('../../font/NotoSansKR-Bold-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-Bold-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-Bold-Hestia.otf') format('opentype');
+}
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 800;
+    src:local(¡Ø),
+  url('../../font/NotoSansKR-Black-Hestia.eot'),
+  url('../../font/NotoSansKR-Black-Hestia.eot?#iefix') format('embedded-opentype'),
+  url('../../font/NotoSansKR-Black-Hestia.woff') format('woff'),
+  url('../../font/NotoSansKR-Black-Hestia.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Tahoma';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../font/Tahoma.eot');
+  src: local('sdf51'),
+       local('sdf51'),
+       url('../../font/Tahoma.eot?#iefix') format('embedded-opentype'),
+       url('../../font/Tahoma.woff') format('woff'),
+       url('../../font/Tahoma.otf') format('opentype');
+}

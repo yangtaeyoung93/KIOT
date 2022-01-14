@@ -1,0 +1,26 @@
+package com.airguard.mapper.readonly;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import com.airguard.model.datacenter.DatacenterConnectDto;
+import com.airguard.model.system.DeviceElements;
+
+@Mapper
+public interface DatacenterMapper {
+
+  List<String> selectDeviceType(@Param("userId") String userId);
+
+  List<String> selectGroupDeviceType(String groupId);
+
+  List<DatacenterConnectDto> selectUserDevice(String userId);
+
+  List<DatacenterConnectDto> selectUserVentDevice(String userId);
+
+  List<String> selectGroupForUser(String groupId);
+
+  List<DeviceElements> selectDeviceModelElements(String serial);
+
+  List<String> selectMemberDeviceSerialList(@Param("type") String type, @Param("userId") String userId);
+}

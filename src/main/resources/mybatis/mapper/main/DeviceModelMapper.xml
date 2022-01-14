@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.DeviceModelMapper">
+
+    <!-- 장비 모델 추가 -->
+	<insert id="insertDeviceModel" parameterType="DeviceModel" useGeneratedKeys="true" keyProperty="idx">
+		INSERT INTO 
+			TB_DEVICE_MODEL(
+				device_type_idx,
+				device_model,
+				description,
+			  image_file,
+		    use_yn
+			) values(
+				#{deviceTypeIdx}, 
+				#{deviceModel},
+				#{description},
+			  #{imageFile},
+		    'Y'
+	        )
+	</insert>
+
+    <!-- 장비 모델 수정 -->
+    <update id="updateDeviceModel" parameterType="DeviceModel">
+		UPDATE 
+			TB_DEVICE_MODEL 
+		SET 
+			device_type_idx = #{deviceTypeIdx}, 
+			device_model = #{deviceModel},
+			description = #{description},
+		  image_file = #{imageFile}
+		WHERE 
+			idx = #{idx}
+	</update>
+
+    <!-- 장비 모델 삭제 -->
+	<update id="deleteDeviceModel" parameterType="String">
+		UPDATE 
+			TB_DEVICE_MODEL 
+		SET 
+			use_yn = 'N'
+		WHERE 
+			idx = #{idx }
+	</update>
+
+	<!-- 장비 모델 속성 삭제 -->
+	<delete id="deleteDeviceModelAttribute" parameterType="String">
+		DELETE FROM TB_DEVICE_MODEL_ATTRIBUTE  
+		WHERE device_model_idx = #{idx}
+	</delete>
+
+	<!-- 장비 측정 요소 삭제 -->
+	<delete id="deleteDeviceModelElements" parameterType="String">
+		DELETE FROM TB_DEVICE_MODEL_ELEMENTS  
+		WHERE device_model_idx = #{idx}
+	</delete>
+
+	<!-- 장비 모델 속성 관계 등록 -->
+	<insert id="addDeviceModelAttribute" parameterType="String">
+		INSERT INTO 
+			TB_DEVICE_MODEL_ATTRIBUTE(
+				device_model_idx,
+		        attribute_idx,
+		        attribute_value
+			) values (
+				#{deviceModelIdx}, 
+				#{attributeIdx},
+				#{attributeValue}
+			)
+	</insert>
+
+	<!-- 장비 모델 측정 요소 관계 등록 -->
+	<insert id="addDeviceModelElement" parameterType="String">
+		INSERT INTO 
+			TB_DEVICE_MODEL_ELEMENTS(
+				device_model_idx,
+		        element_idx
+			) values(
+				#{deviceModelIdx}, 
+				#{elementIdx}
+			)
+	</insert>
+
+</mapper>

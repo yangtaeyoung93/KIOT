@@ -1,0 +1,58 @@
+@charset "UTF-8";
+/*@charset "";*/
+/* CSS Document */
+
+
+/*마진과 패징의 초기화*/
+body, div, dl, dt,dd,ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, p, blockquote, th, td{margin:0; padding:0;}
+
+/*헤더 폰트의 초기화*/
+h1, h2, h3, h4, h5, h6{font-size:100%;}
+
+/*리스트의 스타일 제거*/
+ol, ul{list-style:none}
+
+/* 폰트 강조 특성 초기화*/
+address, caption, cite, code, dfn, em, strong, th, var { font-style: normal; font-weight:normal;}
+/*body,input,textarea,select,button,table{font-family:'나눔고딕',NanumGothic,'돋움',dotum,AppleGothic;}*/
+body,input,textarea,select,button,table{font-family:"Open Sans","NanumGothic", "나눔고딕","ng", "맑은 고딕", "Malgun Gothic", sans-serif;}
+
+/*테이블 스타일초기화*/
+table{ border-collapse:collapse; border-spacing:0;}
+
+/*이미지 및 필드셋에서 보더표시 초기화*/
+fieldset, img{border: 0;}
+
+/*캡션과 테이블헤더 텍스트 정렬 초기화*/
+/*caption. th{text-align:left}/*
+
+/*인용구 표시 초기화*/
+q:before, q:after{content:'';}
+
+/*기본 포지션 정하기*/
+/*body{position:relative; margin:0 auto; text-align:center;}*/
+
+html, body { 
+ height: 100%; margin: 0; padding: 0; font-size:12px;
+ filter: expression(document.execCommand('BackgroundImageCache', false, true));
+}
+
+* {margin:0; padding:0;}
+
+img, fieldset {border:0;}
+li {list-style:none;}
+
+A:link {color:#333333;text-decoration:none;}
+A:visited {color:#333333;text-decoration:none;}
+A:active {color:#333333;text-decoration:none;}
+A:hover {color:#999999;text-decoration:none; cursor:pointer;}
+
+A.menu img { border-width:0px; display:inline; }
+A.menu img.over { display:none; } 
+A.menu:hover { border:0px }
+A.menu:hover img { display:none; }
+A.menu:hover img.over { display:inline; }
+A.submenu:hover {color:#529CFF; text-decoration:none}
+
+
+.link {cursor:pointer;}
