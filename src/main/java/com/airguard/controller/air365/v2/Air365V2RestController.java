@@ -132,7 +132,6 @@ public class Air365V2RestController {
   @ApiImplicitParams({@ApiImplicitParam(name = "serial", value = "스테이션 번호"),})
   @RequestMapping(value = "/data/detail", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> getIotDataDetail(String serial, String region) throws Exception {
-    System.out.println("serial : " + serial + ", region : " + region);
     HashMap<String, Object> result = new HashMap<>();
     LinkedHashMap<String, Object> dataMp = new LinkedHashMap<>();
 

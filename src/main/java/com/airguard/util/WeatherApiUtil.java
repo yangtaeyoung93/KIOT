@@ -1,11 +1,19 @@
 package com.airguard.util;
 
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -67,7 +75,6 @@ public class WeatherApiUtil {
 
     String weatherApiParam = "?mode=n&region=" + region;
     String url = new StringBuilder(WEATHER_API_DOMAIN).append(TODAY).append(weatherApiParam).toString();
-    System.out.println(url);
     HttpPost post = new HttpPost(url);
     logger.error("url :: {}", url);
 
@@ -80,6 +87,7 @@ public class WeatherApiUtil {
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document doc = builder.parse(new InputSource(new StringReader(resData)));
       NodeList nList = doc.getChildNodes();
+
 
       for (int temp = 0; temp < nList.getLength(); temp++) {
         Node nNode = nList.item(temp);

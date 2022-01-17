@@ -21,6 +21,7 @@ import com.airguard.util.KweatherElementMessageManageUtil;
 import com.airguard.util.WeatherApiUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -569,6 +575,27 @@ public class Air365StationV2Service {
 
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");
+      }
+
+      String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region="+region;
+      URL url = new URL(urlForDust);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+      connection.setRequestProperty("Content-type", "text/plain");
+
+      if(connection.getResponseCode() == 200) {
+        StringBuilder result = new StringBuilder ();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line = "";
+        while((line = in.readLine()) != null) {
+          result.append(line);
+        }
+        in.close();
+        JSONParser parser = new JSONParser();
+        org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
+        weatherData.put("pm10", outdoor.get("pm10Value").toString());
+        weatherData.put("pm25", outdoor.get("pm25Value").toString());
+
       }
 
       weatherData.put("dongKo", weatherParsingData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherParsingData.get("P_1"));
