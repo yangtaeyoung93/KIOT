@@ -74,7 +74,7 @@ function initDataTableCustom() {
         targets: 6,
         orderable: false,
         render: function (data, type, full) {
-          return "<img src='/NAS2_NFS/IOT_KITECH/DEVICE_MODEL/"
+          return "<img src='https://suncheon.kweather.co.kr/IMAGES/deviceModel/"
               + full.deviceModel + "." + data + "' alt='이미지없음'"
               + "style='width: 50px; height: 50px;'/>";
         },

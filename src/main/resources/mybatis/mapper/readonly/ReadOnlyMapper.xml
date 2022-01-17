@@ -1045,7 +1045,7 @@
 		    TDTDM.tdtidx AS device_type_idx,
 		    TDTDM.tdtdevicetype AS device_type,
             TDTDM.tdmdm as device_model,
-            TDTDM.tdmif as imgage_file
+            TDTDM.tdmif as image_file
 		FROM 
 			TB_MEMBER_DEVICE_MANAGE AS TMDM JOIN (
 				SELECT 

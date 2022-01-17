@@ -47,6 +47,7 @@ public class MemberDevice {
   String deviceTypeIdx;
   String deviceType;
   String deviceModel;
+  String imageFile;
   String deviceTypeName;
   String deviceModelIdx;
   String deviceModelName;

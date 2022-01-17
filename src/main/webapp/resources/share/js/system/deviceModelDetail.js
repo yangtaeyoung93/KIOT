@@ -185,7 +185,7 @@ $().ready(function () {
 
       formData.append("imageFile", $('#imageSelector')[0].files[0]);
       formData.append("fileName", $('#deviceModel').val());
-      formData.append("filePath", "/NAS2_NFS/IOT_KITECH/DEVICE_MODEL/");
+      formData.append("filePath", "/NAS2_NFS/CUSTOM/SUNCHEON/IMAGES/deviceModel/");
 
       $.ajax({
         method: "POST",

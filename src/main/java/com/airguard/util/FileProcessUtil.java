@@ -47,7 +47,7 @@ public class FileProcessUtil {
 
     File dest = new File(fileName);
     file.transferTo(dest);
-    // Runtime.getRuntime().exec("chmod -R 644 " + dest);
+    Runtime.getRuntime().exec("chmod -R 644 " + dest);
 
     result = true;
 
