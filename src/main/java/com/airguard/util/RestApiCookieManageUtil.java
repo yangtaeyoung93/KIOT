@@ -67,10 +67,10 @@ public class RestApiCookieManageUtil {
 
   public static boolean userCookieCheck(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
-
     try {
 
       for (Cookie c : cookies) {
+
         if (Arrays.asList(COOKIE_NAMES).contains(c.getName())) {
           return true;
         }

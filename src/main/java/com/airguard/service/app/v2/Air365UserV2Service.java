@@ -739,7 +739,7 @@ public class Air365UserV2Service {
               deviceInfo.put("deviceModelName",
                       mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : mdi.getDeviceModel());
               deviceInfo.put("deviceModelImgPath",
-                      mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
+                      mdi.getImageFile() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
               deviceInfo.put("stationName",
                   mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
@@ -824,7 +824,7 @@ public class Air365UserV2Service {
             deviceInfo.put("deviceModelName",
                     mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : mdi.getDeviceModel());
             deviceInfo.put("deviceModelImgPath",
-                    mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
+                    mdi.getImageFile() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
             deviceInfo.put("stationName",
                 mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
             deviceInfo.put("lat",
@@ -928,7 +928,7 @@ public class Air365UserV2Service {
               deviceInfo.put("deviceModelName",
                       mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : mdi.getDeviceModel());
               deviceInfo.put("deviceModelImgPath",
-                      mdi.getDeviceModel() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
+                      mdi.getImageFile() == null ? CommonConstant.NULL_DATA : "https://suncheon.kweather.co.kr/IMAGES/deviceModel/"+mdi.getDeviceModel()+"."+imgFile);
               deviceInfo.put("stationName",
                   mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA

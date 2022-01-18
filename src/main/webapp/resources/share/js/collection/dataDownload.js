@@ -382,7 +382,7 @@ function plustime(){
 function addtime(){
 
     downtime+=0.1;
-    document.getElementById("dataDownTime").innerHTML = downtime;
+    document.getElementById("dataDownTime").innerHTML = downtime.toFixed(1);
 }
 
 $().ready(() => {

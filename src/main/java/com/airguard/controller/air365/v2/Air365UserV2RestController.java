@@ -195,10 +195,9 @@ public class Air365UserV2RestController {
   })
   @RequestMapping(value = "/get/user", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> selectUserInfo(HttpServletRequest request) throws Exception {
-
-//    if (!RestApiCookieManageUtil.userCookieCheck(request)) {
-//      throw new CookieAuthException(CookieAuthException.COOKIE_AUTH_MEMBER_EXCEPTION);
-//    }
+    if (!RestApiCookieManageUtil.userCookieCheck(request)) {
+      throw new CookieAuthException(CookieAuthException.COOKIE_AUTH_MEMBER_EXCEPTION);
+    }
 
     LinkedHashMap<String, Object> res;
 
