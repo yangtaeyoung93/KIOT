@@ -203,7 +203,7 @@
                                                 onclick="deleteImage()">
                                             삭제
                                         </button>
-                                        <img src="/NAS2_NFS/IOT_KITECH/DEVICE_MODEL/${data.deviceModel}.${data.imageFile}"
+                                        <img src="https://suncheon.kweather.co.kr/IMAGES/deviceModel/${data.deviceModel}.${data.imageFile}"
                                              value="${data.imageFile}" id="deviceImage"
                                              style="height: 10rem; width: 10rem; float: right; margin-right: 6rem;">
                                     </div>
