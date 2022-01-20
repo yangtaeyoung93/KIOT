@@ -200,7 +200,6 @@ function dataDownload() {
     plustime();
 	dataMakeToExcel(0, param);
 
-
 }
 
 function dataMakeToExcel(index, param) {
