@@ -1045,7 +1045,8 @@
 		    TDTDM.tdtidx AS device_type_idx,
 		    TDTDM.tdtdevicetype AS device_type,
             TDTDM.tdmdm as device_model,
-            TDTDM.tdmif as image_file
+            TDTDM.tdmif as image_file,
+            TDTDM.tdmip as device_model_img_path
 		FROM 
 			TB_MEMBER_DEVICE_MANAGE AS TMDM JOIN (
 				SELECT 
@@ -1054,7 +1055,8 @@
 		            TDMDT.tdtidx AS tdtidx,
 		            TDMDT.tdtdevicetype AS tdtdevicetype,
                     TDMDT.tdmdm AS tdmdm,
-                    TDMDT.tdmif AS tdmif
+                    TDMDT.tdmif AS tdmif,
+                    TDMDT.tdmip AS tdmip
 				FROM 
 					TB_DEVICE AS TD 
 						JOIN (
@@ -1063,7 +1065,11 @@
                                 TDM.device_model AS tdmdm,
                                 TDM.image_file AS tdmif,
 								TDT.idx AS tdtidx, 
-		                        TDT.device_type AS tdtdevicetype
+		                        TDT.device_type AS tdtdevicetype,
+                                case when TDM.image_file is null then 'NA'
+                                when TDM.image_file = '' then 'NA'
+                                else
+                                concat('https://suncheon.kweather.co.kr/IMAGES/deviceModel/',TDM.device_model,'.',TDM.image_file) end as 'tdmip'
 							FROM 
 								TB_DEVICE_MODEL AS TDM 
 									JOIN TB_DEVICE_TYPE AS TDT 
