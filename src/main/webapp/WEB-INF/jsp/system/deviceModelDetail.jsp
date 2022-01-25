@@ -203,6 +203,9 @@
                                                 onclick="deleteImage()">
                                             삭제
                                         </button>
+                                        <!--
+                                              2022/01/25 데이터센터 이미지 수정 새로고침 문제 해결
+                                         -->
                                         <img src="https://suncheon.kweather.co.kr/IMAGES/deviceModel/${data.deviceModel}.${data.imageFile}"
                                              value="${data.imageFile}" id="deviceImage"
                                              style="height: 10rem; width: 10rem; float: right; margin-right: 6rem;">

@@ -1,5 +1,6 @@
 package com.airguard.controller.system;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,11 @@ public class DeviceModelController {
     model.addAttribute("item", "장비 모델 상세");
     model.addAttribute("oneDepth", "system");
     model.addAttribute("twoDepth", "model");
+
+    /**
+     * 2022/01/25 데이터센터 이미지 수정 새로고침 문제 해결
+     */
+    model.addAttribute("t", LocalDateTime.now().toLocalTime());
 
     return "/system/deviceModelDetail";
   }
