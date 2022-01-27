@@ -6,6 +6,7 @@
  */
 package com.airguard.model.platform;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+/**
+ * 2022.1.26 UnrecognizedPropertyException으로 인해 JsonIgnoreProperties 추가
+ * */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SensorDataDto {
 
   /*
