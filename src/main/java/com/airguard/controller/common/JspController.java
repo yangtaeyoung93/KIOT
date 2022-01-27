@@ -335,4 +335,11 @@ public class JspController {
     model.addAttribute("item", groupId);
     return "/collection/proManage";
   }
+
+  @ApiOperation(value = "외부 프로젝트 관리용, 관리자 페이지 (Example, 구로구)", tags = "웹 페이지 Url")
+  @RequestMapping(value = "/project/external", method = RequestMethod.GET)
+  public String externalProjectManage(Model model) throws Exception {
+
+    return "/collection/externalProManage";
+  }
 }
