@@ -87,7 +87,7 @@ public class DatacenterService {
             : mapper.selectUserDevice(userId);
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.U_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_U_ID_FORMAT;
@@ -156,7 +156,7 @@ public class DatacenterService {
     List<DatacenterConnectDto> deviceList = new ArrayList<>();
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.G_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_G_ID_FORMAT;
@@ -222,7 +222,7 @@ public class DatacenterService {
     List<DatacenterConnectDto> deviceList = mapper.selectUserVentDevice(userId);
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.U_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_U_ID_FORMAT;
@@ -283,7 +283,7 @@ public class DatacenterService {
     List<DatacenterConnectDto> deviceList = new ArrayList<>();
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.G_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_G_ID_FORMAT;
