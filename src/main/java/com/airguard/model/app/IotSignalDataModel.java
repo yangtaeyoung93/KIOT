@@ -55,4 +55,35 @@ public class IotSignalDataModel {
 
   @XmlElement(name = "accz")
   private String accz;
+
+  @XmlElement(name = "lux")
+  private String lux;
+
+  @XmlElement(name = "uv")
+  private String uv;
+
+  @XmlElement(name = "windd")
+  private String windd;
+
+  @XmlElement(name = "winds")
+  private String winds;
+
+  @XmlElement(name = "so2")
+  private String so2;
+
+  @XmlElement(name = "no2")
+  private String no2;
+
+  @XmlElement(name = "nh3")
+  private String nh3;
+
+  @XmlElement(name = "h2s")
+  private String h2s;
+
+  @XmlElement(name = "wbgt")
+  private String wbgt;
+
+  @XmlElement(name = "o3")
+  private String o3;
+
 }
