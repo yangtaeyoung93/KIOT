@@ -1,9 +1,11 @@
 package com.airguard.controller.air365.v2;
 
 import com.airguard.exception.AuthException;
+import com.airguard.exception.CommonErrorMessage;
 import com.airguard.exception.ExternalApiException;
 import com.airguard.exception.ParameterException;
 import com.airguard.model.app.AppVent;
+import com.airguard.model.datacenter.DatacenterConnectDto;
 import com.airguard.service.app.v2.Air365StationV2Service;
 import com.airguard.service.datacenter.DatacenterService;
 import com.airguard.service.platform.PlatformService;
@@ -26,10 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = CommonConstant.URL_API_APP_AIR365_V2,
@@ -204,6 +203,127 @@ public class Air365V2RestController {
     }
 
     result.put("result", resultCode);
+
+    return result;
+  }
+
+  @ApiOperation(value = "VENT 장비 일괄 제어", tags = "AIR365, 프로젝트")
+  @ApiImplicitParams({
+          @ApiImplicitParam(name = "type", value = "groupId / serial 선택"),
+          @ApiImplicitParam(name = "groupId", value = "그룹계정"),
+          @ApiImplicitParam(name = "serial", value = "vent serial"),})
+  @RequestMapping(value = "/mqtt/all", method = {RequestMethod.POST})
+  public HashMap<String, Object> postVentControlAll(HttpServletRequest request) throws Exception {
+    HashMap<String, Object> result = new HashMap<>();
+    int resultCode = 0;
+
+    String type = request.getParameter("type") == null ? "" : request.getParameter("type");
+    String groupId = request.getParameter("groupId") == null ? "" : request.getParameter("groupId");
+    String serial = request.getParameter("serial") == null ? "" : request.getParameter("serial");
+    String mode = request.getParameter("mode") == null ? "" : request.getParameter("mode");
+
+    if(type == null || "".equals(type)){
+      throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
+    }
+
+    if(type.equals("groupId") && (groupId == null || "".equals(groupId))){
+      throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
+    }
+
+    if(type.equals("serial") && (serial == null || "".equals(serial))){
+      throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
+    }
+
+
+    if (mode == null || "".equals(mode))
+      throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
+
+    if (Arrays.stream(CommonConstant.VENT_STATUS_CODE).noneMatch(mode::equals))
+      throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+
+    List<HashMap<String,String>> ventList = new ArrayList<>();
+    if(type.equals("groupId")){
+      List<String> memberIds = service.selectGroupForUser(groupId);
+      for(String userId : memberIds ) {
+        List<DatacenterConnectDto> datacenterConnectDtoList = service.selectUserVentDevice(userId);
+        for(DatacenterConnectDto list : datacenterConnectDtoList){
+          HashMap<String,String> userDevices = new HashMap<>();
+          userDevices.put("ventSerial",list.getSerialNum());
+          userDevices.put("iaqSerial",list.getIaqSerialNum());
+          ventList.add(userDevices);
+        }
+
+      }
+    }else{
+      String[] ventSerials = serial.split(",");
+      for(String vent : ventSerials){
+        HashMap<String,String> userDevices = new HashMap<>();
+        userDevices.put("ventSerial",vent);
+        userDevices.put("iaqSerial",platformService.ventSerialToIaqSerial(vent));
+        ventList.add(userDevices);
+      }
+
+    }
+    CommonErrorMessage commonErrorMessage = new CommonErrorMessage();
+    List<HashMap<String,Object>> resultList = new ArrayList<>();
+    for(HashMap<String,String> list : ventList){
+      HashMap<String,Object> resultMap = new HashMap<>();
+      resultMap.put("serial",list.get("ventSerial"));
+      try {
+
+        if (Arrays.asList(CommonConstant.VENT_AI_CODE).contains(mode)) {
+
+          String aiMode = mode.equals("A1") ? "1" : "0";
+
+          // RDB Update .
+          platformService.updateventAiMode(aiMode, list.get("ventSerial"));
+
+          // 연결 상태 알림 (플랫폼)
+          platformService.postPlatformRequestConnect(list.get("iaqSerial"), request.getLocalName());
+
+          // 명령어 전송 (플랫폼)
+          resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+
+        } else {
+          // 명령어 전송 (플랫폼)
+          resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+        }
+
+        resultMap.put("result", resultCode);
+
+        if (resultCode == 2) {
+//            throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+          resultMap.put("errorCode",ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+          resultMap.put("message",commonErrorMessage.getMessage(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION));
+        }
+
+        if (resultCode == 0) {
+//            throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
+          resultMap.put("errorCode",ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
+          resultMap.put("message",commonErrorMessage.getMessage(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION));
+        }
+
+      } catch (NullPointerException e) {
+//          throw new ParameterException(ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION);
+        resultMap.put("errorCode",ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION);
+        resultMap.put("message",commonErrorMessage.getMessage(ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION));
+        continue;
+      } catch (ParameterException e) {
+//          throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+        resultMap.put("errorCode",ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+        resultMap.put("message",commonErrorMessage.getMessage(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION));
+        continue;
+      } catch (Exception e) {
+//          throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
+        resultMap.put("errorCode",ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
+        resultMap.put("message",commonErrorMessage.getMessage(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION));
+        continue;
+      }
+      resultList.add(resultMap);
+      Thread.sleep(1000);
+    }
+
+    result.put("result", resultList);
 
     return result;
   }

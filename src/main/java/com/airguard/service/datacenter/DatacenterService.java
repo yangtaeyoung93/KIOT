@@ -39,6 +39,10 @@ public class DatacenterService {
     return mapper.selectDeviceType(userId);
   }
 
+  public List<String> selectGroupForUser(String groupId){ return mapper.selectGroupForUser(groupId);}
+
+  public List<DatacenterConnectDto> selectUserVentDevice(String userId){ return mapper.selectUserVentDevice(userId);}
+
   public List<String> selectGroupDeviceType(String groupId) {
     return mapper.selectGroupDeviceType(groupId);
   }
