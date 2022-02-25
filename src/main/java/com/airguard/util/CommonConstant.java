@@ -126,6 +126,7 @@ public class CommonConstant {
   public static final String URL_API_APP = "/api/app";
   public static final String URL_API_APP_AIR365 = "/api/air365";
   public static final String URL_API_APP_AIR365_V2 = "/api/air365/v2";
+  public static final String URL_API_APP_AIR365_V3 = "/api/air365/v3";
 
   /*
    * 유효성 검사

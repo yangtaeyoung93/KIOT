@@ -11,5 +11,6 @@ public class DeviceInfoDto {
     String lat;
     String lon;
     String dcode;
+    String dfname;
     Object sensor;
 }

@@ -1040,6 +1040,7 @@
             TMDM.depart_phone_number,
             TMDM.sales_name,
 			TMDM.dcode,
+            TDH.dfname,
 			TMDM.airmap_yn,
 		    TDTDM.tdmidx AS device_model_idx,
 		    TDTDM.tdtidx AS device_type_idx,
@@ -1077,6 +1078,9 @@
 							) AS TDMDT 
 								ON TD.device_model_idx = TDMDT.tdmidx
 			) AS TDTDM ON TMDM.device_idx=TDTDM.tdidx
+            LEFT OUTER JOIN
+            TB_DONG_HCODE TDH
+              on TMDM.dcode = TDH.dcode
 		WHERE
 			TMDM.member_idx=
     #{idx}
@@ -2620,10 +2624,17 @@
 		TMDM.member_idx,
 		TMDM.device_idx,
 	    TMDM.station_name,
+        TMDM.lat,
+        TMDM.lon,
+        TMDM.dcode,
+        TDH.dfname,
 	    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
 	    (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS device_type
 	FROM 
 		TB_MEMBER_DEVICE_MANAGE AS TMDM
+        LEFT OUTER JOIN
+        TB_DONG_HCODE TDH
+        on TMDM.dcode = TDH.dcode
 	WHERE
 		TMDM.device_idx =  (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serialNum})
   </select>
@@ -2747,4 +2758,17 @@
 		FROM
 			TB_CUSTOM_BOARD AS TCB
 	</select>
+
+  <select id="selectElementInfo" resultType="HashMap">
+    SELECT
+      kor_name as korName,
+      eng_name as engName,
+      element_unit as unit,
+      view_name as viewName
+    FROM
+      TB_DEVICE_ELEMENTS
+    WHERE
+      eng_name = #{element}
+
+  </select>
 </mapper>

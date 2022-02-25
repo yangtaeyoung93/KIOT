@@ -383,4 +383,6 @@ public interface ReadOnlyMapper {
   List<HashMap<String, Object>> selectGroupPushHistory(@Param("groupId") String groupId);
 
   List<HashMap<String, Object>> selectSeochoNoticeList();
+
+  HashMap<String ,Object> selectElementInfo(@Param("element") String element);
 }

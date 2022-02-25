@@ -31,6 +31,7 @@ public class MemberDevice {
   String createDt;
   String useYn;
   String dcode;
+  String dfname;
   String airMapYn;
   String relatedDevice;
 
