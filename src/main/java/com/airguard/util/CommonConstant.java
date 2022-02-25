@@ -11,7 +11,7 @@ public class CommonConstant {
   /*
    * AES256 암호화 Key
    * */
-  public static final String AES256_KEY = "kiot2020!kiot2020!";
+  public static final String AES256_KEY = "kiot2020";
 
   /*
    * Kweather SMS Module Server

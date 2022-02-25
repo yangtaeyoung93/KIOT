@@ -1,11 +1,11 @@
 package com.airguard.controller.air365.v2;
-
-import com.airguard.exception.AuthException;
 import com.airguard.exception.CommonErrorMessage;
+import com.airguard.model.datacenter.DatacenterConnectDto;
+import com.airguard.util.AES256Util;
+import com.airguard.exception.AuthException;
 import com.airguard.exception.ExternalApiException;
 import com.airguard.exception.ParameterException;
 import com.airguard.model.app.AppVent;
-import com.airguard.model.datacenter.DatacenterConnectDto;
 import com.airguard.service.app.v2.Air365StationV2Service;
 import com.airguard.service.datacenter.DatacenterService;
 import com.airguard.service.platform.PlatformService;
@@ -20,11 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -32,7 +34,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = CommonConstant.URL_API_APP_AIR365_V2,
-    produces = MediaType.APPLICATION_JSON_VALUE)
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class Air365V2RestController {
 
   private static final Logger logger = LoggerFactory.getLogger(Air365V2RestController.class);
@@ -62,22 +64,22 @@ public class Air365V2RestController {
 
   @ApiOperation(value = "이메일 전송", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({@ApiImplicitParam(name = "email", value = "전달받을 메일 계정", required = true),
-      @ApiImplicitParam(name = "subject", value = "메일 제목"),
-      @ApiImplicitParam(name = "content", value = "메일 내용"),
-      @ApiImplicitParam(name = "sendType", value = "전송 유형")})
+          @ApiImplicitParam(name = "subject", value = "메일 제목"),
+          @ApiImplicitParam(name = "content", value = "메일 내용"),
+          @ApiImplicitParam(name = "sendType", value = "전송 유형")})
   @RequestMapping(value = "/mail/send", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> mailSend(HttpServletRequest request) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
     int resultCode;
 
     String email =
-        request.getParameter("email") == null ? "" : request.getParameter("email").trim();
+            request.getParameter("email") == null ? "" : request.getParameter("email").trim();
     String subject =
-        request.getParameter("subject") == null ? "" : request.getParameter("subject").trim();
+            request.getParameter("subject") == null ? "" : request.getParameter("subject").trim();
     String content =
-        request.getParameter("content") == null ? "" : request.getParameter("content").trim();
+            request.getParameter("content") == null ? "" : request.getParameter("content").trim();
     String sendType =
-        request.getParameter("sendType") == null ? "" : request.getParameter("sendType").trim();
+            request.getParameter("sendType") == null ? "" : request.getParameter("sendType").trim();
 
     if ("".equals(email)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -85,7 +87,7 @@ public class Air365V2RestController {
 
     if ("SMS".equalsIgnoreCase(sendType)) {
       resultCode = SmsSendUtil.mailSend(email,
-          URLEncoder.encode(content, StandardCharsets.UTF_8.toString()));
+              URLEncoder.encode(content, StandardCharsets.UTF_8.toString()));
     } else {
       resultCode = MailSendUtil.mailSend(email, subject, content);
     }
@@ -97,8 +99,8 @@ public class Air365V2RestController {
 
   @ApiOperation(value = "측정항목 조회", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({@ApiImplicitParam(name = "userId", value = "사용자 계정"),
-      @ApiImplicitParam(name = "serial", value = "스테이션 번호", defaultValue = "all"),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형")})
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호", defaultValue = "all"),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형")})
   @RequestMapping(value = "/elements", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> getModelElements(HttpServletRequest request) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
@@ -106,11 +108,11 @@ public class Air365V2RestController {
     int resultCode = CommonConstant.R_SUCC_CODE;
 
     String serial =
-        request.getParameter("serial") == null ? "all" : request.getParameter("serial").trim();
+            request.getParameter("serial") == null ? "all" : request.getParameter("serial").trim();
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
 
     if ("".equals(userId) && "all".equals(serial)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -130,7 +132,7 @@ public class Air365V2RestController {
   @ApiOperation(value = "장비 데이터 조회 (상세 내용)", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({@ApiImplicitParam(name = "serial", value = "스테이션 번호"),})
   @RequestMapping(value = "/data/detail", method = {RequestMethod.GET, RequestMethod.POST})
-  public HashMap<String, Object> getIotDataDetail(String serial, String region) throws Exception {
+  public HashMap<String, Object> getIotDataDetail(String serial, String region,boolean encoding) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
     LinkedHashMap<String, Object> dataMp = new LinkedHashMap<>();
 
@@ -140,7 +142,16 @@ public class Air365V2RestController {
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
     }
 
-    dataMp = stationService.getIotDataDetail(serial, region);
+    //air365 모바일용 복호화
+    if(encoding){
+      serial = AES256Util.decrypt(serial.replace(" ","+"));
+      region = AES256Util.decrypt(region.replace(" ","+"));
+      dataMp = stationService.getIotDataDetailEncodeVersion(serial, region);
+
+    }else{
+      dataMp = stationService.getIotDataDetail(serial, region);
+    }
+
 
     result.put("data", dataMp);
     result.put("result", resultCode);
@@ -150,9 +161,9 @@ public class Air365V2RestController {
 
   @ApiOperation(value = "VENT 장비 제어", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "request", value = "Prod / Dev Domain 구분 이용"),
-      @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
-      @ApiImplicitParam(name = "mode", value = "명령어"),})
+          @ApiImplicitParam(name = "request", value = "Prod / Dev Domain 구분 이용"),
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
+          @ApiImplicitParam(name = "mode", value = "명령어"),})
   @RequestMapping(value = "/mqtt", method = {RequestMethod.POST})
   public HashMap<String, Object> postVentControl(HttpServletRequest request) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
@@ -161,11 +172,19 @@ public class Air365V2RestController {
     String serial = request.getParameter("serial") == null ? "" : request.getParameter("serial");
     String mode = request.getParameter("mode") == null ? "" : request.getParameter("mode");
 
-    if (serial == null || "".equals(serial) || mode == null || "".equals(mode)) 
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+    if (serial == null || "".equals(serial) || mode == null || "".equals(mode))
       throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
 
-    if (Arrays.stream(CommonConstant.VENT_STATUS_CODE).noneMatch(mode::equals)) 
+    if (Arrays.stream(CommonConstant.VENT_STATUS_CODE).noneMatch(mode::equals))
       throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+
+    if(encoding){
+      serial = AES256Util.decrypt(serial.replace(" ","+"));
+      mode = AES256Util.decrypt(mode.replace(" ","+"));
+    }
+
 
     try {
 
@@ -187,7 +206,7 @@ public class Air365V2RestController {
         resultCode = platformService.postPlatformRequestVent(serial, mode, request.getLocalName());
       }
 
-      if (resultCode == 2) 
+      if (resultCode == 2)
         throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
       if (resultCode == 0)
         throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
@@ -330,33 +349,46 @@ public class Air365V2RestController {
 
   @ApiOperation(value = "VENT 장비 데이터 조회 (단일)", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-        @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
-      })
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
+  })
   @RequestMapping(value = "/data/vent", method = {RequestMethod.GET, RequestMethod.POST})
-  public HashMap<String, Object> getVentStatusData(String serial, String region) throws Exception {
+  public HashMap<String, Object> getVentStatusData(String serial, String region,Boolean encoding) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
 
     if (serial == null || "".equals(serial)) {
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
     }
 
+    if(encoding == null){
+      encoding = false;
+    }
+    if(encoding){
+      serial = AES256Util.decrypt(serial.replace(" ","+"));
+      region = AES256Util.decrypt(region.replace(" ","+"));
+      result.put("data", stationService.getVentStatusDataEncodeVersion(serial, region));
+    }else{
+      result.put("data", stationService.getVentStatusData(serial, region));
+    }
+
     result.put("result", 1);
-    result.put("data", stationService.getVentStatusData(serial, region));
+
+
+
 
     return result;
   }
 
   @ApiOperation(value = "장비 데이터 조회 (통계 데이터) standard :: hour & days", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-        @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
-        @ApiImplicitParam(name = "searchDate", value = "검색 기준 일"),
-        @ApiImplicitParam(name = "standard", value = "검색 데이터 기준"),
-      })
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
+          @ApiImplicitParam(name = "searchDate", value = "검색 기준 일"),
+          @ApiImplicitParam(name = "standard", value = "검색 데이터 기준"),
+  })
   @RequestMapping(value = "/data/stat", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> getStatIotData(String serial, String searchDate, String standard, String type) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
 
-    if (Arrays.stream(new String[] {"hour", "day"}).noneMatch(standard::equals)) 
+    if (Arrays.stream(new String[] {"hour", "day"}).noneMatch(standard::equals))
       throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
     if (serial == null || "".equals(serial)) {
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
@@ -369,23 +401,23 @@ public class Air365V2RestController {
 //    };
 
     // app 이용, 예외 처리
-    result = "app".equals(type) ? stationService.getStatIotDataApp(serial, searchDate, ("day".equals(standard) ? standard : "hour")) : 
-      stationService.getStatIotDataWeb(serial, searchDate, ("day".equals(standard) ? standard : "hour"));
+    result = "app".equals(type) ? stationService.getStatIotDataApp(serial, searchDate, ("day".equals(standard) ? standard : "hour")) :
+            stationService.getStatIotDataWeb(serial, searchDate, ("day".equals(standard) ? standard : "hour"));
 
     return result;
   }
 
   @ApiOperation(value = "장비 데이터 조회 (분석 데이터) standard :: 1 minute, 5 minute, 1 hours, 1 days, 1 month", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-        @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
-        @ApiImplicitParam(name = "searchDate", value = "검색 기준 일"),
-        @ApiImplicitParam(name = "standard", value = "검색 데이터 기준"),
-      })
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
+          @ApiImplicitParam(name = "searchDate", value = "검색 기준 일"),
+          @ApiImplicitParam(name = "standard", value = "검색 데이터 기준"),
+  })
   @RequestMapping(value = "/data/report", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> getReportData(String serial, String searchDate, String standard, String type) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
 
-    if (Arrays.stream(new String[] {"1min", "5min", "hour"}).noneMatch(standard::equals)) 
+    if (Arrays.stream(new String[] {"1min", "5min", "hour"}).noneMatch(standard::equals))
       throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
 
     if (serial == null || "".equals(serial)) {
@@ -396,7 +428,7 @@ public class Air365V2RestController {
 
     // app 이용, 예외 처리
     result = "app".equals(type) ? stationService.getReportDataApp(serial, searchDate, standard)
-        : stationService.getReportDataWeb(serial, searchDate, standard);
+            : stationService.getReportDataWeb(serial, searchDate, standard);
 
     return result;
   }
