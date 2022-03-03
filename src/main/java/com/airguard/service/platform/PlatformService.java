@@ -2179,7 +2179,7 @@ public class PlatformService {
       throws Exception {
     int result = 0;
 
-    if (!domain.equals("220.95.238.45") && !domain.equals("220.95.238.39")) {
+    if (!domain.equals("220.95.238.45") && !domain.equals("220.95.238.39") && !domain.equals("220.95.238.50")) {
       return 1;
     }
 
@@ -2337,7 +2337,7 @@ public class PlatformService {
       return 1;
     }
 
-    if (!"220.95.238.45".equals(domain) && !"220.95.238.39".equals(domain)) {
+    if (!"220.95.238.45".equals(domain) && !"220.95.238.39".equals(domain) && !"220.95.238.50".equals(domain)) {
       return 1;
     }
 

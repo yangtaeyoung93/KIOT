@@ -4,6 +4,7 @@ import com.airguard.exception.CookieAuthException;
 import com.airguard.exception.ParameterException;
 import com.airguard.service.app.v3.Air365UserV3Service;
 import com.airguard.service.platform.PlatformService;
+import com.airguard.util.AES256Util;
 import com.airguard.util.CommonConstant;
 import com.airguard.util.RestApiCookieManageUtil;
 import com.airguard.util.Sha256EncryptUtil;
@@ -51,6 +52,15 @@ public class Air365UserV3RestController {
         request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
     String token =
         request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      password = AES256Util.decrypt(password.replace(" ","+"));
+      userType = AES256Util.decrypt(userType.replace(" ","+"));
+      token = AES256Util.decrypt(token.replace(" ","+"));
+    }
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -65,7 +75,11 @@ public class Air365UserV3RestController {
       reqInfo.put("userType", userType);
       reqInfo.put("token", token);
 
-      res = service.login(reqInfo, response);
+      if(encoding){
+        res = service.loginEncodeVersion(reqInfo, response);
+      }else{
+        res = service.login(reqInfo, response);
+      }
     }
 
     return res;

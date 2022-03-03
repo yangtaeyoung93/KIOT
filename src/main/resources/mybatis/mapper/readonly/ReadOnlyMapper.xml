@@ -2759,6 +2759,7 @@
 			TB_CUSTOM_BOARD AS TCB
 	</select>
 
+  <!--engName으로 element info 가져오기-->
   <select id="selectElementInfo" resultType="HashMap">
     SELECT
       kor_name as korName,
@@ -2769,6 +2770,17 @@
       TB_DEVICE_ELEMENTS
     WHERE
       eng_name = #{element}
+
+  </select>
+
+    <!--IAQ 기준온도 설정값 가져오기-->
+  <select id="selectSetTemp" resultType="String">
+    SELECT
+      set_temp
+    FROM
+      TB_MEMBER_DEVICE_MANAGE tmdm
+    WHERE
+      device_idx =(select idx from TB_DEVICE td where serial_num = #{iaqSerial});
 
   </select>
 </mapper>

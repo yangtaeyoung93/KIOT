@@ -385,4 +385,6 @@ public interface ReadOnlyMapper {
   List<HashMap<String, Object>> selectSeochoNoticeList();
 
   HashMap<String ,Object> selectElementInfo(@Param("element") String element);
+
+  String selectSetTemp(@Param("iaqSerial") String iaqSerial);
 }

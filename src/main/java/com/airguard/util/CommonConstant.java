@@ -82,7 +82,8 @@ public class CommonConstant {
   public static final String[] VENT_TAES_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
   public static final String[] VENT_AHU_STATUS_CODE = {"A0", "A1", "W1", "W2", "W3", "W4"};
   public static final String[] VENT_KWG_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3"};
-  public static final String[] VENT_KESR_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
+  public static final String[] VENT_KESR_STATUS_CODE = {"A0","A1","A2","A3","P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
+  //A0: AI모드 OFF, A1 : AI 환기모드, A2 : AI 공기청정기모드, A3 : AI 바이패스모드
   public static final String[] VENT_KWV_AIC1_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3"};
   public static final String[] VENT_HUM_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3"};
 
