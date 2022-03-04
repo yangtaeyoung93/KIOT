@@ -862,11 +862,11 @@ public class Air365StationV3Service {
 //      ventDataObj.put("airMode", aiMode == null ? CommonConstant.NULL_DATA : Integer.valueOf(aiMode));
 
       if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
-        ventDataObj.put("ventMode",0); //바이패스 0 & 공청기모드 0 => 환기모드
-      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")){
-        ventDataObj.put("ventMode",2); //바이패스 1 & 공청기모드 0 => 바이패스모드
+        ventDataObj.put("ventMode","H1"); //바이패스 0 & 공청기모드 0 => 환기모드
       }else if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("1")){
-        ventDataObj.put("ventMode",1); //바이패스 0 & 공청기모드 1 => 공청기모드
+        ventDataObj.put("ventMode","H2"); //바이패스 0 & 공청기모드 1 => 공청기모드
+      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")) {
+        ventDataObj.put("ventMode", "H3"); //바이패스 1 & 공청기모드 0 => 바이패스모드
       }
 
 //      //ventMode 가져오기
@@ -1127,11 +1127,11 @@ public class Air365StationV3Service {
       //ventDataObj.put("airMode", AES256Util.encrypt(aiMode == null ? CommonConstant.NULL_DATA : aiMode));
 
       if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
-        ventDataObj.put("ventMode",AES256Util.encrypt("0")); //바이패스 0 & 공청기모드 0 => 환기모드
-      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")){
-        ventDataObj.put("ventMode",AES256Util.encrypt("2")); //바이패스 1 & 공청기모드 0 => 바이패스모드
+        ventDataObj.put("ventMode",AES256Util.encrypt("H1")); //바이패스 0 & 공청기모드 0 => 환기모드
       }else if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("1")){
-        ventDataObj.put("ventMode",AES256Util.encrypt("1")); //바이패스 0 & 공청기모드 1 => 공청기모드
+        ventDataObj.put("ventMode",AES256Util.encrypt("H2")); //바이패스 0 & 공청기모드 1 => 공청기모드
+      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")){
+        ventDataObj.put("ventMode",AES256Util.encrypt("H3")); //바이패스 1 & 공청기모드 0 => 바이패스모드
       }
 
       ventDataObj.put("windMax",AES256Util.encrypt(ventSerial.contains("AIC1")? "3" : "6"));

@@ -84,8 +84,6 @@ public class Air365V3RestController {
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
     }
 
-    System.out.println(AES256Util.encrypt(serial));
-    System.out.println(AES256Util.encrypt(hang_cd));
     if(encoding == null){
       encoding = false;
     }

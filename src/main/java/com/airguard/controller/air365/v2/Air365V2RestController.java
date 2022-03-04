@@ -339,7 +339,6 @@ public class Air365V2RestController {
         continue;
       }
       resultList.add(resultMap);
-      Thread.sleep(1000);
     }
 
     result.put("result", resultList);
