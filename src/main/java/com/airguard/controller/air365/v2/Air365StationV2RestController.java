@@ -76,13 +76,13 @@ public class Air365StationV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String serial = request.getParameter("stationSerial") == null ? ""
-            : request.getParameter("stationSerial").trim();
+            : request.getParameter("stationSerial");
     String stationName = request.getParameter("stationName") == null ? ""
-            : request.getParameter("stationName").trim();
-    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon").trim();
-    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat").trim();
+            : request.getParameter("stationName");
+    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon");
+    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -148,9 +148,9 @@ public class Air365StationV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String serial = request.getParameter("stationSerial") == null ? ""
-            : request.getParameter("stationSerial").trim();
+            : request.getParameter("stationSerial");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -198,13 +198,13 @@ public class Air365StationV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String serial = request.getParameter("stationSerial") == null ? ""
-            : request.getParameter("stationSerial").trim();
+            : request.getParameter("stationSerial");
     String stationName = request.getParameter("stationName") == null ? null
-            : request.getParameter("stationName").trim();
-    String lon = request.getParameter("lon") == null ? null : request.getParameter("lon").trim();
-    String lat = request.getParameter("lat") == null ? null : request.getParameter("lat").trim();
+            : request.getParameter("stationName");
+    String lon = request.getParameter("lon") == null ? null : request.getParameter("lon");
+    String lat = request.getParameter("lat") == null ? null : request.getParameter("lat");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
     if(encoding){
@@ -254,11 +254,11 @@ public class Air365StationV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String serial = request.getParameter("stationSerial") == null ? ""
-            : request.getParameter("stationSerial").trim();
+            : request.getParameter("stationSerial");
     String ventSerial =
-            request.getParameter("ventSerial") == null ? "" : request.getParameter("ventSerial").trim();
+            request.getParameter("ventSerial") == null ? "" : request.getParameter("ventSerial");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -312,11 +312,11 @@ public class Air365StationV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String serial = request.getParameter("stationSerial") == null ? ""
-            : request.getParameter("stationSerial").trim();
+            : request.getParameter("stationSerial");
     String ventSerial =
-            request.getParameter("ventSerial") == null ? "" : request.getParameter("ventSerial").trim();
+            request.getParameter("ventSerial") == null ? "" : request.getParameter("ventSerial");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 

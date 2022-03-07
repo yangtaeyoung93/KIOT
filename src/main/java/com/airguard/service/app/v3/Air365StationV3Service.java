@@ -557,7 +557,7 @@ public class Air365StationV3Service {
         elementData.put("viewName", AES256Util.encrypt(el.getViewName() == null ? "NA" : el.getViewName().toString()));
         elementData.put("unit", AES256Util.encrypt(el.getElementUnit() == null ? "NA" : el.getElementUnit().toString()));
 
-        elementData.put("criteria", AES256Util.encrypt(criteriaMp.containsKey(el.getEngName()) ? criteriaMp.get(el.getEngName()).toString() : criteriaMp.get("pm10").toString()));
+        elementData.put("criteria", criteriaMp.containsKey(el.getEngName()) ? criteriaMp.get(el.getEngName()) : criteriaMp.get("pm10"));
 
         elementData.put("value", AES256Util.encrypt(!collectionData.containsKey(el.getEngName()) ? "NA" : (!"temp".equals(el.getEngName()) ? elData : tempElData).toString()));
         elementData.put("score", AES256Util.encrypt(collectionData.containsKey(ci.concat("_").concat(el.getEngName())) ?

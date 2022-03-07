@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -51,32 +52,32 @@ public class Air365PushV2RestController {
     }
 
     String token =
-            request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+            request.getParameter("token") == null ? "" : request.getParameter("token");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String deviceType = request.getParameter("stationType") == null ? ""
             : request.getParameter("stationType").trim();
     String target =
-            request.getParameter("target") == null ? "" : request.getParameter("target").trim();
+            request.getParameter("target") == null ? "" : request.getParameter("target");
 
     String pm10Flag =
-            request.getParameter("pm10") == null ? "0" : request.getParameter("pm10").trim();
+            request.getParameter("pm10") == null ? "0" : request.getParameter("pm10");
     String pm25Flag =
-            request.getParameter("pm25") == null ? "0" : request.getParameter("pm25").trim();
-    String co2Flag = request.getParameter("co2") == null ? "0" : request.getParameter("co2").trim();
+            request.getParameter("pm25") == null ? "0" : request.getParameter("pm25");
+    String co2Flag = request.getParameter("co2") == null ? "0" : request.getParameter("co2");
     String vocs5Flag =
-            request.getParameter("vocs") == null ? "0" : request.getParameter("vocs").trim();
+            request.getParameter("vocs") == null ? "0" : request.getParameter("vocs");
     String tempFlag =
-            request.getParameter("temp") == null ? "0" : request.getParameter("temp").trim();
+            request.getParameter("temp") == null ? "0" : request.getParameter("temp");
     String humiFlag =
-            request.getParameter("humi") == null ? "0" : request.getParameter("humi").trim();
+            request.getParameter("humi") == null ? "0" : request.getParameter("humi");
 
     String startTime = request.getParameter("startTime") == null ? "08:00"
-            : request.getParameter("startTime").trim();
+            : request.getParameter("startTime");
     String endTime =
-            request.getParameter("endTime") == null ? "20:00" : request.getParameter("endTime").trim();
+            request.getParameter("endTime") == null ? "20:00" : request.getParameter("endTime");
 
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
@@ -140,13 +141,13 @@ public class Air365PushV2RestController {
     }
 
     String token =
-            request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+            request.getParameter("token") == null ? "" : request.getParameter("token");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String target =
-            request.getParameter("target") == null ? "" : request.getParameter("target").trim();
+            request.getParameter("target") == null ? "" : request.getParameter("target");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
     if(encoding){
@@ -193,13 +194,13 @@ public class Air365PushV2RestController {
     }
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String serial =
-            request.getParameter("serial") == null ? "" : request.getParameter("serial").trim();
+            request.getParameter("serial") == null ? "" : request.getParameter("serial");
     String hisIdx =
-            request.getParameter("hisIdx") == null ? "0" : request.getParameter("hisIdx").trim();
+            request.getParameter("hisIdx") == null ? "0" : request.getParameter("hisIdx");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -207,9 +208,8 @@ public class Air365PushV2RestController {
       userId = AES256Util.decrypt(userId.replace(" ","+"));
       userType = AES256Util.decrypt(userType.replace(" ","+"));
       serial = AES256Util.decrypt(serial.replace(" ","+"));
-      if(!hisIdx.equals("0")){
-        hisIdx = AES256Util.decrypt(hisIdx.replace(" ","+"));
-      }
+      hisIdx = AES256Util.decrypt(hisIdx.replace(" ","+"));
+
     }
 
     if ("".equals(userId)) {

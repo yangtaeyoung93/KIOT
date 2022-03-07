@@ -41,13 +41,13 @@ public class Air365UserV2RestController {
           throws Exception {
     LinkedHashMap<String, Object> res;
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-            request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String token =
-            request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+            request.getParameter("token") == null ? "" : request.getParameter("token");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
 
@@ -124,8 +124,11 @@ public class Air365UserV2RestController {
 
     LinkedHashMap<String, Object> res;
 
-    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat").trim();
-    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon").trim();
+    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat");
+    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon");
+
+    System.out.println(AES256Util.encrypt(lat));
+    System.out.println(AES256Util.encrypt(lon));
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     if(encoding){
@@ -163,9 +166,9 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     if(encoding){
       userId = AES256Util.decrypt(userId.replace(" ","+"));
@@ -197,7 +200,7 @@ public class Air365UserV2RestController {
 
     String phoneNumber =
             request.getParameter("phoneNumber") == null ? ""
-                    : request.getParameter("phoneNumber").trim();
+                    : request.getParameter("phoneNumber");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     if(encoding){
@@ -235,10 +238,9 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
-
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
     if(encoding){
@@ -321,21 +323,22 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-            request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
     String name =
-            request.getParameter("userName") == null ? "" : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? "" : request.getParameter("userName");
     String phoneNumber = request.getParameter("phoneNumber") == null ? ""
-            : request.getParameter("phoneNumber").trim();
+            : request.getParameter("phoneNumber");
     String telephone =
-            request.getParameter("telephone") == null ? "" : request.getParameter("telephone").trim();
+            request.getParameter("telephone") == null ? "" : request.getParameter("telephone");
     String region =
-            request.getParameter("region") == null ? "" : request.getParameter("region").trim();
+            request.getParameter("region") == null ? "" : request.getParameter("region");
     String regionName =
-            request.getParameter("regionName") == null ? "" : request.getParameter("regionName").trim();
+            request.getParameter("regionName") == null ? "" : request.getParameter("regionName");
     String email =
-            request.getParameter("email") == null ? "" : request.getParameter("email").trim();
+            request.getParameter("email") == null ? "" : request.getParameter("email");
+
 
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
@@ -407,39 +410,41 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-            request.getParameter("password") == null ? null : request.getParameter("password").trim();
+            request.getParameter("password") == null ? null : request.getParameter("password");
     String userType =
-            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String name =
-            request.getParameter("userName") == null ? null : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? null : request.getParameter("userName");
     String groupDepartName = request.getParameter("groupDepartName") == null ? null
-            : request.getParameter("groupDepartName").trim();
+            : request.getParameter("groupDepartName");
     String phoneNumber = request.getParameter("phoneNumber") == null ? null
-            : request.getParameter("phoneNumber").trim().replaceAll("-", "");
+            : request.getParameter("phoneNumber");
     String region =
-            request.getParameter("region") == null ? null : request.getParameter("region").trim();
+            request.getParameter("region") == null ? null : request.getParameter("region");
     String regionName = request.getParameter("regionName") == null ? null
-            : request.getParameter("regionName").trim();
+            : request.getParameter("regionName");
     String email =
-            request.getParameter("email") == null ? null : request.getParameter("email").trim();
+            request.getParameter("email") == null ? null : request.getParameter("email");
     String telephone = request.getParameter("telephone") == null ? null
-            : request.getParameter("telephone").trim().replaceAll("-", "");
+            : request.getParameter("telephone");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
-
     if (encoding) {
       userId = AES256Util.decrypt(userId.replace(" ", "+"));
       password = password == null? null : AES256Util.decrypt(password.replace(" ", "+"));
       name = name == null ? null : AES256Util.decrypt(name.replace(" ", "+"));
       userType = AES256Util.decrypt(userType.replace(" ", "+"));
       groupDepartName = groupDepartName == null? null : AES256Util.decrypt(groupDepartName.replace(" ", "+"));
-      phoneNumber = phoneNumber == null? null : AES256Util.decrypt(phoneNumber.replace(" ", "+"));
+      phoneNumber = phoneNumber == null? null : (AES256Util.decrypt(phoneNumber.replace(" ", "+"))).replaceAll("-", "");
       region = region == null ? null : AES256Util.decrypt(region.replace(" ", "+"));
       regionName = regionName == null ? null : AES256Util.decrypt(regionName.replace(" ", "+"));
       email = email == null ? null : AES256Util.decrypt(email.replace(" ", "+"));
-      telephone = telephone == null ? null : AES256Util.decrypt(telephone.replace(" ", "+"));
+      telephone = telephone == null ? null : (AES256Util.decrypt(telephone.replace(" ", "+"))).replaceAll("-", "");
+    }else{
+      phoneNumber=phoneNumber.replaceAll("-", "");
+      telephone=telephone.replaceAll("-", "");
     }
 
     if ("".equals(userId)) {
@@ -479,13 +484,13 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String legacyPassword = request.getParameter("legacyPassword") == null ? ""
-            : request.getParameter("legacyPassword").trim();
+            : request.getParameter("legacyPassword");
     String password =
-            request.getParameter("password") == null ? null : request.getParameter("password").trim();
+            request.getParameter("password") == null ? null : request.getParameter("password");
     String userType =
-            request.getParameter("userType") == null ? null : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? null : request.getParameter("userType");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -532,9 +537,9 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-            request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -574,9 +579,9 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userName =
-            request.getParameter("userName") == null ? "" : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? "" : request.getParameter("userName");
     String phoneNumber = request.getParameter("phoneNumber") == null ? ""
-            : request.getParameter("phoneNumber").trim();
+            : request.getParameter("phoneNumber");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     HashMap<String, String> reqInfo = new HashMap<>();
 

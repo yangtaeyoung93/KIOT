@@ -136,6 +136,7 @@ public class Air365V2RestController {
     HashMap<String, Object> result = new HashMap<>();
     LinkedHashMap<String, Object> dataMp = new LinkedHashMap<>();
 
+
     int resultCode = CommonConstant.R_SUCC_CODE;
 
     if (serial == null || "".equals(serial)) {

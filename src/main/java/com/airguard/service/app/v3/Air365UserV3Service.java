@@ -144,7 +144,6 @@ public class Air365UserV3Service {
         break;
 
       case "member":
-        System.out.println("case member");
         Member member = new Member();
 
         member.setUserId(userId);
@@ -175,7 +174,6 @@ public class Air365UserV3Service {
             deviceList = new ArrayList<>();
             for (MemberDevice mdi : readOnlyMapper
                 .selectMemberDeviceOne(Integer.toString(findMemberData.getIdx()))) {
-              System.out.println("select member device one");
               deviceInfo = new LinkedHashMap<>();
 
               deviceInfo.put("deviceIdx", Integer.parseInt(mdi.getDeviceIdx()));
@@ -200,10 +198,9 @@ public class Air365UserV3Service {
                       : mdi.getDcode());
 
               deviceList.add(deviceInfo);
-              System.out.println("device List add");
-              System.out.println(deviceInfo.get("end_nm"));
+
               deviceSerials.add(mdi.getSerialNum());
-              System.out.println(deviceSerials);
+
             }
 
             memberMapper.updateMemberLoginCount(userId, 1);

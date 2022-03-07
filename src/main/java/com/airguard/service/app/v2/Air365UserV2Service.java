@@ -1118,7 +1118,6 @@ public class Air365UserV2Service {
                       : Double.parseDouble(mdi.getLat()));
               deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLon()));
-              System.out.println(deviceInfo.get("deviceModelName"));
               ventDeviceList = new ArrayList<>();
               if ("IAQ".equals(mdi.getDeviceType())) {
                 for (Vent v : readOnlyMapper.selectMemberDeviceVentOne(mdi.getDeviceIdx())) {
