@@ -305,8 +305,35 @@ public class Air365V2RestController {
           resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
 
         } else {
-          // 명령어 전송 (플랫폼)
-          resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+
+          if(mode.equals("P1")){//전원ON => AI모드 ON
+            String aiMode = "1";
+            // RDB Update .
+            platformService.updateventAiMode(aiMode, list.get("ventSerial"));
+            // 연결 상태 알림 (플랫폼)
+            platformService.postPlatformRequestConnect(list.get("iaqSerial"), request.getLocalName());
+            // 전원 ON 명령어 전송 (플랫폼)
+            resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+            //전원ON 성공인 경우만 A1 실행
+            if(resultCode == 1) {
+              resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), "A1", request.getLocalName());
+            }
+          }else if(mode.equals("P0")){//전원 OFF => AI모드 OFF
+            String aiMode = "0";
+            // RDB Update .
+            platformService.updateventAiMode(aiMode, list.get("ventSerial"));
+            // 연결 상태 알림 (플랫폼)
+            platformService.postPlatformRequestConnect(list.get("iaqSerial"), request.getLocalName());
+            // AI모드 OFF 명령어 전송 (플랫폼)
+            resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), "A0", request.getLocalName());
+            //A0 성공인 경우만 P0 실행
+            if(resultCode == 1){
+              resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+            }
+          }else {
+            // 명령어 전송 (플랫폼)
+            resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+          }
         }
 
         resultMap.put("result", resultCode);
@@ -327,16 +354,19 @@ public class Air365V2RestController {
 //          throw new ParameterException(ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION);
         resultMap.put("errorCode",ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION);
         resultMap.put("message",commonErrorMessage.getMessage(ParameterException.ILLEGAL_SERIAL_PARAMETER_EXCEPTION));
+        resultList.add(resultMap);
         continue;
       } catch (ParameterException e) {
 //          throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
         resultMap.put("errorCode",ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
         resultMap.put("message",commonErrorMessage.getMessage(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION));
+        resultList.add(resultMap);
         continue;
       } catch (Exception e) {
 //          throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
         resultMap.put("errorCode",ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
         resultMap.put("message",commonErrorMessage.getMessage(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION));
+        resultList.add(resultMap);
         continue;
       }
       resultList.add(resultMap);

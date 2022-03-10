@@ -2324,6 +2324,10 @@ public class PlatformService {
 
     RedisVentDto vent = mapper.selectVentOne(serial);
 
+    if(vent == null){
+      throw new NullPointerException();
+    }
+
     if (!mode.equals("A0") && !mode.equals("A1") && !ventCodeCheck(vent.getModel(), mode)) {
       return 2;
     }
@@ -2334,11 +2338,11 @@ public class PlatformService {
         && !vent.getModel().equals("KESR") // NET 모델
         && !vent.getModel().equals("KWG-ST1")
         && !vent.getModel().equals("KWV-AIC1")) {
-      return 1;
+      return 2;
     }
 
     if (!"220.95.238.45".equals(domain) && !"220.95.238.39".equals(domain) && !"220.95.238.50".equals(domain)) {
-      return 1;
+      return 0;
     }
 
     RestTemplate restTemplate = new RestTemplate();
