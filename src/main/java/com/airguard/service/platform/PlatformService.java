@@ -546,7 +546,7 @@ public class PlatformService {
     RestTemplate restTemplate = new RestTemplate();
     List<Map<String, Object>> resCol = new ArrayList<>();
 
-    if (siDo == null) {
+    if (siDo == "") {
       siDo = "00";
     }
 
@@ -631,12 +631,12 @@ public class PlatformService {
         break;
     }
 
-    logger.error("??");
+
     airLoop: for (CollectionDto dto : deviceList) {
       Map<String, Object> dataMp = new LinkedHashMap<>();
       Map<String, Double> latlonMp = new LinkedHashMap<>();
       String serial = dto.getSerialNum();
-      logger.error("serial :: {}", serial);
+      //logger.error("serial :: {}", serial);
 
       dataMp.put("serial", serial);
 

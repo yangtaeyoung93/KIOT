@@ -1025,8 +1025,7 @@ public class DongService {
 
   public List<Map<String, Object>> selectAirKorApiLightly(String dCode) throws Exception {
     List<Map<String, Object>> resCol = new ArrayList<>();
-
-    if (dCode == null) {
+    if (dCode == "") {
       dCode = "0000000000";
     } else if (dCode.length() == 2) {
       dCode = dCode + "00000000";
