@@ -387,4 +387,8 @@ public interface ReadOnlyMapper {
   HashMap<String ,Object> selectElementInfo(@Param("element") String element);
 
   String selectSetTemp(@Param("iaqSerial") String iaqSerial);
+
+  HashMap<String,Object> selectIaqRelatedOaq(@Param("iaqSerial") String iaqSerial);
+
+  List<HashMap<String,Object>> selectNearByOaqs(HashMap<String,Object> LatLon );
 }

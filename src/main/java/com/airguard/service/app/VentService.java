@@ -2,9 +2,11 @@ package com.airguard.service.app;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.models.auth.In;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,4 +299,254 @@ public class VentService {
 
     return result;
   }
+
+
+  public Map<String, Object> getKesrOutInfo(String ventSerial) {
+
+    Map<String, Object> result = new HashMap<>();
+
+    try {
+      String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
+      result.put("standardTemp", readOnlyMapper.selectSetTemp(iaqSerial) == null ? 26 : readOnlyMapper.selectSetTemp(iaqSerial));
+      Map<String, Object> iaqInfo = readOnlyMapper.selectIaqRelatedOaq(iaqSerial);
+      result.put("locationArea", iaqInfo.get("dfname"));
+      result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
+      result.put("outsideType", result.get("oaq")=="NA" ? "0" : "1");
+      HashMap<String, Object> latLon = getLatLonRangeByDistance(iaqInfo.get("lat"), iaqInfo.get("lon"));
+      HashMap<String, Object> nearByOaqs = new HashMap<>();
+      List<HashMap<String, Object>> nearByOaqList = readOnlyMapper.selectNearByOaqs(latLon);
+      nearByOaqs.put("nearbyOaqSize", nearByOaqList.size());
+      ArrayList elements = new ArrayList<>();
+      for (HashMap<String, Object> nearByOaq : nearByOaqList) {
+        HashMap<String, Object> element = new HashMap<>();
+        element.put("serial", nearByOaq.get("serial_num"));
+        element.put("dateTime", selectOaqDateTime(nearByOaq.get("serial_num").toString()));
+        HashMap<String, Double> lat = latlonCalculation(
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
+                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("seconds").toString()), "-"
+        );
+
+        HashMap<String, Double> lon = latlonCalculation(
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("seconds").toString()),
+                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("seconds").toString()), "-"
+        );
+        element.put("distance", getDistanceByDms(lat.get("resultDeg"), lat.get("resultMin"), lat.get("resultSec"), lon.get("resultDeg"), lon.get("resultMin"), lon.get("resultSec")));
+        element.put("latitute", nearByOaq.get("lat"));
+        element.put("longitude", nearByOaq.get("lon"));
+        elements.add(element);
+      }
+      nearByOaqs.put("elements", elements);
+      result.put("nearbyOaqs", nearByOaqs);
+    }catch(Exception e){
+      logger.error("getKesrOutInfo ERROR :: " + ventSerial);
+      e.printStackTrace();
+    }
+    return result;
+
+  }
+
+
+  //소수점 표현 위도,경도를 DMS 표현으로 변환
+  public HashMap<String ,Object> getDmsByLatLon(Object data) throws Exception{
+    HashMap<String,Object> result = new HashMap<>();
+    try {
+      String[] dataArray = data.toString().split("\\.");
+      String dataDegree = dataArray[0];
+
+      String dataMinutesFull = String.valueOf(Double.parseDouble("0." + dataArray[1]) * 60);
+      String dataMinutes = dataMinutesFull.split("\\.")[0];
+      String dataSeconds;
+      if(String.valueOf(Double.parseDouble("0." + dataMinutesFull.split("\\.")[1]) * 60).length()<5){
+        dataSeconds = String.valueOf(Double.parseDouble("0." + dataMinutesFull.split("\\.")[1]) * 60);
+      }else {
+        dataSeconds = String.valueOf(Double.parseDouble("0." + dataMinutesFull.split("\\.")[1]) * 60).substring(0, 5);
+      }
+      result.put("degree", dataDegree);
+      result.put("minutes", dataMinutes);
+      result.put("seconds", dataSeconds);
+    }catch(Exception e){
+      System.out.println("=====getDMSByLatLon=====");
+      e.printStackTrace();
+    }
+    return result;
+  }
+
+  //DMS 표현 위경도의 연산
+  public HashMap<String,Double> latlonCalculation (Double targetDeg, Double targetMin, Double targetSec, Double opDeg, Double opMin, Double opSec,String operator) throws Exception{
+    HashMap<String,Double> result = new HashMap<>();
+    Double resultSec;
+    Double resultMin;
+    Double resultDeg;
+
+    //더하기 연산
+    if(operator =="+"){
+      if(targetSec+opSec>=60){
+        resultSec = targetSec+opSec-60;
+        resultMin = targetMin+opMin+1;
+        if(resultMin >=60){
+          resultMin = resultMin -60;
+          resultDeg = targetDeg + opDeg + 1;
+        }else{
+          resultDeg = targetDeg + opDeg;
+        }
+      }else{
+        resultSec = targetSec+opSec;
+        resultMin = targetMin+opMin;
+        if(resultMin >=60){
+          resultMin = resultMin -60;
+          resultDeg = targetDeg + opDeg + 1;
+        }else{
+          resultDeg = targetDeg +opDeg;
+        }
+      }
+
+    //빼기 연산
+    }else{
+      if(opSec > targetSec){
+        resultSec = 60-opSec+targetSec;
+        resultMin = targetMin-1;
+        if(opMin > targetMin){
+          resultMin = 60-opMin+resultMin;
+          resultDeg = targetDeg -1 - opDeg;
+        }else{
+          resultMin = resultMin-opMin;
+          resultDeg = targetDeg - opDeg;
+        }
+      }else{
+        resultSec = targetSec - opSec;
+        if(opMin > targetMin){
+          resultMin = 60-opMin+targetMin;
+          resultDeg = targetDeg -1 - opDeg;
+        }else{
+          resultMin = targetMin-opMin;
+          resultDeg = targetDeg - opDeg;
+        }
+      }
+    }
+    result.put("resultDeg",resultDeg);
+    result.put("resultMin",resultMin);
+    result.put("resultSec",resultSec);
+    return result;
+  }
+
+  public HashMap<String,Object> getLatLonRangeByDistance(Object lat, Object lon) throws Exception{
+    HashMap<String,Object> result = new HashMap<>();
+    try {
+      //기준 장비 위도,경도를 DD(Decimal Degree) 표현-> DMS(Degree Minutes Seconds) 표현으로 변환
+      String latDegree = (getDmsByLatLon(lat).get("degree")).toString();
+      String latMinutes = (getDmsByLatLon(lat).get("minutes")).toString();
+      String latSeconds = (getDmsByLatLon(lat).get("seconds")).toString();
+
+      String lonDegree = (getDmsByLatLon(lon).get("degree")).toString();
+      String lonMinutes = (getDmsByLatLon(lon).get("minutes")).toString();
+      String lonSeconds = (getDmsByLatLon(lon).get("seconds")).toString();
+
+      //위도 5km = 약 2분 42.2초(1분=1.85km, 1초=30.8m로 계산)
+      int latDistanceMin = 2;
+      Double latDistanceSec = 42.2D;
+
+      //경도 5km = 약 3분 22.4초(1분=1.48km, 1초=25m로 계산)
+      int lonDistanceMin = 3;
+      Double lonDistanceSec = 22.4D;
+
+      //위도 최대값 구하기(DMS)
+      HashMap<String, Double> calResult = new HashMap<>();
+      calResult = latlonCalculation(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "+");
+      Double latMaxSec = calResult.get("resultSec");
+      Double latMaxMin = calResult.get("resultMin");
+      Double latMaxDeg = calResult.get("resultDeg");
+
+
+      //경도 최대값 구하기(DMS)
+      calResult = latlonCalculation(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "+");
+      Double lonMaxSec = calResult.get("resultSec");
+      Double lonMaxMin = calResult.get("resultMin");
+      Double lonMaxDeg = calResult.get("resultDeg");
+
+
+      //위도 최소값 구하기(DMS)
+      calResult = latlonCalculation(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "-");
+      Double latMinSec = calResult.get("resultSec");
+      Double latMinMin = calResult.get("resultMin");
+      Double latMinDeg = calResult.get("resultDeg");
+
+
+      //경도 최소값 구하기(DMS)
+      calResult = latlonCalculation(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "-");
+      Double lonMinSec = calResult.get("resultSec");
+      Double lonMinMin = calResult.get("resultMin");
+      Double lonMinDeg = calResult.get("resultDeg");
+
+
+      //DMS -> 소수점 표현으로 변환
+      double latMax = latMaxDeg + (latMaxMin + latMaxSec / 60) / 60;
+      //System.out.println("MAX LAT 소수점 표현 : " + latMax);
+
+      double lonMax = lonMaxDeg + (lonMaxMin + lonMaxSec / 60) / 60;
+      //System.out.println("MAX LON 소수점 표현 : " + lonMax);
+
+      double latMin = latMinDeg + (latMinMin + latMinSec / 60) / 60;
+      //System.out.println("MIN LAT 소수점 표현 : " + latMin);
+
+
+      double lonMin = lonMinDeg + (lonMinMin + lonMinSec / 60) / 60;
+      //System.out.println("MIN LON 소수점 표현 : " + lonMin);
+
+      result.put("latMax", latMax);
+      result.put("lonMax", lonMax);
+      result.put("latMin", latMin);
+      result.put("lonMin", lonMin);
+    }catch(Exception e ){
+      e.printStackTrace();
+    }
+    return result;
+  }
+
+  public Double getDistanceByDms(Double latDeg,Double latMin, Double latSec,Double lonDeg, Double lonMin, Double lonSec) throws Exception{
+    Double result;
+    result = Math.sqrt(Math.pow(latDeg*88.9036+latMin*1.4817+latSec*0.0246,2) + Math.pow(lonDeg*111.3194+lonMin*1.8553+lonSec*0.0309,2));
+    return result;
+  }
+
+
+  public String selectOaqDateTime(String oaqSerial) throws Exception {
+    RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+
+    URI url = URI.create(
+            CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/kw-osk/"
+                    + oaqSerial);
+
+    RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
+    ResponseEntity<String> res = restTemplate.exchange(req, String.class);
+
+    JSONObject jObj = new JSONObject(res.getBody());
+    JSONObject service = new JSONObject(jObj.getString("service"));
+    String tsp = service.getString("timestamp");
+
+    Date st = new Date(Integer.parseInt(tsp)*1000L);
+    SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMddHHmm");
+    String result = dtFormat.format(st);
+
+    return result;
+  }
+
+
+  public Map<String, Object> setKesrOutInfo(String ventSerial,String standardTemp,String outsideType,String oaq) {
+
+    Map<String, Object> result = new HashMap<>();
+    try{
+      String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
+    }catch(Exception e){
+      logger.error("setKesrOutInfo ERROR :: ");
+      e.printStackTrace();
+    }
+    return result;
+
+  }
+
+
+
 }

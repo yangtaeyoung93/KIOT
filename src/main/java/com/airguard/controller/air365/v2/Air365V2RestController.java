@@ -1,18 +1,13 @@
 package com.airguard.controller.air365.v2;
-import com.airguard.exception.CommonErrorMessage;
+import com.airguard.exception.*;
 import com.airguard.model.datacenter.DatacenterConnectDto;
-import com.airguard.util.AES256Util;
-import com.airguard.exception.AuthException;
-import com.airguard.exception.ExternalApiException;
-import com.airguard.exception.ParameterException;
+import com.airguard.service.app.VentService;
+import com.airguard.util.*;
 import com.airguard.model.app.AppVent;
 import com.airguard.service.app.v2.Air365StationV2Service;
 import com.airguard.service.datacenter.DatacenterService;
 import com.airguard.service.platform.PlatformService;
 import com.airguard.service.system.MemberDeviceService;
-import com.airguard.util.CommonConstant;
-import com.airguard.util.MailSendUtil;
-import com.airguard.util.SmsSendUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +45,9 @@ public class Air365V2RestController {
 
   @Autowired
   private DatacenterService service;
+
+  @Autowired
+  private VentService ventService;
 
   @ApiOperation(value = "사용자 장비 조회", tags = "AIR365, 프로젝트")
   @RequestMapping(value = "/member/device/list", method = {RequestMethod.GET, RequestMethod.POST})
@@ -459,6 +457,62 @@ public class Air365V2RestController {
     // app 이용, 예외 처리
     result = "app".equals(type) ? stationService.getReportDataApp(serial, searchDate, standard)
             : stationService.getReportDataWeb(serial, searchDate, standard);
+
+    return result;
+  }
+
+
+  @ApiOperation(value = "NET인증 VENT 설정 정보 조회", tags = "AIR365, 프로젝트")
+  @ApiImplicitParams({
+          @ApiImplicitParam(name = "ventSerial", value = "vent 시리얼", required = true),
+  })
+  @RequestMapping(value = "/kesr/out/get",method = {RequestMethod.GET, RequestMethod.POST})
+  public HashMap<String, Object> getKesrOutInfo(HttpServletRequest request) throws Exception {
+
+    HashMap<String, Object> result = new HashMap<>();
+
+    String ventSerial = request.getParameter("ventSerial") == null ? "" : request.getParameter("ventSerial");
+
+
+    if ("".equals(ventSerial)) {
+      throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
+    } else {
+      result.put("data",ventService.getKesrOutInfo(ventSerial));
+
+    }
+    result.put("result", 1);
+
+    return result;
+  }
+
+
+  @ApiOperation(value = "NET인증 VENT 설정 정보 설정", tags = "AIR365, 프로젝트")
+  @ApiImplicitParams({
+          @ApiImplicitParam(name = "serial", value = "vent 시리얼", required = true),
+          @ApiImplicitParam(name = "standardTemp", value = "기준온도", required = true),
+          @ApiImplicitParam(name = "outsideType", value = "0:동별미세먼지/1:OAQ", required = true),
+          @ApiImplicitParam(name = "oaq", value = "oaq 시리얼(outsideType이 0일 때는 무시", required = true),
+  })
+  @RequestMapping(value = "/kesr/out/set",method = {RequestMethod.GET, RequestMethod.POST})
+  public HashMap<String, Object> setKesrOutInfo(HttpServletRequest request) throws Exception {
+
+    HashMap<String, Object> result = new HashMap<>();
+
+    String ventSerial = request.getParameter("serial") == null ? "" : request.getParameter("serial");
+    String standardTemp = request.getParameter("standardTemp") == null ? "" : request.getParameter("standardTemp");
+    String outsideType = request.getParameter("outsideType") == null ? "" : request.getParameter("outsideTemp");
+    String oaq = request.getParameter("oaq") == null ? "" : request.getParameter("oaq");
+
+
+    if ("".equals(ventSerial) || "".equals(standardTemp) || "".equals(outsideType)) {
+      throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
+    }if(outsideType.equals("1") && oaq.equals("")){
+      throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
+    } else {
+      result.put("data",ventService.setKesrOutInfo(ventSerial,standardTemp,outsideType,oaq));
+
+    }
+    result.put("result", 1);
 
     return result;
   }
