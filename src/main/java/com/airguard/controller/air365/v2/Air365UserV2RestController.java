@@ -419,7 +419,7 @@ public class Air365UserV2RestController {
             request.getParameter("userName") == null ? null : request.getParameter("userName");
     String groupDepartName = request.getParameter("groupDepartName") == null ? null
             : request.getParameter("groupDepartName");
-    String phoneNumber = request.getParameter("phoneNumber") == null ? null
+    String phoneNumber = request.getParameter("phoneNumber") == null ? ""
             : request.getParameter("phoneNumber");
     String region =
             request.getParameter("region") == null ? null : request.getParameter("region");
@@ -427,7 +427,7 @@ public class Air365UserV2RestController {
             : request.getParameter("regionName");
     String email =
             request.getParameter("email") == null ? null : request.getParameter("email");
-    String telephone = request.getParameter("telephone") == null ? null
+    String telephone = request.getParameter("telephone") == null ? ""
             : request.getParameter("telephone");
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
@@ -446,7 +446,6 @@ public class Air365UserV2RestController {
       phoneNumber=phoneNumber.replaceAll("-", "");
       telephone=telephone.replaceAll("-", "");
     }
-
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
     } else if ("".equals(userType)) {
@@ -464,7 +463,6 @@ public class Air365UserV2RestController {
       reqInfo.put("regionName", regionName);
       reqInfo.put("userEmail", email);
       reqInfo.put("legacyUserPw", "");
-
       res = service.updateUserInfo(reqInfo);
     }
 
