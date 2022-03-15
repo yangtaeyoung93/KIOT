@@ -99,8 +99,10 @@ public class DatacenterRestController {
     String cookieId = "";
     for (Cookie c : request.getCookies()) {
       if (c.getName().equals("GROUP_AUTH") || c.getName().equals("MEMBER_AUTH")) {
-        cookieKey = c.getName();
-        cookieId = AES256Util.decrypt(c.getValue());
+        if(cookieId.equals("")) { //AIR365수정사항 - 맨 처음 AUTH 쿠키만 참조
+          cookieId = AES256Util.decrypt(c.getValue());
+          cookieKey = c.getName();
+        }
       }
     }
 
