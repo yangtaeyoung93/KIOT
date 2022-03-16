@@ -45,6 +45,7 @@ public class VentService {
   @Autowired
   ReadOnlyMapper readOnlyMapper;
 
+
   private static final Long WIFI_STATIC_MINUTE = 5L;
   private static final String WIFI_CON_F = "0";
   private static final String WIFI_CON_S = "1";
@@ -303,7 +304,7 @@ public class VentService {
 
   public Map<String, Object> getKesrOutInfo(String ventSerial) {
 
-    Map<String, Object> result = new HashMap<>();
+    Map<String, Object> result = new LinkedHashMap<>();
 
     try {
       String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
@@ -311,7 +312,7 @@ public class VentService {
       Map<String, Object> iaqInfo = readOnlyMapper.selectIaqRelatedOaq(iaqSerial);
       result.put("locationArea", iaqInfo.get("dfname"));
       result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
-      result.put("outsideType", result.get("oaq")=="NA" ? "0" : "1");
+      result.put("outsideType", result.get("oaq").equals("NA")? "0" : "1");
       HashMap<String, Object> latLon = getLatLonRangeByDistance(iaqInfo.get("lat"), iaqInfo.get("lon"));
       HashMap<String, Object> nearByOaqs = new HashMap<>();
       List<HashMap<String, Object>> nearByOaqList = readOnlyMapper.selectNearByOaqs(latLon);
@@ -535,10 +536,20 @@ public class VentService {
 
 
   public Map<String, Object> setKesrOutInfo(String ventSerial,String standardTemp,String outsideType,String oaq) {
-
     Map<String, Object> result = new HashMap<>();
+    HashMap<String, Object> param = new HashMap<>();
     try{
       String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
+      param.put("iaqSerial",iaqSerial);
+      param.put("standardTemp",standardTemp);
+
+      if(outsideType.equals("1")){//OAQ설정인경우
+        param.put("oaqSerial",oaq);
+      }else{
+        param.put("oaqSerial",null);
+      }
+      mapper.updateIaqForVent(param);
+
     }catch(Exception e){
       logger.error("setKesrOutInfo ERROR :: ");
       e.printStackTrace();

@@ -390,5 +390,7 @@ public interface ReadOnlyMapper {
 
   HashMap<String,Object> selectIaqRelatedOaq(@Param("iaqSerial") String iaqSerial);
 
-  List<HashMap<String,Object>> selectNearByOaqs(HashMap<String,Object> LatLon );
+  List<HashMap<String,Object>> selectNearByOaqs(HashMap<String,Object> LatLon);
+
+  String selectMemberIdxFromVentSerial(String ventSerial);
 }

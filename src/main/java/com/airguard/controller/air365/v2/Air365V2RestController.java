@@ -1,5 +1,6 @@
 package com.airguard.controller.air365.v2;
 import com.airguard.exception.*;
+import com.airguard.mapper.readonly.ReadOnlyMapper;
 import com.airguard.model.datacenter.DatacenterConnectDto;
 import com.airguard.service.app.VentService;
 import com.airguard.util.*;
@@ -48,6 +49,9 @@ public class Air365V2RestController {
 
   @Autowired
   private VentService ventService;
+
+  @Autowired
+  private ReadOnlyMapper readOnlyMapper;
 
   @ApiOperation(value = "사용자 장비 조회", tags = "AIR365, 프로젝트")
   @RequestMapping(value = "/member/device/list", method = {RequestMethod.GET, RequestMethod.POST})
@@ -500,16 +504,27 @@ public class Air365V2RestController {
 
     String ventSerial = request.getParameter("serial") == null ? "" : request.getParameter("serial");
     String standardTemp = request.getParameter("standardTemp") == null ? "" : request.getParameter("standardTemp");
-    String outsideType = request.getParameter("outsideType") == null ? "" : request.getParameter("outsideTemp");
+    String outsideType = request.getParameter("outsideType") == null ? "" : request.getParameter("outsideType");
     String oaq = request.getParameter("oaq") == null ? "" : request.getParameter("oaq");
-
 
     if ("".equals(ventSerial) || "".equals(standardTemp) || "".equals(outsideType)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
     }if(outsideType.equals("1") && oaq.equals("")){
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
     } else {
-      result.put("data",ventService.setKesrOutInfo(ventSerial,standardTemp,outsideType,oaq));
+      ventService.setKesrOutInfo(ventSerial,standardTemp,outsideType,oaq);
+
+
+      platformService.postPlatformRequestConnect(
+              readOnlyMapper.ventForIaq(ventSerial), request.getLocalName());
+      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+              CommonConstant.PUBLISHER_USER, true, request.getLocalName());
+      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+              CommonConstant.PUBLISHER_USER, false, request.getLocalName());
+      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+              CommonConstant.PUBLISHER_GROUP, true, request.getLocalName());
+      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+              CommonConstant.PUBLISHER_GROUP, false, request.getLocalName());
 
     }
     result.put("result", 1);

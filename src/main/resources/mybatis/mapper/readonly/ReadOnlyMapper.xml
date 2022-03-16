@@ -2815,4 +2815,14 @@
     where
       tmdm.device_idx = td.idx
   </select>
+
+  <select id="selectMemberIdxFromVentSerial" parameterType="String" resultType="String">
+    select
+      member_idx
+    from
+      TB_MEMBER_DEVICE_CONTROL_MANAGE tmdcm
+    where
+      vent_device_idx =(
+      select idx from TB_DEVICE td where serial_num =#{ventSerial})
+  </select>
 </mapper>
