@@ -2747,4 +2747,10 @@
 		FROM
 			TB_CUSTOM_BOARD AS TCB
 	</select>
+
+  <select id="restLoginCount" parameterType="com.airguard.model.system.Member">
+    UPDATE TB_MEMBER
+      SET LOGIN_COUNT = 0
+      WHERE USER_ID = #{userId};
+  </select>
 </mapper>

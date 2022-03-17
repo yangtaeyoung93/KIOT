@@ -21,10 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import io.swagger.annotations.ApiOperation;
@@ -140,6 +137,14 @@ public class MemberController {
     @RequestMapping(value = "/put", method = RequestMethod.PUT)
     public ResponseEntity<Member> memberUpdate(@RequestBody Member reqBody) throws Exception {
         service.updateMember(reqBody);
+        reqBody.setRestApiMessage(CommonConstant.SUCCESS);
+        return new ResponseEntity<>(reqBody, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "사용자 계정 로그인 횟수 0으로 변경 API", tags = "시스템 관리 API")
+    @PostMapping(value = "/reset")
+    public ResponseEntity<Member> resetLoginCount(@RequestBody Member reqBody) throws Exception {
+        service.restLoginCount(reqBody);
         reqBody.setRestApiMessage(CommonConstant.SUCCESS);
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }

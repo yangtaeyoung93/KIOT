@@ -341,4 +341,27 @@ $().ready(function() {
     	$("#regionName").val($(this).find("option:selected").data("name"));
     	$("#region").val($(this).find("option:selected").data("code"));
     })
+
+	const resetBtn = document.getElementById("loginCntReset");
+
+	resetBtn.addEventListener("click", () => {
+		const xhr = new XMLHttpRequest();
+		const userId = document.getElementById("userId").value;
+		const object = new Object();
+		object.userId = userId;
+
+		xhr.open('POST','/system/member/reset',true);
+		xhr.responseType = "json";
+		xhr.setRequestHeader('Content-type','application/json; charset=utf-8');
+		xhr.send(JSON.stringify(object));
+
+		xhr.onload = function () {
+			if(xhr.status == 200){
+				alert(`${userId}님의 로그인 횟수를 초기화 하였습니다.`);
+			}else{
+				alert("실패하였습니다.");
+			}
+		}
+	});
 })
+

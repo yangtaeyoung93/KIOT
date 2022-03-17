@@ -383,4 +383,10 @@ public interface ReadOnlyMapper {
   List<HashMap<String, Object>> selectGroupPushHistory(@Param("groupId") String groupId);
 
   List<HashMap<String, Object>> selectSeochoNoticeList();
+
+  /**
+   * 로그인시도 횟수 0으로 변경
+   */
+
+  void restLoginCount(Member member);
 }
