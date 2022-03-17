@@ -239,7 +239,6 @@ public class DatacenterService {
     URI url = URI.create(
             CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
                     + userId);
-    logger.debug("URL : {}", url.toString());
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -251,6 +250,7 @@ public class DatacenterService {
       Gson gson = new Gson();
 
       vo.setSerial(serial);
+      vo.setVentModel(datacenterConnectDto.getVentModel());
       vo.setIaqSerial(datacenterConnectDto.getIaqSerialNum());
       vo.setTestYn(datacenterConnectDto.getTestYn());
       vo.setGroupId(datacenterConnectDto.getGroupId());
@@ -316,6 +316,7 @@ public class DatacenterService {
       Gson gson = new Gson();
 
       vo.setSerial(serial);
+      vo.setVentModel(datacenterConnectDto.getVentModel());
       vo.setIaqSerial(datacenterConnectDto.getIaqSerialNum());
       vo.setTestYn(datacenterConnectDto.getTestYn());
       vo.setGroupId(datacenterConnectDto.getGroupId());

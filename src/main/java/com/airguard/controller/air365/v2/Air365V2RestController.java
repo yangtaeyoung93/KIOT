@@ -517,13 +517,13 @@ public class Air365V2RestController {
 
       platformService.postPlatformRequestConnect(
               readOnlyMapper.ventForIaq(ventSerial), request.getLocalName());
-      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxByVentSerial(ventSerial)),
               CommonConstant.PUBLISHER_USER, true, request.getLocalName());
-      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+      platformService.publisherPlatform(platformService.idxToUserId(readOnlyMapper.selectMemberIdxByVentSerial(ventSerial)),
               CommonConstant.PUBLISHER_USER, false, request.getLocalName());
-      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxByVentSerial(ventSerial)),
               CommonConstant.PUBLISHER_GROUP, true, request.getLocalName());
-      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxFromVentSerial(ventSerial)),
+      platformService.publisherPlatform(platformService.memberIdxToGroupId(readOnlyMapper.selectMemberIdxByVentSerial(ventSerial)),
               CommonConstant.PUBLISHER_GROUP, false, request.getLocalName());
 
     }

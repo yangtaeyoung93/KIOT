@@ -24,6 +24,7 @@ import lombok.ToString;
 public class ResultCollectionVo {
 
   private String serial;
+  private String ventModel;
   private String memberIdx;
   private String deviceIdx;
   private String deviceType;

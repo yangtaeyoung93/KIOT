@@ -19,6 +19,7 @@ public class DatacenterConnectDto {
   private String testYn;
   private String userId;
   private String serialNum;
+  private String ventModel;
   private String productDt;
   private String ventCnt;
   private String ventsStr;

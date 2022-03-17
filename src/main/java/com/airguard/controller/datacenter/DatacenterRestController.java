@@ -90,7 +90,6 @@ public class DatacenterRestController {
           CommonConstant.COOKIE_EX_MSG, request.getHeader("X-Forwarded-For"));
       throw new AuthCookieException();
     }
-
     List<ResultCollectionVo> selectList = new ArrayList<>();
     Map<String, Object> mp = new HashMap<>();
     String status = SUCCESS;
@@ -123,7 +122,7 @@ public class DatacenterRestController {
     logger.error("Call Domain :: {}", request.getLocalName());
     logger.error("Cookie KEY :: {}", cookieKey);
     logger.error("Cookie VALUE :: {}", cookieId);
-    logger.error("DEBUG :: {}", selectList.toString());
+    //logger.error("DEBUG :: {}", selectList.toString());
     logger.error("=========================");
 
     mp.put("status", status);

@@ -851,6 +851,7 @@ public class Air365StationV3Service {
 
       ventDataObj.put("receiveError", ventReceiveError);
       ventDataObj.put("dateTime", ventData.getReg_date() == null ? CommonConstant.NULL_DATA : ventData.getReg_date());
+      ventDataObj.put("ventModel",readOnlyMapper.selectDeviceModelByVentSerial(ventSerial));
       ventDataObj.put("filterAlarm", ventData.getFilter_alarm() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getFilter_alarm()));
       ventDataObj.put("powerMode", ventData.getPower() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getPower()));
       ventDataObj.put("windMode", ventData.getAir_volume() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAir_volume()));
@@ -1086,6 +1087,7 @@ public class Air365StationV3Service {
 
       ventDataObj.put("receiveError", AES256Util.encrypt(String.valueOf(ventReceiveError)));
       ventDataObj.put("dateTime", AES256Util.encrypt(ventData.getReg_date() == null ? CommonConstant.NULL_DATA : ventData.getReg_date()));
+      ventDataObj.put("ventModel",AES256Util.encrypt(readOnlyMapper.selectDeviceModelByVentSerial(ventSerial)));
       ventDataObj.put("filterAlarm", AES256Util.encrypt(ventData.getFilter_alarm() == null ? CommonConstant.NULL_DATA : ventData.getFilter_alarm()));
       ventDataObj.put("powerMode", AES256Util.encrypt(ventData.getPower() == null ? CommonConstant.NULL_DATA : ventData.getPower()));
       ventDataObj.put("windMode", AES256Util.encrypt(ventData.getAir_volume() == null ? CommonConstant.NULL_DATA : ventData.getAir_volume()));
