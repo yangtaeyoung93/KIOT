@@ -1040,7 +1040,6 @@
             TMDM.depart_phone_number,
             TMDM.sales_name,
 			TMDM.dcode,
-            TDH.dfname,
 			TMDM.airmap_yn,
 		    TDTDM.tdmidx AS device_model_idx,
 		    TDTDM.tdtidx AS device_type_idx,
@@ -1078,9 +1077,6 @@
 							) AS TDMDT 
 								ON TD.device_model_idx = TDMDT.tdmidx
 			) AS TDTDM ON TMDM.device_idx=TDTDM.tdidx
-            LEFT OUTER JOIN
-            TB_DONG_HCODE TDH
-              on TMDM.dcode = TDH.dcode
 		WHERE
 			TMDM.member_idx=
     #{idx}
@@ -2624,17 +2620,10 @@
 		TMDM.member_idx,
 		TMDM.device_idx,
 	    TMDM.station_name,
-        TMDM.lat,
-        TMDM.lon,
-        TMDM.dcode,
-        TDH.dfname,
 	    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
 	    (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS device_type
 	FROM 
 		TB_MEMBER_DEVICE_MANAGE AS TMDM
-        LEFT OUTER JOIN
-        TB_DONG_HCODE TDH
-        on TMDM.dcode = TDH.dcode
 	WHERE
 		TMDM.device_idx =  (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serialNum})
   </select>
@@ -2759,70 +2748,9 @@
 			TB_CUSTOM_BOARD AS TCB
 	</select>
 
-  <!--engName으로 element info 가져오기-->
-  <select id="selectElementInfo" resultType="HashMap">
-    SELECT
-      kor_name as korName,
-      eng_name as engName,
-      element_unit as unit,
-      view_name as viewName
-    FROM
-      TB_DEVICE_ELEMENTS
-    WHERE
-      eng_name = #{element}
-
-  </select>
-
-    <!--IAQ 기준온도 설정값 가져오기-->
-  <select id="selectSetTemp" resultType="String">
-    SELECT
-      set_temp
-    FROM
-      TB_MEMBER_DEVICE_MANAGE tmdm
-    WHERE
-      device_idx =(select idx from TB_DEVICE td where serial_num = #{iaqSerial})
-  </select>
-
-  <!--iaq 시리얼로 lat,lon, 주소,연동OAQ 가져오기-->
-  <select id="selectIaqRelatedOaq" parameterType="String" resultType="HashMap">
-    select
-      tmdm.lat,
-      tmdm.lon,
-      tmdm.related_device_serial,
-      dfname from
-        (select lat,lon,related_device_serial,dcode from TB_MEMBER_DEVICE_MANAGE
-    where device_idx =(select idx from TB_DEVICE td where serial_num =#{iaqSerial}))as tmdm
-    left outer join
-    (select dcode,dfname from TB_DONG_HCODE)as tdh
-    on tmdm.dcode = tdh.dcode
-  </select>
-
-  <!--위경도 범위내의 OAQ 장비리스트 가져오기-->
-  <select id="selectNearByOaqs" parameterType="hashmap" resultType="HashMap">
-    select
-      serial_num,
-      station_name,
-      lat,lon,
-      equip_dt
-    from
-      (select
-          *
-      from
-          TB_MEMBER_DEVICE_MANAGE
-      where
-          lat between #{latMin} and #{latMax} and lon between #{lonMin} and #{lonMax}) tmdm,
-      (select * from TB_DEVICE where device_type_idx='2')td
-    where
-      tmdm.device_idx = td.idx
-  </select>
-
-  <select id="selectMemberIdxFromVentSerial" parameterType="String" resultType="String">
-    select
-      member_idx
-    from
-      TB_MEMBER_DEVICE_CONTROL_MANAGE tmdcm
-    where
-      vent_device_idx =(
-      select idx from TB_DEVICE td where serial_num =#{ventSerial})
+  <select id="restLoginCount" parameterType="com.airguard.model.system.Member">
+    UPDATE TB_MEMBER
+      SET LOGIN_COUNT = 0
+      WHERE USER_ID = #{userId};
   </select>
 </mapper>

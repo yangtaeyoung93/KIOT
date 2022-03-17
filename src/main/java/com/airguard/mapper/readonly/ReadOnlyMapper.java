@@ -384,13 +384,9 @@ public interface ReadOnlyMapper {
 
   List<HashMap<String, Object>> selectSeochoNoticeList();
 
-  HashMap<String ,Object> selectElementInfo(@Param("element") String element);
+  /**
+   * 로그인시도 횟수 0으로 변경
+   */
 
-  String selectSetTemp(@Param("iaqSerial") String iaqSerial);
-
-  HashMap<String,Object> selectIaqRelatedOaq(@Param("iaqSerial") String iaqSerial);
-
-  List<HashMap<String,Object>> selectNearByOaqs(HashMap<String,Object> LatLon);
-
-  String selectMemberIdxFromVentSerial(String ventSerial);
+  void restLoginCount(Member member);
 }
