@@ -126,12 +126,15 @@ public class CollectionRestController {
     boolean errorFlag = false;
     String resultMessage = "SUCCESS";
     long httpStatusCode = 200;
-
+    siDo =  siDo == null? "" : siDo;
+    type = type==null? "" : type;
     try {
 
       if ("all".equals(type)) {
         resData = service.selectTotalSensorAirMapLightly(siDo, type);
         resData.addAll(dongService.selectAirKorApiLightly(siDo));
+        resData.addAll(service.selectTotalSensorAirMapLightly(siDo, "OAQ"));
+        resData.addAll(service.selectTotalSensorAirMapLightly(siDo, "DOT"));
 
       } else if ("OAQ".equals(type.toUpperCase())) {
         resData = service.selectTotalSensorAirMapLightly(siDo, type);

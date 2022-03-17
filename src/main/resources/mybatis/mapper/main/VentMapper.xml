@@ -32,4 +32,15 @@
 				vent_device_idx = #{ventDeviceIdx}
 	</delete>
 	<!-- =========== 2) 환기청정기, 기기 해제 :: END =========== -->
+
+	<!--환기청정기와 연동된 IAQ의 기준온도, 연동OAQ 값 변경-->
+	<update id="updateIaqForVent" parameterType="HashMap">
+		update
+			TB_MEMBER_DEVICE_MANAGE
+		set
+			set_temp =#{standardTemp},
+			related_device_serial=#{oaqSerial}
+		where
+			device_idx = (select idx from TB_DEVICE td where serial_num = #{iaqSerial})
+	</update>
 </mapper>

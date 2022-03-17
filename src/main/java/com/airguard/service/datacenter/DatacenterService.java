@@ -43,6 +43,10 @@ public class DatacenterService {
     return mapper.selectGroupDeviceType(groupId);
   }
 
+  public List<String> selectGroupForUser(String groupId){ return mapper.selectGroupForUser(groupId);}
+
+  public List<DatacenterConnectDto> selectUserVentDevice(String userId){ return mapper.selectUserVentDevice(userId);}
+
   public List<DeviceElements> selectDeviceModelElements(String serial) throws SQLException {
 
     List<DeviceElements> result;
@@ -63,7 +67,7 @@ public class DatacenterService {
   }
 
   public List<DeviceElements> selectDeviceModelElements(String type, String userId)
-      throws SQLException {
+          throws SQLException {
     List<DeviceElements> result = new ArrayList<>();
     List<String> serialList = mapper.selectMemberDeviceSerialList(type, userId);
 
@@ -79,15 +83,15 @@ public class DatacenterService {
   }
 
   public List<ResultCollectionVo> selectPrivateSensorApi(String userId, String paramType,
-      String domain) throws Exception {
+                                                         String domain) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
     List<DatacenterConnectDto> deviceList =
-        mapper.selectUserDevice(userId) == null ? new ArrayList<>()
-            : mapper.selectUserDevice(userId);
+            mapper.selectUserDevice(userId) == null ? new ArrayList<>()
+                    : mapper.selectUserDevice(userId);
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.U_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_U_ID_FORMAT;
@@ -98,8 +102,8 @@ public class DatacenterService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
     URI url = URI.create(
-        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
-            + userId);
+            CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
+                    + userId);
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -137,7 +141,7 @@ public class DatacenterService {
         vo.setSensor(resData.getData());
 
         vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp()))
-            + (5 * 60)) > (System.currentTimeMillis() / 1000));
+                + (5 * 60)) > (System.currentTimeMillis() / 1000));
 
         vo.setTimestamp(resData.getService().getTimestamp());
       }
@@ -149,14 +153,14 @@ public class DatacenterService {
   }
 
   public List<ResultCollectionVo> selectGroupSensorApi(String groupId, String paramType,
-      String domain) throws Exception {
+                                                       String domain) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
     List<String> userIdList = mapper.selectGroupForUser(groupId);
     List<DatacenterConnectDto> deviceList = new ArrayList<>();
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.G_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_G_ID_FORMAT;
@@ -171,8 +175,8 @@ public class DatacenterService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
     URI url = URI.create(
-        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
-            + groupId);
+            CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
+                    + groupId);
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
@@ -205,7 +209,7 @@ public class DatacenterService {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
         vo.setSensor(resData.getData());
         vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp())) + (5 * 60)) > (
-            System.currentTimeMillis() / 1000));
+                System.currentTimeMillis() / 1000));
         vo.setTimestamp(resData.getService().getTimestamp());
       }
 
@@ -216,13 +220,13 @@ public class DatacenterService {
   }
 
   public List<ResultCollectionVo> selectPrivateVentSensorApi(String userId, String domain)
-      throws Exception {
+          throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
     List<DatacenterConnectDto> deviceList = mapper.selectUserVentDevice(userId);
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.U_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_U_ID_FORMAT;
@@ -233,8 +237,8 @@ public class DatacenterService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
     URI url = URI.create(
-        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
-            + userId);
+            CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
+                    + userId);
     logger.debug("URL : {}", url.toString());
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
@@ -263,7 +267,7 @@ public class DatacenterService {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
 
         vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp()))
-            + (5 * 60)) > (System.currentTimeMillis() / 1000));
+                + (5 * 60)) > (System.currentTimeMillis() / 1000));
 
         vo.setSensor(resData.getData());
         vo.setTimestamp(resData.getService().getTimestamp());
@@ -276,14 +280,14 @@ public class DatacenterService {
   }
 
   public List<ResultCollectionVo> selectGroupVentSensorApi(String groupId, String domain)
-      throws Exception {
+          throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
     List<String> userIdList = mapper.selectGroupForUser(groupId);
     List<DatacenterConnectDto> deviceList = new ArrayList<>();
 
     String idFormat;
-    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39")) {
+    if (domain.equals("220.95.238.45") || domain.equals("220.95.238.39") || domain.equals("220.95.238.50")) {
       idFormat = CommonConstant.G_ID_FORMAT;
     } else {
       idFormat = CommonConstant.T_G_ID_FORMAT;
@@ -298,8 +302,8 @@ public class DatacenterService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
     URI url = URI.create(
-        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
-            + groupId);
+            CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/" + idFormat
+                    + groupId);
     logger.debug("selectPrivateVentSensorApi URL, {}", url.toString());
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
@@ -328,7 +332,7 @@ public class DatacenterService {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
 
         vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp()))
-            + (5 * 60)) > (System.currentTimeMillis() / 1000));
+                + (5 * 60)) > (System.currentTimeMillis() / 1000));
 
         vo.setSensor(resData.getData());
         vo.setTimestamp(resData.getService().getTimestamp());
@@ -372,53 +376,53 @@ public class DatacenterService {
         iaqCnt++;
         updateDt = vo.getSensor().getTm();
         iaqPm10 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getPm10() == null) ? "0"
-                : vo.getSensor().getPm10());
+                (vo.getSensor() == null || vo.getSensor().getPm10() == null) ? "0"
+                        : vo.getSensor().getPm10());
         iaqPm25 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getPm25() == null) ? "0"
-                : vo.getSensor().getPm25());
+                (vo.getSensor() == null || vo.getSensor().getPm25() == null) ? "0"
+                        : vo.getSensor().getPm25());
         iaqHcho += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getHcho() == null) ? "0"
-                : vo.getSensor().getHcho());
+                (vo.getSensor() == null || vo.getSensor().getHcho() == null) ? "0"
+                        : vo.getSensor().getHcho());
         iaqCo += Double.parseDouble((vo.getSensor() == null || vo.getSensor().getCo() == null) ? "0"
-            : vo.getSensor().getCo());
+                : vo.getSensor().getCo());
         iaqCo2 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getCo2() == null) ? "0"
-                : vo.getSensor().getCo2());
+                (vo.getSensor() == null || vo.getSensor().getCo2() == null) ? "0"
+                        : vo.getSensor().getCo2());
         iaqRn += Double.parseDouble((vo.getSensor() == null || vo.getSensor().getRn() == null) ? "0"
-            : vo.getSensor().getRn());
+                : vo.getSensor().getRn());
         iaqTemp += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getTemp() == null) ? "0"
-                : vo.getSensor().getTemp());
+                (vo.getSensor() == null || vo.getSensor().getTemp() == null) ? "0"
+                        : vo.getSensor().getTemp());
         iaqHumi += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getHumi() == null) ? "0"
-                : vo.getSensor().getHumi());
+                (vo.getSensor() == null || vo.getSensor().getHumi() == null) ? "0"
+                        : vo.getSensor().getHumi());
 
       } else if (deviceType.equals("OAQ")) {
         oaqCnt++;
         updateDt = vo.getSensor().getTm();
         oaqPm10 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getPm10() == null) ? "0"
-                : vo.getSensor().getPm10());
+                (vo.getSensor() == null || vo.getSensor().getPm10() == null) ? "0"
+                        : vo.getSensor().getPm10());
         oaqPm25 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getPm25() == null) ? "0"
-                : vo.getSensor().getPm25());
+                (vo.getSensor() == null || vo.getSensor().getPm25() == null) ? "0"
+                        : vo.getSensor().getPm25());
         oaqHcho += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getHcho() == null) ? "0"
-                : vo.getSensor().getHcho());
+                (vo.getSensor() == null || vo.getSensor().getHcho() == null) ? "0"
+                        : vo.getSensor().getHcho());
         oaqCo += Double.parseDouble((vo.getSensor() == null || vo.getSensor().getCo() == null) ? "0"
-            : vo.getSensor().getCo());
+                : vo.getSensor().getCo());
         oaqCo2 += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getCo2() == null) ? "0"
-                : vo.getSensor().getCo2());
+                (vo.getSensor() == null || vo.getSensor().getCo2() == null) ? "0"
+                        : vo.getSensor().getCo2());
         oaqRn += Double.parseDouble((vo.getSensor() == null || vo.getSensor().getRn() == null) ? "0"
-            : vo.getSensor().getRn());
+                : vo.getSensor().getRn());
         oaqTemp += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getTemp() == null) ? "0"
-                : vo.getSensor().getTemp());
+                (vo.getSensor() == null || vo.getSensor().getTemp() == null) ? "0"
+                        : vo.getSensor().getTemp());
         oaqHumi += Double.parseDouble(
-            (vo.getSensor() == null || vo.getSensor().getHumi() == null) ? "0"
-                : vo.getSensor().getHumi());
+                (vo.getSensor() == null || vo.getSensor().getHumi() == null) ? "0"
+                        : vo.getSensor().getHumi());
       }
     }
 

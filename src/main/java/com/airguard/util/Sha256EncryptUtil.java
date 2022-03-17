@@ -11,6 +11,7 @@ public class Sha256EncryptUtil {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] hash = digest.digest(userPw.getBytes(StandardCharsets.UTF_8));
+
       StringBuilder hexString = new StringBuilder();
 
       for (byte b : hash) {
@@ -24,5 +25,18 @@ public class Sha256EncryptUtil {
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
+  }
+
+
+  public static byte[] shaEncoderByte(String message){
+
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+      return hash;
+    }catch(Exception ex){
+      throw new RuntimeException(ex);
+    }
+
   }
 }

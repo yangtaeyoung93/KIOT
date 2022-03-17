@@ -11,7 +11,7 @@ public class CommonConstant {
   /*
    * AES256 암호화 Key
    * */
-  public static final String AES256_KEY = "kiot2020!kiot2020!";
+  public static final String AES256_KEY = "kiot2020";
 
   /*
    * Kweather SMS Module Server
@@ -82,7 +82,8 @@ public class CommonConstant {
   public static final String[] VENT_TAES_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
   public static final String[] VENT_AHU_STATUS_CODE = {"A0", "A1", "W1", "W2", "W3", "W4"};
   public static final String[] VENT_KWG_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3"};
-  public static final String[] VENT_KESR_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
+  public static final String[] VENT_KESR_STATUS_CODE = {"A0","A1","P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6","H1","H2","H3"};
+  //H1 환기모드, H2 공기청정기모드, H3 바이패스모드
   public static final String[] VENT_KWV_AIC1_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3"};
   public static final String[] VENT_HUM_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3"};
 
@@ -126,6 +127,7 @@ public class CommonConstant {
   public static final String URL_API_APP = "/api/app";
   public static final String URL_API_APP_AIR365 = "/api/air365";
   public static final String URL_API_APP_AIR365_V2 = "/api/air365/v2";
+  public static final String URL_API_APP_AIR365_V3 = "/api/air365/v3";
 
   /*
    * 유효성 검사

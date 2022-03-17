@@ -546,7 +546,7 @@ public class PlatformService {
     RestTemplate restTemplate = new RestTemplate();
     List<Map<String, Object>> resCol = new ArrayList<>();
 
-    if (siDo == null) {
+    if (siDo == "") {
       siDo = "00";
     }
 
@@ -631,12 +631,12 @@ public class PlatformService {
         break;
     }
 
-    logger.error("??");
+
     airLoop: for (CollectionDto dto : deviceList) {
       Map<String, Object> dataMp = new LinkedHashMap<>();
       Map<String, Double> latlonMp = new LinkedHashMap<>();
       String serial = dto.getSerialNum();
-      logger.error("serial :: {}", serial);
+      //logger.error("serial :: {}", serial);
 
       dataMp.put("serial", serial);
 
@@ -2179,7 +2179,7 @@ public class PlatformService {
       throws Exception {
     int result = 0;
 
-    if (!domain.equals("220.95.238.45") && !domain.equals("220.95.238.39")) {
+    if (!domain.equals("220.95.238.45") && !domain.equals("220.95.238.39") && !domain.equals("220.95.238.50")) {
       return 1;
     }
 
@@ -2324,6 +2324,10 @@ public class PlatformService {
 
     RedisVentDto vent = mapper.selectVentOne(serial);
 
+    if(vent == null){
+      throw new NullPointerException();
+    }
+
     if (!mode.equals("A0") && !mode.equals("A1") && !ventCodeCheck(vent.getModel(), mode)) {
       return 2;
     }
@@ -2334,11 +2338,11 @@ public class PlatformService {
         && !vent.getModel().equals("KESR") // NET 모델
         && !vent.getModel().equals("KWG-ST1")
         && !vent.getModel().equals("KWV-AIC1")) {
-      return 1;
+      return 2;
     }
 
-    if (!"220.95.238.45".equals(domain) && !"220.95.238.39".equals(domain)) {
-      return 1;
+    if (!"220.95.238.45".equals(domain) && !"220.95.238.39".equals(domain) && !"220.95.238.50".equals(domain)) {
+      return 0;
     }
 
     RestTemplate restTemplate = new RestTemplate();

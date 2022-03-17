@@ -31,24 +31,33 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "로그인", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true),
-      @ApiImplicitParam(name = "token", value = "구글 메시지 토큰")
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true),
+          @ApiImplicitParam(name = "token", value = "구글 메시지 토큰")
   })
   @RequestMapping(value = "/login", method = RequestMethod.POST)
   public HashMap<String, Object> appLogin(HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
+          throws Exception {
     LinkedHashMap<String, Object> res;
-
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-        request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String token =
-        request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+            request.getParameter("token") == null ? "" : request.getParameter("token");
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      password = AES256Util.decrypt(password.replace(" ","+"));
+      userType = AES256Util.decrypt(userType.replace(" ","+"));
+      token = AES256Util.decrypt(token.replace(" ","+"));
+    }
+
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -62,21 +71,24 @@ public class Air365UserV2RestController {
       reqInfo.put("password", password);
       reqInfo.put("userType", userType);
       reqInfo.put("token", token);
-
-      res = service.login(reqInfo, response);
+      if(encoding){
+        res = service.loginEncodeVersion(reqInfo, response);
+      }else{
+        res = service.login(reqInfo, response);
+      }
     }
-
     return res;
   }
 
+
   @ApiOperation(value = "로그아웃", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "token", value = "구글 메시지 토큰", required = true)
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "token", value = "구글 메시지 토큰", required = true)
   })
   @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> appLogout(HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
+          throws Exception {
 
     if (!RestApiCookieManageUtil.userCookieCheck(request)) {
       throw new CookieAuthException(CookieAuthException.COOKIE_AUTH_MEMBER_EXCEPTION);
@@ -85,9 +97,9 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
     String token =
-        request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+            request.getParameter("token") == null ? "" : request.getParameter("token").trim();
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -104,16 +116,25 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "관심 지역코드 조회", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "lat", value = "위도", required = true),
-      @ApiImplicitParam(name = "lon", value = "경도", required = true)
+          @ApiImplicitParam(name = "lat", value = "위도", required = true),
+          @ApiImplicitParam(name = "lon", value = "경도", required = true)
   })
   @RequestMapping(value = "/find/region", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> findRegionInfo(HttpServletRequest request) throws Exception {
 
     LinkedHashMap<String, Object> res;
 
-    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat").trim();
-    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon").trim();
+    String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat");
+    String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon");
+
+    System.out.println(AES256Util.encrypt(lat));
+    System.out.println(AES256Util.encrypt(lon));
+
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+    if(encoding){
+      lat = AES256Util.decrypt(lat.replace(" ","+"));
+      lon = AES256Util.decrypt(lon.replace(" ","+"));
+    }
 
     HashMap<String, String> reqInfo = new HashMap<>();
 
@@ -124,8 +145,11 @@ public class Air365UserV2RestController {
     } else {
       reqInfo.put("lat", lat);
       reqInfo.put("lon", lon);
-
-      res = service.findRegionInfo(reqInfo);
+      if(encoding){
+        res= service.findRegionInfoEncodeVersion(reqInfo);
+      }else {
+        res = service.findRegionInfo(reqInfo);
+      }
     }
 
     return res;
@@ -133,8 +157,8 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "계정 체크", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true)
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true)
   })
   @RequestMapping(value = "/check/userId", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> checkUserId(HttpServletRequest request) throws Exception {
@@ -142,9 +166,14 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      userType = AES256Util.decrypt(userType.replace(" ","+"));
+    }
 
     HashMap<String, String> reqInfo = new HashMap<>();
 
@@ -170,9 +199,13 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String phoneNumber =
-        request.getParameter("phoneNumber") == null ? ""
-            : request.getParameter("phoneNumber").trim();
+            request.getParameter("phoneNumber") == null ? ""
+                    : request.getParameter("phoneNumber");
 
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+    if(encoding){
+      phoneNumber = AES256Util.decrypt(phoneNumber.replace(" ","+"));
+    }
     HashMap<String, String> reqInfo = new HashMap<>();
 
     if ("".equals(phoneNumber)) {
@@ -181,8 +214,11 @@ public class Air365UserV2RestController {
       throw new ParameterException(ParameterException.ILLEGAL_PHONE_PARAMETER_EXCEPTION);
     } else {
       reqInfo.put("phoneNumber", phoneNumber.replaceAll("-", ""));
-
-      res = service.sendSMSData(reqInfo);
+      if(encoding){
+        res = service.sendSMSDataEncodeVersion(reqInfo);
+      }else {
+        res = service.sendSMSData(reqInfo);
+      }
     }
 
     return res;
@@ -190,8 +226,8 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "사용자 정보 조회", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true)
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "admin, member, group", required = true)
   })
   @RequestMapping(value = "/get/user", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> selectUserInfo(HttpServletRequest request) throws Exception {
@@ -202,9 +238,15 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      userType = AES256Util.decrypt(userType.replace(" ","+"));
+    }
 
     if ("admin".equals(userType)) {
       if (!RestApiCookieManageUtil.adminCookieCheck(request)) {
@@ -223,7 +265,11 @@ public class Air365UserV2RestController {
       reqInfo.put("userId", userId);
       reqInfo.put("userType", userType);
 
-      res = service.selectUserInfo(reqInfo);
+      if(encoding){
+        res = service.selectUserInfoEncodeVersion(reqInfo);
+      }else {
+        res = service.selectUserInfo(reqInfo);
+      }
     }
 
     return res;
@@ -241,7 +287,7 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
 
     if ("admin".equals(userType)) {
       if (!RestApiCookieManageUtil.adminCookieCheck(request)) {
@@ -262,14 +308,14 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "회원 가입", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
-      @ApiImplicitParam(name = "userName", value = "사용자 이름", required = true),
-      @ApiImplicitParam(name = "phoneNumber", value = "사용자 휴대폰 번호", required = true),
-      @ApiImplicitParam(name = "region", value = "관심 지역 코드", required = true),
-      @ApiImplicitParam(name = "regionName", value = "관심 지역 명", required = true),
-      @ApiImplicitParam(name = "email", value = "사용자 이메일 주소", required = true),
-      @ApiImplicitParam(name = "telephone", value = "사용자 유선 전화 번호")
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
+          @ApiImplicitParam(name = "userName", value = "사용자 이름", required = true),
+          @ApiImplicitParam(name = "phoneNumber", value = "사용자 휴대폰 번호", required = true),
+          @ApiImplicitParam(name = "region", value = "관심 지역 코드", required = true),
+          @ApiImplicitParam(name = "regionName", value = "관심 지역 명", required = true),
+          @ApiImplicitParam(name = "email", value = "사용자 이메일 주소", required = true),
+          @ApiImplicitParam(name = "telephone", value = "사용자 유선 전화 번호")
   })
   @RequestMapping(value = "/insert/user", method = RequestMethod.POST)
   public HashMap<String, Object> insertUserInfo(HttpServletRequest request) throws Exception {
@@ -277,21 +323,36 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-        request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
     String name =
-        request.getParameter("userName") == null ? "" : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? "" : request.getParameter("userName");
     String phoneNumber = request.getParameter("phoneNumber") == null ? ""
-        : request.getParameter("phoneNumber").trim();
+            : request.getParameter("phoneNumber");
     String telephone =
-        request.getParameter("telephone") == null ? "" : request.getParameter("telephone").trim();
+            request.getParameter("telephone") == null ? "" : request.getParameter("telephone");
     String region =
-        request.getParameter("region") == null ? "" : request.getParameter("region").trim();
+            request.getParameter("region") == null ? "" : request.getParameter("region");
     String regionName =
-        request.getParameter("regionName") == null ? "" : request.getParameter("regionName").trim();
+            request.getParameter("regionName") == null ? "" : request.getParameter("regionName");
     String email =
-        request.getParameter("email") == null ? "" : request.getParameter("email").trim();
+            request.getParameter("email") == null ? "" : request.getParameter("email");
+
+
+
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      password = AES256Util.decrypt(password.replace(" ","+"));
+      name = AES256Util.decrypt(name.replace(" ","+"));
+      phoneNumber = AES256Util.decrypt(phoneNumber.replace(" ","+"));
+      region = AES256Util.decrypt(region.replace(" ","+"));
+      regionName = AES256Util.decrypt(regionName.replace(" ","+"));
+      email = AES256Util.decrypt(email.replace(" ","+"));
+      telephone = AES256Util.decrypt(telephone.replace(" ","+"));
+    }
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -329,15 +390,15 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "회원 정보 수정", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "password", value = "사용자 암호"),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "member, group", required = true),
-      @ApiImplicitParam(name = "userName", value = "사용자 이름"),
-      @ApiImplicitParam(name = "phoneNumber", value = "사용자 휴대폰 번호"),
-      @ApiImplicitParam(name = "region", value = "관심 지역 코드"),
-      @ApiImplicitParam(name = "regionName", value = "관심 지역 명"),
-      @ApiImplicitParam(name = "email", value = "사용자 이메일 주소"),
-      @ApiImplicitParam(name = "telephone", value = "사용자 유선 전화 번호")
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "password", value = "사용자 암호"),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "member, group", required = true),
+          @ApiImplicitParam(name = "userName", value = "사용자 이름"),
+          @ApiImplicitParam(name = "phoneNumber", value = "사용자 휴대폰 번호"),
+          @ApiImplicitParam(name = "region", value = "관심 지역 코드"),
+          @ApiImplicitParam(name = "regionName", value = "관심 지역 명"),
+          @ApiImplicitParam(name = "email", value = "사용자 이메일 주소"),
+          @ApiImplicitParam(name = "telephone", value = "사용자 유선 전화 번호")
   })
   @RequestMapping(value = "/update/user", method = {RequestMethod.PUT, RequestMethod.POST})
   public HashMap<String, Object> updateUserInfo(HttpServletRequest request) throws Exception {
@@ -349,26 +410,42 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-        request.getParameter("password") == null ? null : request.getParameter("password").trim();
+            request.getParameter("password") == null ? null : request.getParameter("password");
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String name =
-        request.getParameter("userName") == null ? null : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? null : request.getParameter("userName");
     String groupDepartName = request.getParameter("groupDepartName") == null ? null
-        : request.getParameter("groupDepartName").trim();
-    String phoneNumber = request.getParameter("phoneNumber") == null ? null
-        : request.getParameter("phoneNumber").trim().replaceAll("-", "");
+            : request.getParameter("groupDepartName");
+    String phoneNumber = request.getParameter("phoneNumber") == null ? ""
+            : request.getParameter("phoneNumber");
     String region =
-        request.getParameter("region") == null ? null : request.getParameter("region").trim();
+            request.getParameter("region") == null ? null : request.getParameter("region");
     String regionName = request.getParameter("regionName") == null ? null
-        : request.getParameter("regionName").trim();
+            : request.getParameter("regionName");
     String email =
-        request.getParameter("email") == null ? null : request.getParameter("email").trim();
-    String telephone = request.getParameter("telephone") == null ? null
-        : request.getParameter("telephone").trim().replaceAll("-", "");
+            request.getParameter("email") == null ? null : request.getParameter("email");
+    String telephone = request.getParameter("telephone") == null ? ""
+            : request.getParameter("telephone");
 
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+    if (encoding) {
+      userId = AES256Util.decrypt(userId.replace(" ", "+"));
+      password = password == null? null : AES256Util.decrypt(password.replace(" ", "+"));
+      name = name == null ? null : AES256Util.decrypt(name.replace(" ", "+"));
+      userType = AES256Util.decrypt(userType.replace(" ", "+"));
+      groupDepartName = groupDepartName == null? null : AES256Util.decrypt(groupDepartName.replace(" ", "+"));
+      phoneNumber = phoneNumber == null? null : (AES256Util.decrypt(phoneNumber.replace(" ", "+"))).replaceAll("-", "");
+      region = region == null ? null : AES256Util.decrypt(region.replace(" ", "+"));
+      regionName = regionName == null ? null : AES256Util.decrypt(regionName.replace(" ", "+"));
+      email = email == null ? null : AES256Util.decrypt(email.replace(" ", "+"));
+      telephone = telephone == null ? null : (AES256Util.decrypt(telephone.replace(" ", "+"))).replaceAll("-", "");
+    }else{
+      phoneNumber=phoneNumber.replaceAll("-", "");
+      telephone=telephone.replaceAll("-", "");
+    }
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
     } else if ("".equals(userType)) {
@@ -386,7 +463,6 @@ public class Air365UserV2RestController {
       reqInfo.put("regionName", regionName);
       reqInfo.put("userEmail", email);
       reqInfo.put("legacyUserPw", "");
-
       res = service.updateUserInfo(reqInfo);
     }
 
@@ -395,10 +471,10 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "비밀번호 수정", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "member, group", required = true),
-      @ApiImplicitParam(name = "password", value = "변경할 패스워드", required = true),
-      @ApiImplicitParam(name = "legacyPassword", value = "기존 인증용 패스워드")
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "userType", value = "사용자 유형", allowableValues = "member, group", required = true),
+          @ApiImplicitParam(name = "password", value = "변경할 패스워드", required = true),
+          @ApiImplicitParam(name = "legacyPassword", value = "기존 인증용 패스워드")
   })
   @RequestMapping(value = "/update/password", method = {RequestMethod.PUT, RequestMethod.POST})
   public HashMap<String, Object> updateUserPassword(HttpServletRequest request) throws Exception {
@@ -406,13 +482,22 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String legacyPassword = request.getParameter("legacyPassword") == null ? ""
-        : request.getParameter("legacyPassword").trim();
+            : request.getParameter("legacyPassword");
     String password =
-        request.getParameter("password") == null ? null : request.getParameter("password").trim();
+            request.getParameter("password") == null ? null : request.getParameter("password");
     String userType =
-        request.getParameter("userType") == null ? null : request.getParameter("userType").trim();
+            request.getParameter("userType") == null ? null : request.getParameter("userType");
+
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      legacyPassword = AES256Util.decrypt(legacyPassword.replace(" ","+"));
+      password = AES256Util.decrypt(password.replace(" ","+"));
+      userType = AES256Util.decrypt(userType.replace(" ","+"));
+    }
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -429,6 +514,7 @@ public class Air365UserV2RestController {
       reqInfo.put("userType", userType);
 
       res = service.updateUserInfo(reqInfo);
+
     }
 
     return res;
@@ -436,8 +522,8 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "회원 탈퇴", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
-      @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
+          @ApiImplicitParam(name = "userId", value = "사용자 계정", required = true),
+          @ApiImplicitParam(name = "password", value = "사용자 암호", required = true),
   })
   @RequestMapping(value = "/delete/user", method = {RequestMethod.DELETE, RequestMethod.POST})
   public HashMap<String, Object> deleteUserInfo(HttpServletRequest request) throws Exception {
@@ -449,9 +535,16 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+            request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-        request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+            request.getParameter("password") == null ? "" : request.getParameter("password");
+
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
+
+    if(encoding){
+      userId = AES256Util.decrypt(userId.replace(" ","+"));
+      password = AES256Util.decrypt(password.replace(" ","+"));
+    }
 
     if ("".equals(userId)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
@@ -461,13 +554,13 @@ public class Air365UserV2RestController {
       res = service.deleteUserInfo(userId, password);
 
       platformService
-          .publisherPlatform(userId, CommonConstant.PUBLISHER_USER, true, request.getLocalName());
+              .publisherPlatform(userId, CommonConstant.PUBLISHER_USER, true, request.getLocalName());
       platformService
-          .publisherPlatform(userId, CommonConstant.PUBLISHER_USER, false, request.getLocalName());
+              .publisherPlatform(userId, CommonConstant.PUBLISHER_USER, false, request.getLocalName());
       platformService.publisherPlatform(platformService.userIdToGroupId(userId),
-          CommonConstant.PUBLISHER_GROUP, true, request.getLocalName());
+              CommonConstant.PUBLISHER_GROUP, true, request.getLocalName());
       platformService.publisherPlatform(platformService.userIdToGroupId(userId),
-          CommonConstant.PUBLISHER_GROUP, false, request.getLocalName());
+              CommonConstant.PUBLISHER_GROUP, false, request.getLocalName());
     }
 
     return res;
@@ -475,8 +568,8 @@ public class Air365UserV2RestController {
 
   @ApiOperation(value = "계정 찿기", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "userName", value = "사용자 이름", required = true),
-      @ApiImplicitParam(name = "phoneNumber", value = "휴대폰 번호", required = true)
+          @ApiImplicitParam(name = "userName", value = "사용자 이름", required = true),
+          @ApiImplicitParam(name = "phoneNumber", value = "휴대폰 번호", required = true)
   })
   @RequestMapping(value = "/find/userId", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> findUserId(HttpServletRequest request) throws Exception {
@@ -484,11 +577,17 @@ public class Air365UserV2RestController {
     LinkedHashMap<String, Object> res;
 
     String userName =
-        request.getParameter("userName") == null ? "" : request.getParameter("userName").trim();
+            request.getParameter("userName") == null ? "" : request.getParameter("userName");
     String phoneNumber = request.getParameter("phoneNumber") == null ? ""
-        : request.getParameter("phoneNumber").trim();
-
+            : request.getParameter("phoneNumber");
+    Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     HashMap<String, String> reqInfo = new HashMap<>();
+
+    if(encoding){
+      userName = AES256Util.decrypt(userName.replace(" ","+"));
+      phoneNumber = AES256Util.decrypt(phoneNumber.replace(" ","+"));
+    }
+
 
     if ("".equals(phoneNumber)) {
       throw new ParameterException(ParameterException.NULL_PHONE_PARAMETER_EXCEPTION);
@@ -499,8 +598,11 @@ public class Air365UserV2RestController {
     } else {
       reqInfo.put("phoneNumber", phoneNumber.replaceAll("-", ""));
       reqInfo.put("userName", userName);
-
-      res = service.findUserId(reqInfo);
+      if(encoding){
+        res = service.findUserIdEncodeVersion(reqInfo);
+      }else {
+        res = service.findUserId(reqInfo);
+      }
     }
 
     return res;

@@ -1230,7 +1230,6 @@ public class StationService {
 
     try {
       String deviceType = readOnlyMapper.getDeviceType(serial);
-
       if (deviceType == null || deviceType.equals("")) {
         logger.error(
             "Call iotDataForSignal API FAIL : Please Serial Number Check . [ Serial : {}, ClientIp : {}",
@@ -1264,6 +1263,16 @@ public class StationService {
       res.setAccx(apiData.getAccx() == null ? CommonConstant.NULL_DATA : apiData.getAccx());
       res.setAccy(apiData.getAccy() == null ? CommonConstant.NULL_DATA : apiData.getAccy());
       res.setAccz(apiData.getAccz() == null ? CommonConstant.NULL_DATA : apiData.getAccz());
+      res.setLux(apiData.getLux() == null ? CommonConstant.NULL_DATA : apiData.getLux());
+      res.setUv(apiData.getUv() == null ? CommonConstant.NULL_DATA : apiData.getUv());
+      res.setWindd(apiData.getWindd() == null ? CommonConstant.NULL_DATA : apiData.getWindd());
+      res.setWinds(apiData.getWinds() == null ? CommonConstant.NULL_DATA : apiData.getWinds());
+      res.setSo2(apiData.getSo2() == null ? CommonConstant.NULL_DATA : apiData.getSo2());
+      res.setNo2(apiData.getNo2() == null ? CommonConstant.NULL_DATA : apiData.getNo2());
+      res.setNh3(apiData.getNh3() == null ? CommonConstant.NULL_DATA : apiData.getNh3());
+      res.setH2s(apiData.getH2s() == null ? CommonConstant.NULL_DATA : apiData.getH2s());
+      res.setWbgt(apiData.getWbgt() == null ? CommonConstant.NULL_DATA : apiData.getWbgt());
+      res.setO3(apiData.getO3() == null ? CommonConstant.NULL_DATA : apiData.getO3());
 
       res.setCo(CommonConstant.NULL_DATA);
       res.setHcho(CommonConstant.NULL_DATA);
@@ -1281,6 +1290,16 @@ public class StationService {
       res.setAccx(CommonConstant.NULL_DATA);
       res.setAccy(CommonConstant.NULL_DATA);
       res.setAccz(CommonConstant.NULL_DATA);
+      res.setLux(CommonConstant.NULL_DATA);
+      res.setUv(CommonConstant.NULL_DATA);
+      res.setWindd(CommonConstant.NULL_DATA);
+      res.setWinds(CommonConstant.NULL_DATA);
+      res.setSo2(CommonConstant.NULL_DATA);
+      res.setNo2(CommonConstant.NULL_DATA);
+      res.setNh3(CommonConstant.NULL_DATA);
+      res.setH2s(CommonConstant.NULL_DATA);
+      res.setWbgt(CommonConstant.NULL_DATA);
+      res.setO3(CommonConstant.NULL_DATA);
 
       res.setCo(CommonConstant.NULL_DATA);
       res.setHcho(CommonConstant.NULL_DATA);
