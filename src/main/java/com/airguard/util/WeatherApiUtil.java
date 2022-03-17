@@ -76,7 +76,6 @@ public class WeatherApiUtil {
     String weatherApiParam = "?mode=n&region=" + region;
     String url = new StringBuilder(WEATHER_API_DOMAIN).append(TODAY).append(weatherApiParam).toString();
     HttpPost post = new HttpPost(url);
-    logger.error("url :: {}", url);
 
     String resData;
     try (CloseableHttpClient httpClient = HttpClients.createDefault();

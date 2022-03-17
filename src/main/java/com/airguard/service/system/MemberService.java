@@ -78,6 +78,10 @@ public class MemberService {
     return readOnlyMapper.selectMemberAppDevice(idx);
   }
 
+  public void restLoginCount(Member reqBody){
+   mapper.restLoginCount(reqBody);
+  }
+
   public void insertMember(Member member) {
     String encPwd = Sha256EncryptUtil.ShaEncoder(member.getUserPw());
     member.setUserPw(encPwd);

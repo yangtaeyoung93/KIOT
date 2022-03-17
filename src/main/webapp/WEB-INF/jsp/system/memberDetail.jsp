@@ -67,6 +67,9 @@
 									<label for="chkUserPw" class="custom-control-label">클릭 시 비밀번호 변경이 가능합니다.</label>
 								</div>
 							</div>
+							<div class="row mt10" style="display: block;text-align: center;">
+                                <input type="button" class="btn btn-primary ml3" style="min-width:100px; font-size:14px;" id="loginCntReset"  value="로그인 횟수 초기화" />
+                            </div>
 							<hr />
 							<div class ="row">
 								<div class="col-5 mx-auto">

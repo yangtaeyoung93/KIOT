@@ -846,9 +846,7 @@ public class Air365StationV3Service {
 
         ventReceiveError = (ventTs >= currentTs) ? false : true;
 
-        logger.error("curr TS :: {}, vent TS :: {}", currentTs, ventTs);
-        logger.error("systemcurr :: {}, ventTs :: {}, ventReceiveError :: {}", new SimpleDateFormat("yyyyMMddHHmm").format(new Date(currentTs)),
-                new SimpleDateFormat("yyyyMMddHHmm").format(new Date(ventTs)), ventReceiveError);
+
       }
 
       ventDataObj.put("receiveError", ventReceiveError);
@@ -869,35 +867,10 @@ public class Air365StationV3Service {
         ventDataObj.put("ventMode", "H3"); //바이패스 1 & 공청기모드 0 => 바이패스모드
       }
 
-//      //ventMode 가져오기
-//      RestTemplate restTemplate1 = new RestTemplate();
-//      HttpHeaders headers1 = new HttpHeaders();
-//      headers1.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-//      headers1.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
-//
-//      URI url1 = URI.create(
-//              CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/kw-ivk/"+iaqSerial);
-//
-//      RequestEntity<String> req1 = new RequestEntity<>(headers1, HttpMethod.GET, url1);
-//      ResponseEntity<String> res1 = restTemplate1.exchange(req1, String.class);
-//      JSONObject jObj1 = new JSONObject(res1.getBody());
-//      JSONObject jObjData = new JSONObject(jObj1.getString("data"));
-//      JSONObject jObjSensor = new JSONObject(jObjData.getString("sensor"));
-//      String cmd_m = jObjSensor.getString("cmd_m");
-//      switch (cmd_m) {
-//        case "1" : cmd_m="0";break;//환기0
-//        case "2" : cmd_m="1";break;//공기1
-//        case "3" : cmd_m="2";break;//바이패스2
-//      }
-//      ventDataObj.put("ventMode",cmd_m);
       ventDataObj.put("windMax",ventSerial.contains("AIC1")? 3 : 6);
 
       String setTemp = readOnlyMapper.selectSetTemp(iaqSerial) == null ? CommonConstant.NULL_DATA : readOnlyMapper.selectSetTemp(iaqSerial);
       ventDataObj.put("tempBase",setTemp);
-
-
-
-
 
 
       int ciIndex = iaqData.getCici() == null ? 0 :
@@ -1051,11 +1024,6 @@ public class Air365StationV3Service {
       ventDataObj.put("waterAlarm", ventData.getWater_alarm() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getWater_alarm()));
       ventDataObj.put("devStat", ventData.getDev_stat() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getDev_stat()));
 
-//      stationDataObj.put("outPm10Grade", weatherData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherData.get("P_1"));
-//      stationDataObj.put("outPm25Grade", weatherData.get("P_2") == null ? CommonConstant.NULL_DATA : weatherData.get("P_2"));
-//      stationDataObj.put("outPm10Value", weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3"));
-//      stationDataObj.put("outPm25Value", weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4"));
-//      stationDataObj.put("autoCause", 4L);
       stationDataObj.put("outElements",outElements);
       stationDataObj.put("elements", elementList);
       resDataObj.put("ventData", ventDataObj);
