@@ -17,6 +17,7 @@
 		WHERE 
 			stat_type = #{searchValue}
 			AND	device_type = #{searchValue2}
+		AND stat_date >=(select date_format(dd,'%Y%m%d%H00') from (select DATE_SUB(now(), interval 8 day) as dd) dt)
 	</select>
 
 	<select id="selectReceiveCntDashboard" resultType="DashboardReceiveCntDto">

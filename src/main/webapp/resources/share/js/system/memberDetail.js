@@ -357,7 +357,7 @@ $().ready(function() {
 
 		xhr.onload = function () {
 			if(xhr.status == 200){
-				alert(`${userId}님의 로그인 횟수를 초기화 하였습니다.`);
+				alert(`${userId}님의 로그인 실패 횟수를 초기화 하였습니다.`);
 				location.reload();
 			}else{
 				alert("실패하였습니다.");

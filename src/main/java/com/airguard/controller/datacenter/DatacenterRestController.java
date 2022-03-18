@@ -36,7 +36,7 @@ public class DatacenterRestController {
           CommonConstant.COOKIE_EX_MSG, request.getHeader("X-Forwarded-For"));
       throw new Exception();
     }
-
+    logger.error("API :: /api/datacenter/list");
     List<ResultCollectionVo> selectList = new ArrayList<>();
     Map<String, Object> mp = new HashMap<>();
     String status = SUCCESS;
@@ -46,6 +46,8 @@ public class DatacenterRestController {
     for (Cookie c : request.getCookies()) {
       if (c.getName().equals("GROUP_AUTH") || c.getName().equals("MEMBER_AUTH")) {
         cookieKey = c.getName();
+        logger.error("cookieKey :: {}",c.getName());
+        logger.error("cookieId :: {}",c.getValue());
         cookieId = AES256Util.decrypt(c.getValue());
       }
     }
@@ -93,7 +95,6 @@ public class DatacenterRestController {
     List<ResultCollectionVo> selectList = new ArrayList<>();
     Map<String, Object> mp = new HashMap<>();
     String status = SUCCESS;
-
     String cookieKey = "";
     String cookieId = "";
     for (Cookie c : request.getCookies()) {
