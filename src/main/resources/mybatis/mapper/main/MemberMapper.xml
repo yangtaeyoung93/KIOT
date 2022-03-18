@@ -95,7 +95,7 @@
 	</delete>
 
 	<!--사용자 로그인 횟수 reset -->
-	<select id="restLoginCount" parameterType="com.airguard.model.system.Member">
+	<select id="resetLoginCount" parameterType="com.airguard.model.system.Member">
 		UPDATE TB_MEMBER
 		SET LOGIN_COUNT = 0
 		WHERE USER_ID = #{userId}

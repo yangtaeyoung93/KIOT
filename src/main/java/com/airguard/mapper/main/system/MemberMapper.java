@@ -57,5 +57,5 @@ public interface MemberMapper {
    */
   void deleteAppDeviceInfo(String idx);
 
-  void restLoginCount(Member member);
+  void resetLoginCount(Member member);
 }

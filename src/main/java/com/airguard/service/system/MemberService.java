@@ -62,6 +62,8 @@ public class MemberService {
     return readOnlyMapper.loginCheckMemberId(member);
   }
 
+  public void updateMemberLoginCount(String userId, Integer success){ mapper.updateMemberLoginCount(userId, success);}
+
   public void memberLoginInfoUpdate(Member member) {
     mapper.memberLoginInfoUpdate(member);
   }
@@ -78,8 +80,8 @@ public class MemberService {
     return readOnlyMapper.selectMemberAppDevice(idx);
   }
 
-  public void restLoginCount(Member reqBody){
-   mapper.restLoginCount(reqBody);
+  public void resetLoginCount(Member reqBody){
+   mapper.resetLoginCount(reqBody);
   }
 
   public void insertMember(Member member) {

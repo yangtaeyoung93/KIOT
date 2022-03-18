@@ -870,12 +870,12 @@ public class Air365StationV3Service {
 
       ventDataObj.put("windMax",ventSerial.contains("AIC1")? 3 : 6);
 
-      String setTemp = readOnlyMapper.selectSetTemp(iaqSerial) == null ? CommonConstant.NULL_DATA : readOnlyMapper.selectSetTemp(iaqSerial);
-      ventDataObj.put("tempBase",setTemp);
+      String setTemp = readOnlyMapper.selectSetTemp(iaqSerial);
+      ventDataObj.put("tempBase",setTemp == null ? CommonConstant.NULL_DATA : setTemp);
 
 
       int ciIndex = iaqData.getCici() == null ? 0 :
-              KweatherElementMessageManageUtil.elementLevel(Double.parseDouble(iaqData.getCici().toString()));
+              KweatherElementMessageManageUtil.elementLevel(Double.parseDouble(iaqData.getCici()));
 
       stationDataObj.put("total", iaqData.getCici() == null ? CommonConstant.NULL_DATA : Integer.valueOf(iaqData.getCici()));
       stationDataObj.put("totalIndex", KweatherElementMessageManageUtil.setElementLevelKorName("ci", String.valueOf(ciIndex)));
@@ -950,24 +950,24 @@ public class Air365StationV3Service {
 
         if (!"".equals(regionCode))
           weatherData = WeatherApiUtil.weatherAirCastApi(regionCode, new String[] {
-                  "pm10Grade_who", "pm25Grade_who", "pm10Value", "pm25Value"});
+                  "pm10Value", "pm25Value"});
 
       } catch (Exception e) {
         logger.error("Weather F.CAST API ERROR .");
       }
-      valueMap.put("pm10",weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3"));
-      valueMap.put("pm25",weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4"));
+
+      valueMap.put("pm10",weatherData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherData.get("P_1"));
+      valueMap.put("pm25",weatherData.get("P_2") == null ? CommonConstant.NULL_DATA : weatherData.get("P_2"));
 
       //동 날씨 데이터 humi, temp 구하기
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
       try {
 
         weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode, new String[] {
-                "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+                "dong_ko,", "icon", "wd_ws","temp", "humi", "snowf", "rainf"});
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");
       }
-
       valueMap.put("temp",weatherParsingData.get("P_4"));
       valueMap.put("humi",weatherParsingData.get("P_5"));
 

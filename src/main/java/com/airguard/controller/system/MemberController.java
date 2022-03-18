@@ -144,7 +144,7 @@ public class MemberController {
     @ApiOperation(value = "사용자 계정 로그인 횟수 0으로 변경 API", tags = "시스템 관리 API")
     @PostMapping(value = "/reset")
     public ResponseEntity<Member> resetLoginCount(@RequestBody Member reqBody) throws Exception {
-        service.restLoginCount(reqBody);
+        service.resetLoginCount(reqBody);
         reqBody.setRestApiMessage(CommonConstant.SUCCESS);
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }

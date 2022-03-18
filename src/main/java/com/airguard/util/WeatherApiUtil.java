@@ -86,10 +86,7 @@ public class WeatherApiUtil {
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document doc = builder.parse(new InputSource(new StringReader(resData)));
       NodeList nList = doc.getChildNodes();
-
-
-      for (int temp = 0; temp < nList.getLength(); temp++) {
-        Node nNode = nList.item(temp);
+        Node nNode = nList.item(0);
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
           Element eElement = (Element) nNode;
           result.put(new StringBuilder("P_1").toString(), getTagValue("dong_ko", eElement));
@@ -101,9 +98,7 @@ public class WeatherApiUtil {
           result.put(new StringBuilder("P_7").toString(), getTagValue("rainf", eElement));
 
         }
-      }
     }
-
     return result;
   }
 

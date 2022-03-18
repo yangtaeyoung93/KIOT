@@ -130,7 +130,7 @@
 							<div class ="row">
 								<div class="opt_div col-4">
 									<h5>로그인 실패 횟수</h5>
-									<span id="loginCount"><c:if test="${memberData.loginCount != 0}">${memberData.loginCount } 회</c:if></span>
+									<span id="loginCount">${memberData.loginCount } 회</span>
 									<hr>
 								</div>
 								<div class="opt_div col-4">

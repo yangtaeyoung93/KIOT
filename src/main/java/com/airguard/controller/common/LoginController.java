@@ -80,7 +80,6 @@ public class LoginController {
   @RequestMapping(value = "/api/login", method = RequestMethod.GET)
   public ResponseEntity<Object> apiLogin(HttpServletRequest request, HttpServletResponse response) {
     Map<String, Object> result = new HashMap<>();
-
     final String paramUsername = request.getParameter("username");
     final String paramPassword = request.getParameter("password");
     final String paramLoginAuth = request.getParameter("loginAuth");
@@ -250,13 +249,22 @@ public class LoginController {
       pMember.setUserId(username);
       pMember.setUserPw(Sha256EncryptUtil.ShaEncoder(password));
       int checkCode = memberService.loginCheckMemberId(pMember);
+      Member member = memberService.findMemberByLoginId(username);
 
       if (checkCode == 1) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
         return "redirect:/?error=1";
       } else if (checkCode == 2) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
         return "redirect:/?error=2";
+      } else if (checkCode == 4) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=4";
+      } else if (checkCode == 5) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=5";
       }
-      Member member = memberService.findMemberByLoginId(username);
+
 
       if (member == null || !member.getUserPw().equals(Sha256EncryptUtil.ShaEncoder(password))) {
         return "redirect:/";
@@ -280,6 +288,7 @@ public class LoginController {
       memberDto.setLoginIp(connectIp);
       memberDto.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
       memberService.memberLoginInfoUpdate(memberDto);
+      memberService.updateMemberLoginCount(member.getUserId(),1);
 
     } else {
       Group pGroup = new Group();
