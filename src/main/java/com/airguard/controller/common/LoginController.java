@@ -128,10 +128,12 @@ public class LoginController {
         pMember.setUserPw(Sha256EncryptUtil.ShaEncoder(paramPassword));
 
         int checkCode = memberService.loginCheckMemberId(pMember);
+        Member member = memberService.findMemberByLoginId(paramUsername);
 
         if (checkCode != 3) {
           result.put("resultCode", 0);
           result.put("checkCode", checkCode);
+          memberService.updateMemberLoginCount(member.getUserId(),0);
           return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
@@ -142,7 +144,7 @@ public class LoginController {
         cookie.setDomain("kweather.co.kr");
         response.addCookie(cookie);
 
-        Member member = memberService.findMemberByLoginId(paramUsername);
+
         Member memberDto = new Member();
         memberDto.setIdx(member.getIdx());
         memberDto.setUserId(member.getUserId());
@@ -152,6 +154,7 @@ public class LoginController {
             : request.getHeader("X-Forwarded-For"));
         memberDto.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         memberService.memberLoginInfoUpdate(memberDto);
+        memberService.updateMemberLoginCount(member.getUserId(),1);
 
       } else {
         Group pGroup = new Group();
