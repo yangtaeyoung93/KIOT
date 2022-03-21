@@ -20,6 +20,8 @@ public class DeviceElements {
   String elementUnit;
   String elementConvert;
   String validDigits;
+  String dataMin;
+  String dataMax;
 
   // OutColum
   String deviceModelIdx;

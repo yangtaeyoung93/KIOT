@@ -48,7 +48,8 @@ function initDataTableCustom() {
             {data: "elementUnit"},
             {data: "elementConvert"},
             {data: "viewName"},
-            {data: "validDigits"}
+            {data: "validDigits"},
+            {data: "dataMin"}
         ],
         columnDefs: [ 
         	{
@@ -67,14 +68,30 @@ function initDataTableCustom() {
 
 	        		} else {
 	        			resData = (data == "0") ? "정수" : "소수점 " + data + "자리";
-	        			console.log(data);
-	        			console.log(resData);
-
 	        		}
 
 	        		return '<label style="width: 100%;"><strong>' + resData + '</strong></label>';
 				},
         	},
+        	{
+            	targets:   7,
+            	render: function(data, type, full, meta) {
+            	    let result;
+            	    let min = full.dataMin;
+            	    let max = full.dataMax;
+            	    if(min == null && max!= null){
+            	        result = '<strong>' + max + '</strong>';
+            	    }else if(min != null && max == null){
+            	        result = '<strong>' + min + '</strong>';
+            	    }else if(min ==null && max ==null){
+            	        result = '<strong>-</strong>';
+            	    }else{
+            	        result = '<strong>'+min+' ~ '+max+'</strong>';
+            	    }
+
+            	    return result;
+            	},
+            },
         ],
 	});
 

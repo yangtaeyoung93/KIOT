@@ -52,6 +52,7 @@
 									<th class="bgGray1" style="width: 100px;">변환식</th>
 									<th class="bgGray1">표출명</th>
 									<th class="bgGray1">유효자릿수</th>
+									<th class="bgGray1">데이터 허용범위</th>
 								</tr>
 							</thead>
 						</table>
