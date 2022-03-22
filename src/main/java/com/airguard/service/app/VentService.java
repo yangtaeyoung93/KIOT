@@ -322,14 +322,14 @@ public class VentService {
         HashMap<String, Object> element = new HashMap<>();
         element.put("serial", nearByOaq.get("serial_num"));
         element.put("dateTime", selectOaqDateTime(nearByOaq.get("serial_num").toString()));
-        HashMap<String, Double> lat = latlonCalculation(
+        HashMap<String, Double> lat = DMSCalculationForDistance(
                 Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
-                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("seconds").toString()), "-"
+                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lat")).get("seconds").toString())
         );
 
-        HashMap<String, Double> lon = latlonCalculation(
+        HashMap<String, Double> lon = DMSCalculationForDistance(
                 Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("seconds").toString()),
-                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("seconds").toString()), "-"
+                Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(nearByOaq.get("lon")).get("seconds").toString())
         );
         element.put("distance", getDistanceByDms(lat.get("resultDeg"), lat.get("resultMin"), lat.get("resultSec"), lon.get("resultDeg"), lon.get("resultMin"), lon.get("resultSec")));
         element.put("latitute", nearByOaq.get("lat"));
@@ -366,14 +366,13 @@ public class VentService {
       result.put("minutes", dataMinutes);
       result.put("seconds", dataSeconds);
     }catch(Exception e){
-      System.out.println("=====getDMSByLatLon=====");
       e.printStackTrace();
     }
     return result;
   }
 
-  //DMS 표현 위경도의 연산
-  public HashMap<String,Double> latlonCalculation (Double targetDeg, Double targetMin, Double targetSec, Double opDeg, Double opMin, Double opSec,String operator) throws Exception{
+  //DMS 표현 위경도에 특정 거리를 더하는 연산
+  public HashMap<String,Double> latlonCalDistance (Double targetDeg, Double targetMin, Double targetSec, Double opDeg, Double opMin, Double opSec,String operator) throws Exception{
     HashMap<String,Double> result = new HashMap<>();
     Double resultSec;
     Double resultMin;
@@ -430,6 +429,17 @@ public class VentService {
     return result;
   }
 
+  //지리좌표간 두 점의 거리 계산을 위한 연산
+  public HashMap<String, Double> DMSCalculationForDistance(Double targetDeg, Double targetMin, Double targetSec, Double opDeg, Double opMin, Double opSec)throws Exception{
+    HashMap<String, Double> result = new HashMap<>();
+    result.put("resultDeg",targetDeg-opDeg);
+    result.put("resultMin",targetMin-opMin);
+    result.put("resultSec",targetSec-opSec);
+
+    return result;
+  }
+
+
   public HashMap<String,Object> getLatLonRangeByDistance(Object lat, Object lon) throws Exception{
     HashMap<String,Object> result = new HashMap<>();
     try {
@@ -452,28 +462,28 @@ public class VentService {
 
       //위도 최대값 구하기(DMS)
       HashMap<String, Double> calResult = new HashMap<>();
-      calResult = latlonCalculation(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "+");
+      calResult = latlonCalDistance(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "+");
       Double latMaxSec = calResult.get("resultSec");
       Double latMaxMin = calResult.get("resultMin");
       Double latMaxDeg = calResult.get("resultDeg");
 
 
       //경도 최대값 구하기(DMS)
-      calResult = latlonCalculation(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "+");
+      calResult = latlonCalDistance(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "+");
       Double lonMaxSec = calResult.get("resultSec");
       Double lonMaxMin = calResult.get("resultMin");
       Double lonMaxDeg = calResult.get("resultDeg");
 
 
       //위도 최소값 구하기(DMS)
-      calResult = latlonCalculation(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "-");
+      calResult = latlonCalDistance(Double.parseDouble(latDegree), Double.parseDouble(latMinutes), Double.parseDouble(latSeconds), 0D, (double) latDistanceMin, latDistanceSec, "-");
       Double latMinSec = calResult.get("resultSec");
       Double latMinMin = calResult.get("resultMin");
       Double latMinDeg = calResult.get("resultDeg");
 
 
       //경도 최소값 구하기(DMS)
-      calResult = latlonCalculation(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "-");
+      calResult = latlonCalDistance(Double.parseDouble(lonDegree), Double.parseDouble(lonMinutes), Double.parseDouble(lonSeconds), 0D, (double) lonDistanceMin, lonDistanceSec, "-");
       Double lonMinSec = calResult.get("resultSec");
       Double lonMinMin = calResult.get("resultMin");
       Double lonMinDeg = calResult.get("resultDeg");
