@@ -2618,16 +2618,23 @@
   </select>
   
   <select id="selectMemberDeviceInfo" parameterType="String" resultType="HashMap">
-	SELECT
-		TMDM.member_idx,
-		TMDM.device_idx,
-	    TMDM.station_name,
-	    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
-	    (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS device_type
-	FROM 
-		TB_MEMBER_DEVICE_MANAGE AS TMDM
-	WHERE
-		TMDM.device_idx =  (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serialNum})
+    SELECT
+      TMDM.member_idx,
+      TMDM.device_idx,
+      TMDM.station_name,
+      TMDM.lat,
+      TMDM.lon,
+      TMDM.dcode,
+      TDH.dfname,
+      (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serial_num,
+      (SELECT (SELECT TDT.device_type FROM TB_DEVICE_TYPE AS TDT WHERE TDT.idx = TD.device_type_idx) FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS device_type
+    FROM
+      TB_MEMBER_DEVICE_MANAGE AS TMDM
+    LEFT OUTER JOIN
+      TB_DONG_HCODE TDH
+    on TMDM.dcode = TDH.dcode
+    WHERE
+      TMDM.device_idx =  (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serialNum})
   </select>
 
   <select id="selectAirMapDeviceInfoKweather" parameterType="String" resultType="HashMap">

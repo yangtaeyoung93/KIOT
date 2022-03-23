@@ -284,17 +284,16 @@ public class VentService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
 
     URI url = URI.create(
-        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/kw-isk");
+        CommonConstant.API_SERVER_HOST_TOTAL + CommonConstant.SEARCH_PATH_SENSOR + "/kw-isk/"+iaqSerial);
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
     JSONObject jObj = new JSONObject(res.getBody());
-
     Gson gson = new Gson();
 
     if (!jObj.isNull(iaqSerial)) {
-      PlatformSensorDto resData = gson.fromJson(jObj.getString(iaqSerial), PlatformSensorDto.class);
+      PlatformSensorDto resData = gson.fromJson(jObj.toString(), PlatformSensorDto.class);
       result = resData.getData();
     }
 
