@@ -34,7 +34,7 @@
 					<!-- /.card-header -->
 					<div class="card-body">
 						<div class="search_area" style="width:70%;">
-							<div class="search_bottom" style="max-width: 630px;">
+							<div class="search_bottom" style="max-width: 750px;">
 								<strong>모델</strong>
 								<select name="searchValue2" id="searchValue2" class="custom-select custom-select-sm form-control form-control-sm ml15 mr20" style="max-width:90px;height:38px;">
 									<option value="">전체</option>
@@ -44,19 +44,18 @@
 								</select>
 								<strong>시리얼번호</strong>
 								<input type="text" class="form-control mr10" id="searchValue3" name= "searchValue3" placeholder="내용을 입력해 주세요" style="max-width:250px; display:inline; vertical-align: middle;">
-								
+								<div class="row mt10" style="display:inline;vertical-align:middle;margin-left: 0px;">
+                                							<strong>사용 여부</strong>
+                                							<div class="custom-control custom-radio ml10 mr10" style="display:inline-block;">
+                                								<input class="custom-control-input" type="radio" id="customRadio3" name="useYnRadio" r-data="Y" checked="" >
+                                								<label for="customRadio3" class="custom-control-label">Y</label>
+                                							</div>
+                                							<div class="custom-control custom-radio mr20"style="display:inline-block;">
+                                								<input class="custom-control-input" type="radio" id="customRadio4" name="useYnRadio" r-data="N">
+                                								<label for="customRadio4" class="custom-control-label">N</label>
+                                							</div>
+                                						</div>
 								<input type="button" class="btn btn-primary ml3" style="min-width:100px;" id="searchBtn" value="검 색">
-							</div>
-						</div>
-						<div class="row mt10" style="float:right;">
-							<strong>사용 여부</strong>
-							<div class="custom-control custom-radio ml10 mr10" style="display:inline-block;">
-								<input class="custom-control-input" type="radio" id="customRadio3" name="useYnRadio" r-data="Y" checked="" > 
-								<label for="customRadio3" class="custom-control-label">Y</label>
-							</div>
-							<div class="custom-control custom-radio mr20"style="display:inline-block;">
-								<input class="custom-control-input" type="radio" id="customRadio4" name="useYnRadio" r-data="N"> 
-								<label for="customRadio4" class="custom-control-label">N</label>
 							</div>
 						</div>
 						<table id="deviceTable" class="table table-bordered table-hover text-center">
