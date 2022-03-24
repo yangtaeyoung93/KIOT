@@ -290,11 +290,14 @@ public class VentService {
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
     JSONObject jObj = new JSONObject(res.getBody());
+
     Gson gson = new Gson();
 
-    if (!jObj.isNull(iaqSerial)) {
+    if (!jObj.isNull("data")) {
+
       PlatformSensorDto resData = gson.fromJson(jObj.toString(), PlatformSensorDto.class);
       result = resData.getData();
+
     }
 
     return result;
