@@ -78,7 +78,7 @@ function initDataTableCustom() {
              * 2022/01/25 데이터센터 이미지 수정 새로고침 문제 해결
              */
             const time = new Date();
-          return "<img src='https://suncheon.kweather.co.kr/IMAGES/deviceModel/"
+          return "<img src='https://datacenter.kweather.co.kr/IMAGES/DEVICE_MODEL/"
               + full.deviceModel + "." + data + "?t="+ time +"' alt='이미지없음'"
               + "style='width: 50px; height: 50px;'/>";
         },

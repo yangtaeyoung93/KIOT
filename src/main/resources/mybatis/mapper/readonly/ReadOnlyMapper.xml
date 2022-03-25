@@ -1071,7 +1071,7 @@
                                 case when TDM.image_file is null then 'NA'
                                 when TDM.image_file = '' then 'NA'
                                 else
-                                concat('https://suncheon.kweather.co.kr/IMAGES/deviceModel/',TDM.device_model,'.',TDM.image_file) end as 'tdmip'
+                                concat('https://datacenter.kweather.co.kr/IMAGES/DEVICE_MODEL/',TDM.device_model,'.',TDM.image_file) end as 'tdmip'
 							FROM 
 								TB_DEVICE_MODEL AS TDM 
 									JOIN TB_DEVICE_TYPE AS TDT 
