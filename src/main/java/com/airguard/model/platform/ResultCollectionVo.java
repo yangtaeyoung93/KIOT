@@ -31,6 +31,7 @@ public class ResultCollectionVo {
   private SensorDataDto sensor;
   private TimeStampDto service;
   private String timestamp;
+  private String dataTime;
   private String groupId;
   private String groupName;
   private String spaceName;

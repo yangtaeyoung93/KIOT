@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -251,24 +252,35 @@ public class PlatformService {
     return result;
   }
 
+  public String timeStampToString(String timestamp){
+    Date st = new Date(Integer.parseInt(timestamp)*1000L);
+    SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String result = dtFormat.format(st);
+
+    return result;
+  }
+
   public List<ResultCollectionVo> selectTotalSensorApi(String paramType) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
 
-    List<CollectionDto> deviceList = mapper.selectCollectionDevice("00", "N");
-
+    String deviceTypeIdx = "";
     String deviceType = "";
     switch (paramType) {
       case CommonConstant.PARAM_SENSOR_IAQ:
         deviceType = "IAQ";
+        deviceTypeIdx = "1";
         break;
       case CommonConstant.PARAM_SENSOR_OAQ:
         deviceType = "OAQ";
+        deviceTypeIdx = "2";
         break;
       case CommonConstant.PARAM_SENSOR_DOT:
         deviceType = "DOT";
+        deviceTypeIdx = "3";
         break;
     }
+    List<ResultCollectionVo> deviceList = mapper.selectCollectionDeviceWithDeviceType("00", "N",deviceTypeIdx);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -283,50 +295,72 @@ public class PlatformService {
 
     JSONObject jObj = new JSONObject(res.getBody());
 
-    for (CollectionDto collectionDto : deviceList) {
-      ResultCollectionVo vo = new ResultCollectionVo();
-      String serial = collectionDto.getSerialNum();
+    for (ResultCollectionVo resultCollectionVo : deviceList) {
+      String serial = resultCollectionVo.getSerial();
       Gson gson = new Gson();
 
-      if (!deviceType.equals(collectionDto.getDeviceType())) {
-        continue;
-      }
+      try {
 
-      vo.setSerial(serial);
-      vo.setMemberIdx(collectionDto.getMemberIdx());
-      vo.setDeviceIdx(collectionDto.getDeviceIdx());
-      vo.setGroupCompanyName(collectionDto.getGroupCompanyName());
-      vo.setGroupDepartName(collectionDto.getGroupDepartName());
-      vo.setTestYn(collectionDto.getTestYn());
-      vo.setGroupId(collectionDto.getGroupId());
-      vo.setGroupName(collectionDto.getGroupName());
-      vo.setEtc(collectionDto.getEtc());
-      vo.setLat(collectionDto.getLat());
-      vo.setLon(collectionDto.getLon());
-      vo.setAirMapYn(collectionDto.getAirMapYn());
-      vo.setDCode(collectionDto.getDCode());
-      vo.setParentSpaceName(collectionDto.getParentSpaceName());
-      vo.setSpaceName(collectionDto.getSpaceName());
-      vo.setUserId(collectionDto.getUserId());
-      vo.setCreateDt(collectionDto.getCreateDt());
-      vo.setCreateDt(collectionDto.getCreateDt());
-      vo.setStationName(collectionDto.getStationName());
-      vo.setProductDt(collectionDto.getProductDt());
-
-      if (!jObj.isNull(serial)) {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
-        vo.setSensor(resData.getData());
-
-        vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp())) + (5 * 60)) > (
-            System.currentTimeMillis()
-                / 1000));
-
-        vo.setTimestamp(resData.getService().getTimestamp());
+        resultCollectionVo.setSensor(resData.getData());
+        String timestamp = resData.getService().getTimestamp();
+        resultCollectionVo.setReceiveFlag(((Long.parseLong(timestamp)) + (5 * 60)) > (
+                System.currentTimeMillis()
+                        / 1000));
+        resultCollectionVo.setTimestamp(timestamp);
+        resultCollectionVo.setDataTime(timeStampToString(timestamp));
+      }catch(Exception e){
+        continue;
+      }finally {
+        resCol.add(resultCollectionVo);
       }
 
-      resCol.add(vo);
-    }
 
+    }
+//    int size = deviceList.size();
+//    for (int i=0; i<size;i++) {
+//      ResultCollectionVo vo = new ResultCollectionVo();
+//      String serial = deviceList.get(i).getSerialNum();
+//      Gson gson = new Gson();
+//
+//      if (!deviceType.equals(deviceList.get(i).getDeviceType())) {
+//        continue;
+//      }
+//
+//      vo.setSerial(serial);
+//      vo.setMemberIdx(deviceList.get(i).getMemberIdx());
+//      vo.setDeviceIdx(deviceList.get(i).getDeviceIdx());
+//      vo.setGroupCompanyName(deviceList.get(i).getGroupCompanyName());
+//      vo.setGroupDepartName(deviceList.get(i).getGroupDepartName());
+//      vo.setTestYn(deviceList.get(i).getTestYn());
+//      vo.setGroupId(deviceList.get(i).getGroupId());
+//      vo.setGroupName(deviceList.get(i).getGroupName());
+//      vo.setEtc(deviceList.get(i).getEtc());
+//      vo.setLat(deviceList.get(i).getLat());
+//      vo.setLon(deviceList.get(i).getLon());
+//      vo.setAirMapYn(deviceList.get(i).getAirMapYn());
+//      vo.setDCode(deviceList.get(i).getDCode());
+//      vo.setParentSpaceName(deviceList.get(i).getParentSpaceName());
+//      vo.setSpaceName(deviceList.get(i).getSpaceName());
+//      vo.setUserId(deviceList.get(i).getUserId());
+//      vo.setCreateDt(deviceList.get(i).getCreateDt());
+//      vo.setCreateDt(deviceList.get(i).getCreateDt());
+//      vo.setStationName(deviceList.get(i).getStationName());
+//      vo.setProductDt(deviceList.get(i).getProductDt());
+//
+//      if (!jObj.isNull(serial)) {
+//        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
+//        vo.setSensor(resData.getData());
+//
+//        vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp())) + (5 * 60)) > (
+//            System.currentTimeMillis()
+//                / 1000));
+//
+//        vo.setTimestamp(resData.getService().getTimestamp());
+//      }
+//
+//      resCol.add(vo);
+//    }
     return resCol;
   }
 

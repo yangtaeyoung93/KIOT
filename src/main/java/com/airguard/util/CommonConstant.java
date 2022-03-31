@@ -76,7 +76,7 @@ public class CommonConstant {
   public static final String G_ID_FORMAT = "g-";
 
   public static final String[] VENT_AI_CODE = {"A0", "A1"};
-  public static final String[] VENT_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
+  public static final String[] VENT_STATUS_CODE = {"A0", "A1", "P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6","H1","H2","H3"};
 
   public static final String[] VENT_JNT_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};
   public static final String[] VENT_TAES_STATUS_CODE = {"P0", "P1", "W1", "W2", "W3", "W4", "W5", "W6"};

@@ -47,7 +47,6 @@ public class CollectionRestController {
     List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_IAQ);
     Map<String, Object> result = new HashMap<>();
     result.put("data", res);
-
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

@@ -88,31 +88,30 @@ function initDataTableCustom() {
     ],
     ajax: {
       url: "/api/collection/list/iaq",
-      type: "GET",
+      type: "GET"
     },
     columns: [
-      { orderable: false },
+      { data: "" },
       { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
-      { data: "serial" },
+      { data: "dataTime" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
+      { data: "" },
     ],
     createdRow: function (row, data, dataIndex) {
       $(row).attr("id", "row-" + data.serial);
@@ -123,7 +122,7 @@ function initDataTableCustom() {
     columnDefs: [
       {
         targets: 0,
-        orderable: true,
+        orderable: false,
         render: function (data, type, full, meta) {
           return meta.row + meta.settings._iDisplayStart + 1;
         },
@@ -175,50 +174,50 @@ function initDataTableCustom() {
         targets: 2,
         orderable: true,
         render: function (data, type, full, meta) {
-          var date = "";
-          var convertTime = "";
+//          var date = "";
+//          var convertTime = "";
           var fontWeight = "";
-
+//
           if (full.receiveFlag == true) fontWeight = "bold";
           else fontWeight = "normal";
-
-          if (full.timestamp == null) {
-            convertTime = "";
-          } else {
-            date = new Date(full.timestamp * 1000);
-            var year = date.getFullYear();
-
-            var month = date.getMonth() + 1;
-            var day = date.getDate();
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var seconds = date.getSeconds();
-
-            if (month < 10) month = "0" + month;
-            if (day < 10) day = "0" + day;
-            if (hours < 10) hours = "0" + hours;
-            if (minutes < 10) minutes = "0" + minutes;
-            if (seconds < 10) seconds = "0" + seconds;
-
-            convertTime =
-              year +
-              "-" +
-              month +
-              "-" +
-              day +
-              " " +
-              hours +
-              ":" +
-              minutes +
-              ":" +
-              seconds;
-          }
+//
+//          if (full.timestamp == null) {
+//            convertTime = "";
+//          } else {
+//            date = new Date(full.timestamp * 1000);
+//            var year = date.getFullYear();
+//
+//            var month = date.getMonth() + 1;
+//            var day = date.getDate();
+//            var hours = date.getHours();
+//            var minutes = date.getMinutes();
+//            var seconds = date.getSeconds();
+//
+//            if (month < 10) month = "0" + month;
+//            if (day < 10) day = "0" + day;
+//            if (hours < 10) hours = "0" + hours;
+//            if (minutes < 10) minutes = "0" + minutes;
+//            if (seconds < 10) seconds = "0" + seconds;
+//
+//            convertTime =
+//              year +
+//              "-" +
+//              month +
+//              "-" +
+//              day +
+//              " " +
+//              hours +
+//              ":" +
+//              minutes +
+//              ":" +
+//              seconds;
+//          }
 
           return (
             "<font style='font-weight:" +
             fontWeight +
             "; '>" +
-            convertTime +
+            full.dataTime +
             "</font>"
           );
         },
@@ -620,7 +619,6 @@ function initDataTableCustom() {
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
-        console.log(settings.json.data);
         var js = settings.json.data;
         var reCnt = 0;
         var unReCnt = 0;
@@ -673,28 +671,29 @@ function initDataTableCustom() {
       var colIndex = document.querySelector("#searchType").selectedIndex;
 
       if (colIndex == 0) {
-        table.column(0).search("").draw();
-        table.column(1).search("").draw();
-        table.column(2).search("").draw();
-        table.column(3).search("").draw();
-        table.column(4).search("").draw();
-        table.column(5).search("").draw();
-        table.column(6).search("").draw();
-        table.column(7).search("").draw();
-        table.column(8).search("").draw();
-        table.column(9).search("").draw();
-        table.column(10).search("").draw();
-        table.column(11).search("").draw();
-        table.column(12).search("").draw();
-        table.column(13).search("").draw();
-        table.column(14).search("").draw();
-        table.column(15).search("").draw();
-        table.column(16).search("").draw();
-        table.column(17).search("").draw();
-        table.column(18).search("").draw();
-        table.column(19).search("").draw();
-        table.column(20).search("").draw();
-        table.column(21).search("").draw();
+      table.search(this.value).draw();
+//        table.column(0).search("").draw();
+//        table.column(1).search("").draw();
+//        table.column(2).search("").draw();
+//        table.column(3).search("").draw();
+//        table.column(4).search("").draw();
+//        table.column(5).search("").draw();
+//        table.column(6).search("").draw();
+//        table.column(7).search("").draw();
+//        table.column(8).search("").draw();
+//        table.column(9).search("").draw();
+//        table.column(10).search("").draw();
+//        table.column(11).search("").draw();
+//        table.column(12).search("").draw();
+//        table.column(13).search("").draw();
+//        table.column(14).search("").draw();
+//        table.column(15).search("").draw();
+//        table.column(16).search("").draw();
+//        table.column(17).search("").draw();
+//        table.column(18).search("").draw();
+//        table.column(19).search("").draw();
+//        table.column(20).search("").draw();
+//        table.column(21).search("").draw();
       } else if (colIndex == 1) table.column(1).search(this.value).draw();
       else if (colIndex == 2) table.column(11).search(this.value).draw();
       else if (colIndex == 3) table.column(17).search(this.value).draw();
@@ -705,7 +704,6 @@ function initDataTableCustom() {
   $("#searchType").change(function () {
     var colIndex = document.querySelector("#searchType").selectedIndex;
 
-    table.column(0).search("").draw();
     table.column(1).search("").draw();
     table.column(2).search("").draw();
     table.column(3).search("").draw();

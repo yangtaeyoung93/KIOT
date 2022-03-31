@@ -3,6 +3,7 @@ package com.airguard.mapper.main.platform;
 import java.util.HashMap;
 import java.util.List;
 
+import com.airguard.model.platform.ResultCollectionVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,6 +15,8 @@ import com.airguard.model.redis.RedisVentDto;
 public interface PlatformMapper {
 
   List<CollectionDto> selectCollectionDevice(@Param("siDo") String siDo, @Param("airMapYn") String airMapYn);
+
+  List<ResultCollectionVo> selectCollectionDeviceWithDeviceType(@Param("siDo") String siDo, @Param("airMapYn") String airMapYn, @Param("deviceTypeIdx") String deviceTypeIdx);
 
   List<CollectionDto> selectCollectionDeviceVent();
 
