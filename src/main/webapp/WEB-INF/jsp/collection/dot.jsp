@@ -15,6 +15,10 @@
 	color: white;
 	border-radius: 5px;
 }
+
+#dotTable{
+    width : 1595px;
+}
 </style>
 <div class="content-wrapper">
 	<section class="content-header">

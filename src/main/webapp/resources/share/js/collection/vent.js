@@ -1,4 +1,5 @@
 let historyData;
+let previousSearchType=0;
 
 function viewData2(serialNum, productDt, standard) {
   let winWidth = 400;
@@ -33,6 +34,7 @@ function initDataTableCustom() {
   let searchGroupId = "";
 
   const table = $('#ventTable').DataTable({
+    scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {
@@ -526,26 +528,7 @@ function initDataTableCustom() {
   $('.search_bottom input').unbind().bind('keyup', function () {
     const colIndex = document.querySelector('#searchType').selectedIndex;
     if (colIndex === 0) {
-      table.column(0).search("").draw();
-      table.column(1).search("").draw();
-      table.column(2).search("").draw();
-      table.column(3).search("").draw();
-      table.column(4).search("").draw();
-      table.column(5).search("").draw();
-      table.column(6).search("").draw();
-      table.column(7).search("").draw();
-      table.column(8).search("").draw();
-      table.column(9).search("").draw();
-      table.column(10).search("").draw();
-      table.column(11).search("").draw();
-      table.column(12).search("").draw();
-      table.column(13).search("").draw();
-      table.column(14).search("").draw();
-      table.column(15).search("").draw();
-      table.column(16).search("").draw();
-      table.column(17).search("").draw();
-      table.column(18).search("").draw();
-      table.column(19).search("").draw();
+      table.search(this.value).draw();
     } else if (colIndex === 1) {
       table.column(1).search(this.value).draw();
     } else if (colIndex === 2) {
@@ -558,27 +541,15 @@ function initDataTableCustom() {
   });
 
   $("#searchType").change(function () {
-    document.querySelector('#searchType').selectedIndex;
-    table.column(0).search("").draw();
-    table.column(1).search("").draw();
-    table.column(2).search("").draw();
-    table.column(3).search("").draw();
-    table.column(4).search("").draw();
-    table.column(5).search("").draw();
-    table.column(6).search("").draw();
-    table.column(7).search("").draw();
-    table.column(8).search("").draw();
-    table.column(9).search("").draw();
-    table.column(10).search("").draw();
-    table.column(11).search("").draw();
-    table.column(12).search("").draw();
-    table.column(13).search("").draw();
-    table.column(14).search("").draw();
-    table.column(15).search("").draw();
-    table.column(16).search("").draw();
-    table.column(17).search("").draw();
-    table.column(18).search("").draw();
-    table.column(19).search("").draw();
+   const colIndex = document.querySelector("#searchType").selectedIndex;
+   switch(previousSearchType){
+              case 0 : table.search("").draw(); break;
+              case 1 : table.column(1).search("").draw(); break;
+              case 2 : table.column(2).search("").draw(); break;
+              case 3 : table.column(4).search("").draw(); break;
+              case 4 : table.column(3).search("").draw(); break;
+   }
+   previousSearchType = colIndex;
 
     $("#searchValue").val("");
   });

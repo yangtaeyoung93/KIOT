@@ -2,6 +2,7 @@
  * 수집정보 > IAQ 수집정보
  */
 var historyData;
+let previousSearchType=0;
 
 function viewData2(
   serialNum,
@@ -54,6 +55,7 @@ function initDataTableCustom() {
   var searchGroupId = "";
 
   var table = $("#iaqTable").DataTable({
+  scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {
@@ -672,28 +674,6 @@ function initDataTableCustom() {
 
       if (colIndex == 0) {
       table.search(this.value).draw();
-//        table.column(0).search("").draw();
-//        table.column(1).search("").draw();
-//        table.column(2).search("").draw();
-//        table.column(3).search("").draw();
-//        table.column(4).search("").draw();
-//        table.column(5).search("").draw();
-//        table.column(6).search("").draw();
-//        table.column(7).search("").draw();
-//        table.column(8).search("").draw();
-//        table.column(9).search("").draw();
-//        table.column(10).search("").draw();
-//        table.column(11).search("").draw();
-//        table.column(12).search("").draw();
-//        table.column(13).search("").draw();
-//        table.column(14).search("").draw();
-//        table.column(15).search("").draw();
-//        table.column(16).search("").draw();
-//        table.column(17).search("").draw();
-//        table.column(18).search("").draw();
-//        table.column(19).search("").draw();
-//        table.column(20).search("").draw();
-//        table.column(21).search("").draw();
       } else if (colIndex == 1) table.column(1).search(this.value).draw();
       else if (colIndex == 2) table.column(11).search(this.value).draw();
       else if (colIndex == 3) table.column(17).search(this.value).draw();
@@ -703,29 +683,15 @@ function initDataTableCustom() {
 
   $("#searchType").change(function () {
     var colIndex = document.querySelector("#searchType").selectedIndex;
-
-    table.column(1).search("").draw();
-    table.column(2).search("").draw();
-    table.column(3).search("").draw();
-    table.column(4).search("").draw();
-    table.column(5).search("").draw();
-    table.column(6).search("").draw();
-    table.column(7).search("").draw();
-    table.column(8).search("").draw();
-    table.column(9).search("").draw();
-    table.column(10).search("").draw();
-    table.column(11).search("").draw();
-    table.column(12).search("").draw();
-    table.column(13).search("").draw();
-    table.column(14).search("").draw();
-    table.column(15).search("").draw();
-    table.column(16).search("").draw();
-    table.column(17).search("").draw();
-    table.column(18).search("").draw();
-    table.column(19).search("").draw();
-    table.column(20).search("").draw();
-    table.column(21).search("").draw();
-
+       switch(previousSearchType){
+       case 0 : table.search("").draw(); break;
+       case 1 : table.column(1).search("").draw(); break;
+       case 2 : table.column(11).search("").draw(); break;
+       case 3 : table.column(17).search("").draw(); break;
+       case 4 : table.column(15).search("").draw(); break;
+       case 5 : table.column(14).search("").draw(); break;
+       }
+     previousSearchType = colIndex;
     $("#searchValue").val("");
   });
 

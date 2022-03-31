@@ -15,6 +15,9 @@
 	color: white;
 	border-radius: 5px;
 }
+#iaqTable{
+   width: 1595px;
+}
 </style>
 <div class="content-wrapper">
 	<section class="content-header">

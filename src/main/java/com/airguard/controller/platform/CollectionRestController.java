@@ -41,11 +41,13 @@ public class CollectionRestController {
   @Autowired
   private DongService dongService;
 
+  private static final Map<String, Object> result = new HashMap<>();
+
   @ApiOperation(value = "IAQ 최근 측정 데이터 조회 API", tags = "시스템 관리 API")
   @RequestMapping(value = "/list/iaq", method = RequestMethod.GET)
   public ResponseEntity<Object> collectionTotalSensorApiIaq() throws Exception {
     List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_IAQ);
-    Map<String, Object> result = new HashMap<>();
+
     result.put("data", res);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }

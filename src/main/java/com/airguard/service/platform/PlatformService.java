@@ -294,13 +294,11 @@ public class PlatformService {
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
     JSONObject jObj = new JSONObject(res.getBody());
-
+    Gson gson = new Gson();
     for (ResultCollectionVo resultCollectionVo : deviceList) {
       String serial = resultCollectionVo.getSerial();
-      Gson gson = new Gson();
 
       try {
-
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
         resultCollectionVo.setSensor(resData.getData());
         String timestamp = resData.getService().getTimestamp();
