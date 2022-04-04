@@ -3,7 +3,7 @@
 
 <!-- ##### Header Area Start ##### -->
 <%@ include file="../common/header.jsp"%>
-<script src="/resources/share/js/collection/iaq.js"></script>
+<script defer src="/resources/share/js/collection/iaq.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <!-- Select2 -->
@@ -15,8 +15,9 @@
 	color: white;
 	border-radius: 5px;
 }
-#iaqTable{
-   width: 1595px;
+
+.content-wrapper{
+    width:1655px;
 }
 </style>
 <div class="content-wrapper">

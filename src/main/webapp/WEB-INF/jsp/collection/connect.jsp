@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="${pageContext.request.contextPath}/resources/plugins/select2/js/select2.full.min.js"></script>
 <style>
-#connectTable{
-    width:1595px;
+.content-wrapper{
+    width:1655px;
 }
 </style>
 <div class="content-wrapper">

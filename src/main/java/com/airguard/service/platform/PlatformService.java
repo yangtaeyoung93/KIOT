@@ -294,12 +294,34 @@ public class PlatformService {
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
     JSONObject jObj = new JSONObject(res.getBody());
-    Gson gson = new Gson();
-    for (ResultCollectionVo resultCollectionVo : deviceList) {
-      String serial = resultCollectionVo.getSerial();
+//    Gson gson = new Gson();
+//    for (ResultCollectionVo resultCollectionVo : deviceList) {
+//      String serial = resultCollectionVo.getSerial();
+//
+//      try {
+//        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
+//        resultCollectionVo.setSensor(resData.getData());
+//        String timestamp = resData.getService().getTimestamp();
+//        resultCollectionVo.setReceiveFlag(((Long.parseLong(timestamp)) + (5 * 60)) > (
+//                System.currentTimeMillis()
+//                        / 1000));
+//        resultCollectionVo.setTimestamp(timestamp);
+//        resultCollectionVo.setDataTime(timeStampToString(timestamp));
+//      }catch(Exception e){
+//        continue;
+//      }finally {
+//        resCol.add(resultCollectionVo);
+//      }
+//
+//
+//    }
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    for (ResultCollectionVo resultCollectionVo : deviceList) {
       try {
-        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
+        String serial = resultCollectionVo.getSerial();
+        PlatformSensorDto resData = objectMapper.readValue(jObj.getString(serial), PlatformSensorDto.class);
         resultCollectionVo.setSensor(resData.getData());
         String timestamp = resData.getService().getTimestamp();
         resultCollectionVo.setReceiveFlag(((Long.parseLong(timestamp)) + (5 * 60)) > (
@@ -313,8 +335,12 @@ public class PlatformService {
         resCol.add(resultCollectionVo);
       }
 
-
     }
+
+
+
+
+
 //    int size = deviceList.size();
 //    for (int i=0; i<size;i++) {
 //      ResultCollectionVo vo = new ResultCollectionVo();
@@ -2240,8 +2266,8 @@ public class PlatformService {
     JSONObject dataArrayData2 = new JSONObject();
     JSONArray channelArray = new JSONArray();
 
-    serviceObj1.put("id", platReq.get(0).getService().getId());
-    dataArrayData1.put("key", platReq.get(0).getData().get(0).getKey());
+    serviceObj1.put("id", platReq.get(0).getService().getId()); //"server_kwkiotcluster-redis"
+    dataArrayData1.put("key", platReq.get(0).getData().get(0).getKey()); //"ingress-router/v1/memstore:kw/iaq/cmd/v1/KWV-ST1_1900420"
     dataArrayData1.put("value", platReq.get(0).getData().get(0).getValue());
     dataArray1.put(0, dataArrayData1);
 
@@ -2396,9 +2422,9 @@ public class PlatformService {
     JSONObject dataArrayData1 = new JSONObject();
     JSONArray channelArray = new JSONArray();
 
-    serviceObj1.put("id", platReq.get(0).getService().getId());
-    dataArrayData1.put("data", platReq.get(0).getData().get(0).getData());
-    channelArray.put(0, platReq.get(0).getData().get(0).getChannel().get(0));
+    serviceObj1.put("id", platReq.get(0).getService().getId()); //"server_kwkiotcluster-mqtt-seq"
+    dataArrayData1.put("data", platReq.get(0).getData().get(0).getData()); //"CCMDA0P1"
+    channelArray.put(0, platReq.get(0).getData().get(0).getChannel().get(0)); //"kerv/req/KWV-ST1_1900420"
     dataArrayData1.put("channel", channelArray);
 
     int arrCnt = 0;

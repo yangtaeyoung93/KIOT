@@ -34,7 +34,6 @@ function initDataTableCustom() {
   let searchGroupId = "";
 
   const table = $('#ventTable').DataTable({
-    scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {

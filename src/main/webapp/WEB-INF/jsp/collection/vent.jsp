@@ -11,10 +11,9 @@
         color: white;
         border-radius: 5px;
     }
-
-    #ventTable{
-        width : 1595px;
-    }
+.content-wrapper{
+    width:1655px;
+}
 </style>
 <div class="content-wrapper">
     <section class="content-header">

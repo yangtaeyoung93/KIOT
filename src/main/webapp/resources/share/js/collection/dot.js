@@ -56,7 +56,6 @@ function initDataTableCustom() {
   var searchGroupId = "";
 
   var table = $("#dotTable").DataTable({
-    scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {

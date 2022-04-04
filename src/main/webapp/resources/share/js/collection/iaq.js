@@ -55,7 +55,6 @@ function initDataTableCustom() {
   var searchGroupId = "";
 
   var table = $("#iaqTable").DataTable({
-  scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {

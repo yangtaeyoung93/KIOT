@@ -54,7 +54,6 @@ function initDataTableCustom() {
   let searchGroupId = "";
 
   const table = $("#oaqTable").DataTable({
-    scrollX : true,
     scrollCollapse: true,
     autoWidth: false,
     language: {

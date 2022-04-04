@@ -15,8 +15,8 @@
 	color: white;
 	border-radius: 5px;
 }
-#oaqTable{
-    width : 1595px;
+.content-wrapper{
+    width:1655px;
 }
 </style>
 <div class="content-wrapper">

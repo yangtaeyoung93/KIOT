@@ -41,7 +41,6 @@ function initDataTableCustom() {
   let fontColor;
   const table = $('#connectTable').DataTable(
       {
-        scrollX : true,
         scrollCollapse: true,
         autoWidth: false,
         language: {
