@@ -395,4 +395,6 @@ public interface ReadOnlyMapper {
   String selectMemberIdxByVentSerial(String ventSerial);
 
   String selectDeviceModelByVentSerial(String ventSerial);
+
+  String selectDcode(String iaqSerial);
 }

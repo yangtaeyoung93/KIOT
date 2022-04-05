@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,7 @@ public class Air365V3RestController {
   @ApiOperation(value = "장비 데이터 조회 (상세 내용)", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({@ApiImplicitParam(name = "serial", value = "스테이션 번호"),})
   @RequestMapping(value = "/data/detail", method = {RequestMethod.GET, RequestMethod.POST})
-  public HashMap<String, Object> getIotDataDetail(String serial, String hang_cd,boolean encoding) throws Exception {
+  public HashMap<String, Object> getIotDataDetail(String serial, boolean encoding) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
     LinkedHashMap<String, Object> dataMp = new LinkedHashMap<>();
 
@@ -63,11 +64,11 @@ public class Air365V3RestController {
 
     if(encoding){
       serial = AES256Util.decrypt(serial.replace(" ","+"));
-      hang_cd = AES256Util.decrypt(hang_cd.replace(" ","+"));
-      dataMp = stationService.getIotDataDetailEncodeVersion(serial, hang_cd);
+      //hang_cd = AES256Util.decrypt(hang_cd.replace(" ", "+"));
+      dataMp = stationService.getIotDataDetailEncodeVersion(serial);
 
     }else{
-      dataMp = stationService.getIotDataDetail(serial, hang_cd);
+      dataMp = stationService.getIotDataDetail(serial);
     }
 
     result.put("data", dataMp);
@@ -77,7 +78,7 @@ public class Air365V3RestController {
   }
 
   @RequestMapping(value = "/data/vent", method = {RequestMethod.GET, RequestMethod.POST})
-  public HashMap<String, Object> getVentStatusData(String serial, String hang_cd,Boolean encoding) throws Exception {
+  public HashMap<String, Object> getVentStatusData(String serial,Boolean encoding) throws Exception {
     HashMap<String, Object> result = new HashMap<>();
 
     if (serial == null || "".equals(serial)) {
@@ -89,10 +90,10 @@ public class Air365V3RestController {
     }
     if(encoding){
       serial = AES256Util.decrypt(serial.replace(" ","+"));
-      hang_cd = AES256Util.decrypt(hang_cd.replace(" ","+"));
-      result.put("data", stationService.getVentStatusDataEncodeVersion(serial, hang_cd));
+      //hang_cd = AES256Util.decrypt(hang_cd.replace(" ","+"));
+      result.put("data", stationService.getVentStatusDataEncodeVersion(serial));
     }else{
-      result.put("data", stationService.getVentStatusData(serial, hang_cd));
+      result.put("data", stationService.getVentStatusData(serial));
     }
 
     result.put("result", 1);

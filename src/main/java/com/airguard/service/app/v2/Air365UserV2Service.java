@@ -1114,6 +1114,11 @@ public class Air365UserV2Service {
                       mdi.getDeviceModelImgPath() == null ? CommonConstant.NULL_DATA :mdi.getDeviceModelImgPath());
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
+              deviceInfo.put("country_nm","대한민국");
+              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
               deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
@@ -1197,6 +1202,11 @@ public class Air365UserV2Service {
                     mdi.getDeviceModelImgPath() == null ? CommonConstant.NULL_DATA :mdi.getDeviceModelImgPath());
             deviceInfo.put("stationName",
                     mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
+            deviceInfo.put("country_nm","대한민국");
+            deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+            deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+            deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+            deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
             deviceInfo.put("lat",
                     mdi.getLat() == null ? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLat()));
             deviceInfo.put("lon",
@@ -1301,6 +1311,11 @@ public class Air365UserV2Service {
                       mdi.getDeviceModelImgPath() == null ? CommonConstant.NULL_DATA :mdi.getDeviceModelImgPath());
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
+              deviceInfo.put("country_nm","대한민국");
+              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
               deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA

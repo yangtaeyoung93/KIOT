@@ -1042,6 +1042,7 @@
             TMDM.depart_phone_number,
             TMDM.sales_name,
 			TMDM.dcode,
+            TDH.dfname,
 			TMDM.airmap_yn,
 		    TDTDM.tdmidx AS device_model_idx,
 		    TDTDM.tdtidx AS device_type_idx,
@@ -1079,6 +1080,9 @@
 							) AS TDMDT 
 								ON TD.device_model_idx = TDMDT.tdmidx
 			) AS TDTDM ON TMDM.device_idx=TDTDM.tdidx
+    LEFT OUTER JOIN
+    TB_DONG_HCODE TDH
+    on TMDM.dcode = TDH.dcode
 		WHERE
 			TMDM.member_idx=
     #{idx}
@@ -2826,5 +2830,16 @@
   <select id="selectDeviceModelByVentSerial" parameterType="String" resultType="String">
     select device_model from TB_DEVICE_MODEL tdm where idx =(
     select device_model_idx from TB_DEVICE td where serial_num =#{ventSerial})
+  </select>
+
+
+  <!--IAQ 행정동코드(dcode) 가져오기-->
+  <select id="selectDcode" resultType="String">
+    SELECT
+    dcode
+    FROM
+    TB_MEMBER_DEVICE_MANAGE tmdm
+    WHERE
+    device_idx =(select idx from TB_DEVICE td where serial_num = #{iaqSerial})
   </select>
 </mapper>

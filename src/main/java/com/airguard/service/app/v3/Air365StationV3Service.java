@@ -114,7 +114,7 @@ public class Air365StationV3Service {
 
 
 
-  public LinkedHashMap<String, Object> getIotDataDetail(String serial, String hangCd) throws Exception {
+  public LinkedHashMap<String, Object> getIotDataDetail(String serial) throws Exception {
     LinkedHashMap<String, Object> resultData = new LinkedHashMap<>();
     Map<String, Object> collectionData;
     List<LinkedHashMap<String, Object>> elementDatas, elementDatas2;
@@ -310,7 +310,7 @@ public class Air365StationV3Service {
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
 
 
-      URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+hangCd);
+      URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
@@ -402,7 +402,7 @@ public class Air365StationV3Service {
         elementInfo.put("index", (grade == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(grade)));
         elementInfoList.add(elementInfo);
       }
-      weatherData.put("dongKo", weatherParsingData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherParsingData.get("P_1"));
+      //weatherData.put("dongKo", weatherParsingData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherParsingData.get("P_1"));
 
       weatherData.put("icon", (weatherParsingData.get("P_2") == null || weatherParsingData.get("P_1") == null 
           || CommonConstant.NULL_DATA.equals(weatherParsingData.get("P_1"))) ? CommonConstant.NULL_DATA : weatherParsingData.get("P_2"));
@@ -460,7 +460,7 @@ public class Air365StationV3Service {
     return resultData;
   }
 
-  public LinkedHashMap<String, Object> getIotDataDetailEncodeVersion(String serial, String hangCd) throws Exception {
+  public LinkedHashMap<String, Object> getIotDataDetailEncodeVersion(String serial) throws Exception {
     LinkedHashMap<String, Object> resultData = new LinkedHashMap<>();
     Map<String, Object> collectionData;
 
@@ -656,7 +656,7 @@ public class Air365StationV3Service {
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
 
 
-      URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+hangCd);
+      URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
@@ -747,7 +747,7 @@ public class Air365StationV3Service {
         elementInfoList.add(elementInfo);
       }
 
-      weatherData.put("dongKo", AES256Util.encrypt(weatherParsingData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherParsingData.get("P_1")+""));
+      //weatherData.put("dongKo", AES256Util.encrypt(weatherParsingData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherParsingData.get("P_1")+""));
 
       weatherData.put("icon", AES256Util.encrypt((weatherParsingData.get("P_2") == null || weatherParsingData.get("P_1") == null
               || CommonConstant.NULL_DATA.equals(weatherParsingData.get("P_1"))) ? CommonConstant.NULL_DATA : weatherParsingData.get("P_2")+""));
@@ -805,7 +805,7 @@ public class Air365StationV3Service {
   }
 
 
-  public LinkedHashMap<String, Object> getVentStatusData(String ventSerial, String hangCd) throws Exception {
+  public LinkedHashMap<String, Object> getVentStatusData(String ventSerial) throws Exception {
     LinkedHashMap<String, Object> resDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> ventDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> stationDataObj = new LinkedHashMap<String, Object>();
@@ -821,7 +821,8 @@ public class Air365StationV3Service {
 
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
-
+      String hangCd = readOnlyMapper.selectDcode(iaqSerial);
+      System.out.println("hangCD : " + hangCd);
       String aiMode = readOnlyMapper.getVentAiMode(ventSerial);
 
       Long currentDateTime = Long.parseLong(today);
@@ -901,20 +902,25 @@ public class Air365StationV3Service {
               iaqData.getCici_pm25() == null ? CommonConstant.NULL_DATA : iaqData.getCici_pm25(),"초미세먼지"};
       String[] co2Datas = {"co2", "ppm", iaqData.getCo2() == null ? CommonConstant.NULL_DATA : iaqData.getCo2(),
               iaqData.getCici_co2() == null ? CommonConstant.NULL_DATA : iaqData.getCici_co2(),"이산화탄소"};
-      String[] vocDatas = {"voc", "ppb", iaqData.getVoc() == null ? CommonConstant.NULL_DATA : iaqData.getVoc(),
-              iaqData.getCici_voc() == null ? CommonConstant.NULL_DATA : iaqData.getCici_voc(),"휘발성유기화합물"};
+//      String[] vocDatas = {"voc", "ppb", iaqData.getVoc() == null ? CommonConstant.NULL_DATA : iaqData.getVoc(),
+//              iaqData.getCici_voc() == null ? CommonConstant.NULL_DATA : iaqData.getCici_voc(),"휘발성유기화합물"};
+      String[] tempDatas = {"temp", "℃", iaqData.getTemp() == null ? CommonConstant.NULL_DATA : iaqData.getTemp(),
+              iaqData.getCici_temp() == null ? CommonConstant.NULL_DATA : iaqData.getCici_temp(),"기온"};
+      String[] humiDatas = {"humi", "%", iaqData.getHumi() == null ? CommonConstant.NULL_DATA : iaqData.getHumi(),
+              iaqData.getCici_humi() == null ? CommonConstant.NULL_DATA : iaqData.getCici_humi(),"습도"};
 
       elDataList.add(pm10Datas);
       elDataList.add(pm25Datas);
       elDataList.add(co2Datas);
-      elDataList.add(vocDatas);
+      elDataList.add(tempDatas);
+      elDataList.add(humiDatas);
 
       for (String[] elData : elDataList) {
         Map<String, Object> elMp = new LinkedHashMap<>();
         elMp.put("engName", elData[0]);
         elMp.put("korName",elData[4]);
         elMp.put("score", CommonConstant.NULL_DATA.equals(elData[3]) ? CommonConstant.NULL_DATA : Math.round(Double.valueOf(elData[3])));
-        elMp.put("value", CommonConstant.NULL_DATA.equals(elData[2]) ? CommonConstant.NULL_DATA : Integer.valueOf(elData[2]));
+        elMp.put("value", CommonConstant.NULL_DATA.equals(elData[2]) ? CommonConstant.NULL_DATA : elData[2]);
         elMp.put("unit", elData[1]);
         elMp.put("index", CommonConstant.NULL_DATA.equals(elData[3]) ? 0
                 : KweatherElementMessageManageUtil.setElementLevelKorName(elData[0],
@@ -935,13 +941,15 @@ public class Air365StationV3Service {
 
 
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+hangCd);
+
+      System.out.println("kwapiUrl : " + kwapiUrl);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
       JSONObject jObj = new JSONObject(res.getBody());
       JSONObject data = jObj.getJSONObject("data");
       String regionCode = data.getString("city_id");
-
+      System.out.println("regionCode : " + regionCode);
       //동 날씨 데이터 pm10, pm25 구하기
       HashMap<String,Object> valueMap = new HashMap<>();
       Map<String, Object> weatherData = new LinkedHashMap<>();
@@ -1039,7 +1047,7 @@ public class Air365StationV3Service {
     return resDataObj;
   }
 
-  public LinkedHashMap<String, Object> getVentStatusDataEncodeVersion(String ventSerial, String hangCd) throws Exception {
+  public LinkedHashMap<String, Object> getVentStatusDataEncodeVersion(String ventSerial) throws Exception {
     LinkedHashMap<String, Object> resDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> ventDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> stationDataObj = new LinkedHashMap<String, Object>();
@@ -1055,6 +1063,7 @@ public class Air365StationV3Service {
 
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
+      String hangCd = readOnlyMapper.selectDcode(iaqSerial);
 
       String aiMode = readOnlyMapper.getVentAiMode(ventSerial);
 
@@ -1132,13 +1141,18 @@ public class Air365StationV3Service {
               iaqData.getCici_pm25() == null ? CommonConstant.NULL_DATA : iaqData.getCici_pm25(),"초미세먼지"};
       String[] co2Datas = {"co2", "ppm", iaqData.getCo2() == null ? CommonConstant.NULL_DATA : iaqData.getCo2(),
               iaqData.getCici_co2() == null ? CommonConstant.NULL_DATA : iaqData.getCici_co2(),"이산화탄소"};
-      String[] vocDatas = {"voc", "ppb", iaqData.getVoc() == null ? CommonConstant.NULL_DATA : iaqData.getVoc(),
-              iaqData.getCici_voc() == null ? CommonConstant.NULL_DATA : iaqData.getCici_voc(),"휘발성유기화합물"};
+//      String[] vocDatas = {"voc", "ppb", iaqData.getVoc() == null ? CommonConstant.NULL_DATA : iaqData.getVoc(),
+//              iaqData.getCici_voc() == null ? CommonConstant.NULL_DATA : iaqData.getCici_voc(),"휘발성유기화합물"};
+      String[] tempDatas = {"temp", "℃", iaqData.getTemp() == null ? CommonConstant.NULL_DATA : iaqData.getTemp(),
+              iaqData.getCici_temp() == null ? CommonConstant.NULL_DATA : iaqData.getCici_temp(),"기온"};
+      String[] humiDatas = {"humi", "%", iaqData.getHumi() == null ? CommonConstant.NULL_DATA : iaqData.getHumi(),
+              iaqData.getCici_humi() == null ? CommonConstant.NULL_DATA : iaqData.getCici_humi(),"습도"};
 
       elDataList.add(pm10Datas);
       elDataList.add(pm25Datas);
       elDataList.add(co2Datas);
-      elDataList.add(vocDatas);
+      elDataList.add(tempDatas);
+      elDataList.add(humiDatas);
 
       for (String[] elData : elDataList) {
         Map<String, Object> elMp = new LinkedHashMap<>();
