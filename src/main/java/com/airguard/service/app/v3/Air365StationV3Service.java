@@ -822,8 +822,15 @@ public class Air365StationV3Service {
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
       String hangCd = readOnlyMapper.selectDcode(iaqSerial);
-      System.out.println("hangCD : " + hangCd);
       String aiMode = readOnlyMapper.getVentAiMode(ventSerial);
+      HashMap<String,Object> iaqInfo = readOnlyMapper.selectIaqRelatedOaq(iaqSerial);
+      String dfName = iaqInfo.get("dfname").toString();
+
+      stationDataObj.put("country_nm","대한민국");
+      stationDataObj.put("sido_nm",dfName.split(" ")[0]);
+      stationDataObj.put("sg_nm",dfName.split(" ")[1]);
+      stationDataObj.put("emd_nm",dfName.split(" ")[2]);
+      stationDataObj.put("hang_cd",hangCd);
 
       Long currentDateTime = Long.parseLong(today);
       Long collectionDateTime = Long.parseLong(
@@ -942,14 +949,13 @@ public class Air365StationV3Service {
 
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+hangCd);
 
-      System.out.println("kwapiUrl : " + kwapiUrl);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
       JSONObject jObj = new JSONObject(res.getBody());
       JSONObject data = jObj.getJSONObject("data");
       String regionCode = data.getString("city_id");
-      System.out.println("regionCode : " + regionCode);
+
       //동 날씨 데이터 pm10, pm25 구하기
       HashMap<String,Object> valueMap = new HashMap<>();
       Map<String, Object> weatherData = new LinkedHashMap<>();

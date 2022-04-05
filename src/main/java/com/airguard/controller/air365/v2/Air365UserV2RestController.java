@@ -127,9 +127,6 @@ public class Air365UserV2RestController {
     String lat = request.getParameter("lat") == null ? "" : request.getParameter("lat");
     String lon = request.getParameter("lon") == null ? "" : request.getParameter("lon");
 
-    System.out.println(AES256Util.encrypt(lat));
-    System.out.println(AES256Util.encrypt(lon));
-
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
     if(encoding){
       lat = AES256Util.decrypt(lat.replace(" ","+"));
