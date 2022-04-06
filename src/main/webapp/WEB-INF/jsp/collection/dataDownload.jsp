@@ -91,7 +91,7 @@
 								</select>
 							</div>
 							<div class="search_bottom mt10" style="max-width: 510px;">
-								<label for="searchValue">시리얼 번호 </label> <br/>
+								<label for="searchValue">검색 </label> <br/>
 								<input type="text" class="form-control" id="searchValue" name= "searchValue" placeholder="내용을 입력해 주세요" style="max-width:420px; display:inline; vertical-align: middle;">
 								<br>
 								데이터 다운로드 소요시간 : <span id="dataDownTime"></span> 초

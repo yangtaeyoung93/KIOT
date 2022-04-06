@@ -115,7 +115,8 @@ function initDataTableCustom() {
 	});
 
 	$('.search_bottom input').unbind().bind('keyup', function () {
-		table.column(2).search(this.value).draw();
+		//table.column(2).search(this.value).draw();
+		table.search(this.value).draw();
     });
 
 	$("#searchGroup").change(function() {
@@ -133,7 +134,6 @@ function initDataTableCustom() {
 	});
 
 	$("#searchSpace").change(function() {
-		console.log(this.value);
 		table.column(7).search(this.value).draw();
 	});
 
