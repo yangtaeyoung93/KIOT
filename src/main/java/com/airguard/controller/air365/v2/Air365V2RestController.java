@@ -215,13 +215,9 @@ public class Air365V2RestController {
           // 연결 상태 알림 (플랫폼)
           platformService.postPlatformRequestConnect(iaqSerial, request.getLocalName());
 
-          // AI모드 OFF 명령어 전송 (플랫폼)
-          resultCode = platformService.postPlatformRequestVent(serial, "A0", request.getLocalName());
+          //P0 실행
+           resultCode = platformService.postPlatformRequestVent(serial, mode, request.getLocalName());
 
-          //A0 성공인 경우만 P0 실행
-          if (resultCode == 1) {
-            resultCode = platformService.postPlatformRequestVent(serial, mode, request.getLocalName());
-          }
         }else {
           // 명령어 전송 (플랫폼)
           resultCode = platformService.postPlatformRequestVent(serial, mode, request.getLocalName());
@@ -345,12 +341,9 @@ public class Air365V2RestController {
             platformService.updateventAiMode(aiMode, list.get("ventSerial"));
             // 연결 상태 알림 (플랫폼)
             platformService.postPlatformRequestConnect(list.get("iaqSerial"), request.getLocalName());
-            // AI모드 OFF 명령어 전송 (플랫폼)
-            resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), "A0", request.getLocalName());
-            //A0 성공인 경우만 P0 실행
-            if(resultCode == 1){
-              resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
-            }
+            // P0전송
+            resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());
+
           }else {
             // 명령어 전송 (플랫폼)
             resultCode = platformService.postPlatformRequestVent(list.get("ventSerial"), mode, request.getLocalName());

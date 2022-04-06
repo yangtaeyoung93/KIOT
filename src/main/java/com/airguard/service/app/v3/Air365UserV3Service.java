@@ -119,7 +119,7 @@ public class Air365UserV3Service {
                         : mdi.getDfname().split(" ")[0]);
                 deviceInfo.put("sg_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[1]);
-                deviceInfo.put("end_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("emd_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[2]);
                 deviceInfo.put("hang_cd", mdi.getDcode() == null ? CommonConstant.NULL_DATA
                         : mdi.getDcode());
@@ -192,7 +192,7 @@ public class Air365UserV3Service {
                       : mdi.getDfname().split(" ")[0]);
               deviceInfo.put("sg_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                       : mdi.getDfname().split(" ")[1]);
-              deviceInfo.put("end_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("emd_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                       : mdi.getDfname().split(" ")[2]);
               deviceInfo.put("hang_cd", mdi.getDcode() == null ? CommonConstant.NULL_DATA
                       : mdi.getDcode());
@@ -300,7 +300,7 @@ public class Air365UserV3Service {
                         : mdi.getDfname().split(" ")[0]);
                 deviceInfo.put("sg_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[1]);
-                deviceInfo.put("end_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("emd_nm", mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[2]);
                 deviceInfo.put("hang_cd", mdi.getDcode() == null ? CommonConstant.NULL_DATA
                         : mdi.getDcode());
@@ -445,7 +445,7 @@ public class Air365UserV3Service {
                         : mdi.getDfname().split(" ")[0]));
                 deviceInfo.put("sg_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[1]));
-                deviceInfo.put("end_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("emd_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[2]));
                 deviceInfo.put("hang_cd", AES256Util.encrypt(mdi.getDcode() == null ? CommonConstant.NULL_DATA
                         : mdi.getDcode()));
@@ -523,7 +523,7 @@ public class Air365UserV3Service {
                       : mdi.getDfname().split(" ")[0]));
               deviceInfo.put("sg_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                       : mdi.getDfname().split(" ")[1]));
-              deviceInfo.put("end_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("emd_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                       : mdi.getDfname().split(" ")[2]));
               deviceInfo.put("hang_cd", AES256Util.encrypt(mdi.getDcode() == null ? CommonConstant.NULL_DATA
                       : mdi.getDcode()));
@@ -635,7 +635,7 @@ public class Air365UserV3Service {
                         : mdi.getDfname().split(" ")[0]));
                 deviceInfo.put("sg_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[1]));
-                deviceInfo.put("end_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("emd_nm", AES256Util.encrypt(mdi.getDfname() == null ? CommonConstant.NULL_DATA
                         : mdi.getDfname().split(" ")[2]));
                 deviceInfo.put("hang_cd", AES256Util.encrypt(mdi.getDcode() == null ? CommonConstant.NULL_DATA
                         : mdi.getDcode()));

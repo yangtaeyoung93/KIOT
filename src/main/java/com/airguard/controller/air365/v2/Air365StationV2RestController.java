@@ -210,9 +210,9 @@ public class Air365StationV2RestController {
     if(encoding){
       userId =  AES256Util.decrypt(userId.replace(" ","+"));
       serial =  AES256Util.decrypt(serial.replace(" ","+"));
-      stationName =  AES256Util.decrypt(stationName.replace(" ","+"));
-      lat = AES256Util.decrypt(lat.replace(" ","+"));
-      lon = AES256Util.decrypt(lon.replace(" ","+"));
+      stationName =  stationName == null ? null : AES256Util.decrypt(stationName.replace(" ","+"));
+      lat = lat == null ? null : AES256Util.decrypt(lat.replace(" ","+"));
+      lon = lon == null ? null : AES256Util.decrypt(lon.replace(" ","+"));
     }
 
     if ("".equals(userId)) {
