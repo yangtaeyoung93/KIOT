@@ -49,7 +49,8 @@ function initDataTableCustom() {
             {data: "elementConvert"},
             {data: "viewName"},
             {data: "validDigits"},
-            {data: "dataMin"}
+            {data: "dataMin"},
+            {data: "dataProcessMin"}
         ],
         columnDefs: [ 
         	{
@@ -92,6 +93,18 @@ function initDataTableCustom() {
             	    return result;
             	},
             },
+            {
+                targets : 8,
+                render : function(data, type, full, meta) {
+                if(full.dataProcessMin != null){
+                    return '<strong>'+full.dataProcessMin+"<br>"+full.dataProcessMax+'</strong>';
+                }else{
+                    return '<strong>-</strong>';
+                }
+
+                }
+
+            }
         ],
 	});
 

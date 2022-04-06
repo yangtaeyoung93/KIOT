@@ -136,7 +136,9 @@
 		    TDE.element_convert,
 		    TDE.view_name,
             TDE.data_min,
-            TDE.data_max
+            TDE.data_max,
+            TDE.data_process_min,
+            TDE.data_process_max
     FROM
       TB_DEVICE_ELEMENTS AS TDE, (SELECT @rownum := 0) AS R
   </select>

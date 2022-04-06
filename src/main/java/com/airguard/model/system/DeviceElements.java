@@ -22,6 +22,8 @@ public class DeviceElements {
   String validDigits;
   String dataMin;
   String dataMax;
+  String dataProcessMin;
+  String dataProcessMax;
 
   // OutColum
   String deviceModelIdx;

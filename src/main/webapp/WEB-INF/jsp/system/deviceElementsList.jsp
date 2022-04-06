@@ -53,6 +53,7 @@
 									<th class="bgGray1">표출명</th>
 									<th class="bgGray1">유효자릿수</th>
 									<th class="bgGray1">데이터 허용범위</th>
+									<th class="bgGray1">데이터 전처리</th>
 								</tr>
 							</thead>
 						</table>
