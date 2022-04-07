@@ -174,6 +174,11 @@ public class CommonErrorMessage {
               resultMessage = "H.W 장비 통신 중 문제가 발생 하였습니다 .";
               break;
 
+            case ExternalApiException.PLATFORM_API_CALL_EXCEPTION:
+                resultMessage = "플랫폼으로 측정데이터가 아직 수집되지 않았습니다. 잠시 기다려주세요";
+                break;
+
+
         }
 
         return resultMessage;

@@ -79,6 +79,8 @@ public class Air365V3RestController {
 
   @RequestMapping(value = "/data/vent", method = {RequestMethod.GET, RequestMethod.POST})
   public HashMap<String, Object> getVentStatusData(String serial,Boolean encoding) throws Exception {
+    logger.error("=========vent data V3 API CALL =========");
+    logger.error("=========vent serial :: {} =========",serial);
     HashMap<String, Object> result = new HashMap<>();
 
     if (serial == null || "".equals(serial)) {

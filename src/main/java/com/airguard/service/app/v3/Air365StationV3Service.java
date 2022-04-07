@@ -25,6 +25,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -967,7 +968,8 @@ public class Air365StationV3Service {
                   "pm10Value", "pm25Value"});
 
       } catch (Exception e) {
-        logger.error("Weather F.CAST API ERROR .");
+        logger.error("==========V3 data vent, Weather F.CAST API ERROR ============");
+        e.printStackTrace();
       }
 
       valueMap.put("pm10",weatherData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherData.get("P_1"));
@@ -980,7 +982,8 @@ public class Air365StationV3Service {
         weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode, new String[] {
                 "dong_ko,", "icon", "wd_ws","temp", "humi", "snowf", "rainf"});
       } catch (Exception e) {
-        logger.error("Weather TODAY API ERROR .");
+        logger.error("==========V3 data vent, Weather TODAY API ERROR ============");
+        e.printStackTrace();
       }
       valueMap.put("temp",weatherParsingData.get("P_4"));
       valueMap.put("humi",weatherParsingData.get("P_5"));
@@ -1044,9 +1047,17 @@ public class Air365StationV3Service {
       resDataObj.put("ventData", ventDataObj);
       resDataObj.put("stationData", stationDataObj);
 
-    } catch (SQLException e) {
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new ParameterException(ParameterException.PARAMETER_EXCEPTION);
+    }catch (SQLException e) {
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
 
@@ -1203,7 +1214,7 @@ public class Air365StationV3Service {
                   "pm10Grade_who", "pm25Grade_who", "pm10Value", "pm25Value"});
 
       } catch (Exception e) {
-        logger.error("Weather F.CAST API ERROR .");
+        logger.error("\"==========V3 data vent(Encode version), Weather F.CAST API ERROR .");
       }
       valueMap.put("pm10",weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3"));
       valueMap.put("pm25",weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4"));
@@ -1215,7 +1226,7 @@ public class Air365StationV3Service {
         weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode, new String[] {
                 "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
       } catch (Exception e) {
-        logger.error("Weather TODAY API ERROR .");
+        logger.error("==========V3 data vent(Encode version), Weather TODAY API ERROR ============");
       }
 
       valueMap.put("temp",weatherParsingData.get("P_4"));
@@ -1288,9 +1299,17 @@ public class Air365StationV3Service {
       resDataObj.put("ventData", ventDataObj);
       resDataObj.put("stationData", stationDataObj);
 
-    } catch (SQLException e) {
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new ParameterException(ParameterException.PARAMETER_EXCEPTION);
+    }catch (SQLException e) {
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
 

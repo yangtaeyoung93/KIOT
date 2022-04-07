@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -1059,12 +1060,12 @@ public class Air365StationV2Service {
     LinkedHashMap<String, Object> resDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> ventDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> stationDataObj = new LinkedHashMap<String, Object>();
-    SensorDataDto ventData, iaqData;
+    SensorDataDto ventData = new SensorDataDto();
+    SensorDataDto iaqData = new SensorDataDto();
 
     Calendar calendar = Calendar.getInstance();
     Date date = calendar.getTime();
     String today = (new SimpleDateFormat("yyyyMMddHHmm").format(date));
-
     try {
 
       String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
@@ -1184,12 +1185,19 @@ public class Air365StationV2Service {
       resDataObj.put("ventData", ventDataObj);
       resDataObj.put("stationData", stationDataObj);
 
-    } catch (SQLException e) {
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new NumberFormatException();
+    }catch(SQLException e){
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
-    } catch (Exception e) {
+    }catch (Exception e) {
+      e.printStackTrace();
       throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
-
     return resDataObj;
   }
 
@@ -1322,12 +1330,20 @@ public class Air365StationV2Service {
       resDataObj.put("ventData", ventDataObj);
       resDataObj.put("stationData", stationDataObj);
 
-    } catch (SQLException e) {
+
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new NumberFormatException();
+    }catch(SQLException e){
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
-    } catch (Exception e) {
+    }catch (Exception e) {
+      e.printStackTrace();
       throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
-
     return resDataObj;
   }
 
