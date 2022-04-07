@@ -387,7 +387,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt20">
+                            <div class="row mt20" style="margin-bottom:20px;">
                                 <div class="col-6">
                                     <div class="custom-control">
                                         <label for="etc">비고</label><br/>
@@ -403,7 +403,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt20" id="reportArea" style="display: none;">
+                            <div class="row mt20" id="reportArea" style="display: none;margin-bottom:20px">
                                 <div class="col-6">
                                     <div class="custom-control">
                                         <form enctype="multipart/form-data" id="fileUploadForm">
@@ -425,14 +425,21 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="col-6" id="setTempDiv">
-                                    <div class="custom-control">
-                                        <label for="setTemp">설정 온도</label><br/>
-                                        <input type="number" name="setTemp" id="setTemp"
-                                               class="form-control"/>
-                                    </div>
-                                </div>
+
                             </div>
+                            <font id='NETboxTitle' style='font-size:1.25em; font-weight:bold;'>신기술인증 제어요소</font>
+                             <div id="NETbox" style="border:2px solid #00a1ff;border-radius:0.25em;padding-bottom:30px;margin-top:5px;">
+                            <div class="row mt20" id="setTempDiv">
+
+                                 <div class="col-6" >
+                                     <div class="custom-control">
+                                         <label for="setTemp">설정 온도</label><br/>
+                                         <input type="number" name="setTemp" id="setTemp"
+                                                class="form-control"/>
+                                     </div>
+                                 </div>
+                             </div>
+
                             <div class="row mt20" id="updateRelatedDiv">
                                 <div class="col-6">
                                     <div class="custom-control">
@@ -467,6 +474,7 @@
                                     </div>
                                 </div>
                             </div>
+                                </div>
                             <div class="row mt20" id="imageArea" style="display: none;">
                                 <div class="col-12">
                                     <div class="custom-control">

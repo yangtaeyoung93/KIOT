@@ -168,18 +168,22 @@ function getDeviceInfo(val) {
         $("#relatedSelectArea").html(relatedHtml);
       }
     })
-
     $("#txtRelatedTitle").show();
-    $("#updateRelatedDiv").show();
+    $('#NETbox').show();
+    $('#NETboxTitle').show();
+    //$("#updateRelatedDiv").show();
+    //$('#setTempDiv').show();
 
   } else {
-    $('#setTempDiv').css('display', 'none');
     $("#VentDiv").html("");
     $("#ventArea").hide();
     $("#txtVentTitle").hide();
     $("#txtRelatedTitle").hide();
     $("#VentupdateBtn").hide();
-    $("#updateRelatedDiv").hide();
+    //$("#updateRelatedDiv").hide();
+    //$('#setTempDiv').hide();
+    $('#NETbox').hide();
+    $('#NETboxTitle').hide();
   }
 
   $("#beforeIdx").val(val);
