@@ -63,12 +63,12 @@ public class WeatherApiUtil {
     JSONObject mainData = resDataObj.getJSONObject("main");
     for (int i = 0; i < parsers.length; i++)
       result.put(new StringBuilder("P_").append(String.valueOf(i + 1)).toString(),
-          Integer.valueOf(mainData.get(parsers[i]).toString()));
+         mainData.get(parsers[i]).toString());
 
     return result;
   }
 
-  public static Map<String, Object> weatherTodayApi(String region, String[] parsers)
+  public static Map<String, Object> weatherTodayApi(String region)
       throws Exception {
 
     Map<String, Object> result = new LinkedHashMap<>();
@@ -96,6 +96,7 @@ public class WeatherApiUtil {
           result.put(new StringBuilder("P_5").toString(), getTagValue("humi", eElement));
           result.put(new StringBuilder("P_6").toString(), getTagValue("snowf", eElement));
           result.put(new StringBuilder("P_7").toString(), getTagValue("rainf", eElement));
+          result.put(new StringBuilder("P_8").toString(), getTagValue("date", eElement));
 
         }
     }

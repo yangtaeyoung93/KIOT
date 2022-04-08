@@ -621,8 +621,7 @@ public class Air365StationV2Service {
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(region, new String[] {
-                "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");
@@ -889,8 +888,7 @@ public class Air365StationV2Service {
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(region, new String[] {
-                "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");

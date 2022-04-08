@@ -324,8 +324,7 @@ public class Air365StationV3Service {
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(region, new String[] {
-            "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");
@@ -670,8 +669,7 @@ public class Air365StationV3Service {
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(region, new String[] {
-                "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
         logger.error("Weather TODAY API ERROR .");
@@ -957,7 +955,7 @@ public class Air365StationV3Service {
       JSONObject data = jObj.getJSONObject("data");
       String regionCode = data.getString("city_id");
 
-      //동 날씨 데이터 pm10, pm25 구하기
+      //동 날씨 데이터 pm10, pm25 구하기(동별미세먼지)
       HashMap<String,Object> valueMap = new HashMap<>();
       Map<String, Object> weatherData = new LinkedHashMap<>();
 
@@ -965,28 +963,41 @@ public class Air365StationV3Service {
 
         if (!"".equals(regionCode))
           weatherData = WeatherApiUtil.weatherAirCastApi(regionCode, new String[] {
-                  "pm10Value", "pm25Value"});
+                  "pm10Value", "pm25Value","date"});
 
       } catch (Exception e) {
         logger.error("==========V3 data vent, Weather F.CAST API ERROR ============");
         e.printStackTrace();
       }
-
+      String dongOutDateTime = weatherData.get("P_3").toString();
       valueMap.put("pm10",weatherData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherData.get("P_1"));
       valueMap.put("pm25",weatherData.get("P_2") == null ? CommonConstant.NULL_DATA : weatherData.get("P_2"));
+
+      //동별 미세먼지 receiveError 계산(30분 이상인 경우 error:true)
+      SimpleDateFormat dongFormat = new SimpleDateFormat("yyyyMMddHHmm");
+      Date eTime = new Date();
+      Date sTime = dongFormat.parse(dongOutDateTime);
+      long dongTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
+
 
       //동 날씨 데이터 humi, temp 구하기
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode, new String[] {
-                "dong_ko,", "icon", "wd_ws","temp", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode);
       } catch (Exception e) {
         logger.error("==========V3 data vent, Weather TODAY API ERROR ============");
         e.printStackTrace();
       }
       valueMap.put("temp",weatherParsingData.get("P_4"));
       valueMap.put("humi",weatherParsingData.get("P_5"));
+      String weatherDateTime = weatherParsingData.get("P_8").toString();
+
+      //날씨정보 receiveError 계산(2시간 이상인 경우 error:true)
+      SimpleDateFormat weatherFormat = new SimpleDateFormat("yyyyMMddHH");
+      sTime = weatherFormat.parse(weatherDateTime);
+      long weatherTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
+
 
 
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
@@ -1042,6 +1053,9 @@ public class Air365StationV3Service {
       ventDataObj.put("waterAlarm", ventData.getWater_alarm() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getWater_alarm()));
       ventDataObj.put("devStat", ventData.getDev_stat() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getDev_stat()));
 
+      stationDataObj.put("outDateTime",dongOutDateTime);
+      stationDataObj.put("airReceiveError",dongTimeGap >= 30 ? true : false);
+      stationDataObj.put("weatherReceiveError",weatherTimeGap >= 120 ? true : false);
       stationDataObj.put("outElements",outElements);
       stationDataObj.put("elements", elementList);
       resDataObj.put("ventData", ventDataObj);
@@ -1223,8 +1237,7 @@ public class Air365StationV3Service {
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
       try {
 
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode, new String[] {
-                "dong_ko,", "icon", "temp", "wd_ws", "humi", "snowf", "rainf"});
+        weatherParsingData = WeatherApiUtil.weatherTodayApi(regionCode);
       } catch (Exception e) {
         logger.error("==========V3 data vent(Encode version), Weather TODAY API ERROR ============");
       }
