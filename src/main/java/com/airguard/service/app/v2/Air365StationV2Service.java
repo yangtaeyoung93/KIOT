@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1661,6 +1662,89 @@ public class Air365StationV2Service {
 
     resultData.put("result", resultCode);
     resultData.put("date", searchDate);
+    resultData.put("count", tmList.size());
+    resultData.put("data", dataMp);
+
+    return resultData;
+  }
+
+  public LinkedHashMap<String, Object> getReportDataWebWithDate(String serial, String fromDate, String toDate, String standard) throws Exception {
+    LinkedHashMap<String, Object> resultData = new LinkedHashMap<>();
+    List<String> tmList = new ArrayList<String>();
+    int resultCode = 0;
+    Map<String, Object> dataMp = new LinkedHashMap<>();
+    String standardParam = "";
+
+    HashMap<String, String> deviceInfo = readOnlyMapper.selectMemberDeviceInfo(serial);
+
+    try {
+
+      switch (standard) {
+        case "1min":
+          standardParam = "sum";
+          break;
+        case "5min":
+          standardParam = "5m-avg-none";
+          break;
+        case "hour":
+          standardParam = "1h-avg-none";
+          break;
+        default:
+          standardParam = "sum";
+          break;
+      }
+
+      String deviceType = String.valueOf(deviceInfo.get("device_type"));
+
+//      Map<String, String> searchDateMp = getSearchDate(standard, searchDate, "B");
+      String fD = fromDate.substring(0,4)+"/"+fromDate.substring(4,6)+"/"+fromDate.substring(6);
+      String tD = toDate.substring(0,4)+"/"+toDate.substring(4,6)+"/"+toDate.substring(6);
+      String paramStr = "?start=".concat(URLEncoder.encode(fD.concat("-00:00:00"), "UTF-8"))
+              .concat("&end=").concat(URLEncoder.encode(tD.concat("-23:59:00"), "UTF-8"))
+              .concat("&m=").concat(URLEncoder.encode("avg:".concat(standardParam.concat(":kw-")
+                      .concat((deviceType.equals("dot")) ? "oaq" : deviceType.toLowerCase()))
+                      .concat("-sensor-").concat((deviceType.equals("dot")) ? "dot" : "kiot")
+                      .concat(".").concat(serial).concat("{sensor=*}"), "UTF-8"));
+
+      JSONObject platData = getSerialToReportPlatFormData(paramStr, standard);
+      tmList = createDateTimeList(fromDate, toDate, standard, "B");
+
+      elLoop: for (DeviceElements el : dataCenterMapper.selectDeviceModelElements(serial)) {
+        String engName = el.getEngName();
+
+        List<Object> elDataTempList = new ArrayList<>(), elDataList = new ArrayList<>();
+        for (String tm : tmList) {
+          String timestamp = String.valueOf(tm);
+          double elData;
+
+          if (platData.has(engName)) {
+            JSONObject platElData = platData.getJSONObject(engName);
+            elData = platElData.has(timestamp) ? platElData.getDouble(timestamp) : -999;
+
+          } else {
+            elData = -999;
+          }
+
+          if ("temp".equals(engName)) {
+            elDataTempList.add(Math.round(elData * 10) / 10.0);
+
+          } else {
+            elDataList.add(Math.round(elData));
+          }
+
+          dataMp.put(engName, "temp".equals(engName) ? elDataTempList : elDataList);
+        }
+      }
+
+      resultCode = 1;
+
+    } catch (Exception e) {
+      logger.error("Exception Message :: {}", e.getMessage());
+      throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
+    }
+
+    resultData.put("result", resultCode);
+    resultData.put("date", fromDate+"-"+toDate);
     resultData.put("count", tmList.size());
     resultData.put("data", dataMp);
 

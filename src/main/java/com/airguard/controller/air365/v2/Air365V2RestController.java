@@ -477,6 +477,31 @@ public class Air365V2RestController {
     return result;
   }
 
+  @ApiOperation(value = "장비 데이터 조회 (분석 데이터) standard :: 1 minute, 5 minute, 1 hours, 1 days, 1 month", tags = "AIR365, 프로젝트")
+  @ApiImplicitParams({
+          @ApiImplicitParam(name = "serial", value = "스테이션 번호"),
+          @ApiImplicitParam(name = "searchDate", value = "검색 기준 일"),
+          @ApiImplicitParam(name = "standard", value = "검색 데이터 기준"),
+  })
+  @RequestMapping(value = "/data/reportWithDate", method = {RequestMethod.GET, RequestMethod.POST})
+  public HashMap<String, Object> getReportData(String serial, String fromDate, String toDate, String standard, String type) throws Exception {
+    HashMap<String, Object> result = new HashMap<>();
+
+    if (Arrays.stream(new String[] {"1min", "5min", "hour"}).noneMatch(standard::equals))
+      throw new ParameterException(ParameterException.ILLEGAL_MODE_PARAMETER_EXCEPTION);
+
+    if (serial == null || "".equals(serial)) {
+      throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
+    } else if (fromDate == null || "".equals(fromDate) || toDate == null || "".equals(toDate) || standard == null || "".equals(standard)) {
+      throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
+    }
+
+    // app 이용, 예외 처리
+    result = stationService.getReportDataWebWithDate(serial, fromDate,toDate, standard);
+
+    return result;
+  }
+
 
   @ApiOperation(value = "NET인증 VENT 설정 정보 조회", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
