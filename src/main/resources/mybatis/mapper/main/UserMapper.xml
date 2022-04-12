@@ -144,32 +144,40 @@
 		WHERE
 			fcm_token = #{token}
 	</delete>
-
+<!--회원가입 시 관심지역 필수 아닌것으로 변경.20220412-->
 	<insert id="insertUserInfo" parameterType="HashMap">
 		INSERT 
 			INTO TB_MEMBER(
 					user_id, 
-					user_pw, 
-					region, 
-					region_name, 
-					station_shared, 
-					user_name,
-					phone_number,
-					user_email,
-					use_yn
+					user_pw
+					<if test='!region.equals("")'>
+						,region
+					</if>
+					<if test='!regionName.equals("")'>
+						,region_name
+					</if>
+					,station_shared
+					,user_name
+					,phone_number
+					,user_email
+					,use_yn
 			    	<if test='!telephone.equals("")'>
 						,telephone
 					</if>
 				) VALUES (
-					#{userId}, 
-					#{userPw}, 
-					#{region}, 
-					#{regionName}, 
-					'Y', 
-					#{userName},
-					#{phoneNumber},
-					#{userEmail},
-					'Y'
+					#{userId}
+					,#{userPw}
+					<if test='!region.equals("")'>
+						,#{region}
+					</if>
+					<if test='!regionName.equals("")'>
+						,#{regionName}
+					</if>
+					,'Y'
+					,#{userName}
+					,#{phoneNumber}
+					,#{userEmail}
+					,'Y'
 					<if test='!telephone.equals("")'>
 						,#{telephone}
 					</if>
