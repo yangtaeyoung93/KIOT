@@ -129,6 +129,9 @@
     <if test=" lon != null ">
       , lon = #{lon}
     </if>
+    <if test=" dcode != null">
+      , dcode = #{dcode}
+    </if>
     WHERE
     TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id = #{userId})
     AND TMDM.device_idx = (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serial})
