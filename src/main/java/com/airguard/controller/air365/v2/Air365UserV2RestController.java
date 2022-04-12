@@ -345,8 +345,8 @@ public class Air365UserV2RestController {
       password = AES256Util.decrypt(password.replace(" ","+"));
       name = AES256Util.decrypt(name.replace(" ","+"));
       phoneNumber = AES256Util.decrypt(phoneNumber.replace(" ","+"));
-      region = AES256Util.decrypt(region.replace(" ","+"));
-      regionName = AES256Util.decrypt(regionName.replace(" ","+"));
+      region = region.equals("") ? "" : AES256Util.decrypt(region.replace(" ","+"));
+      regionName = region.equals("") ? "" : AES256Util.decrypt(regionName.replace(" ","+"));
       email = AES256Util.decrypt(email.replace(" ","+"));
       telephone = AES256Util.decrypt(telephone.replace(" ","+"));
     }
@@ -359,9 +359,7 @@ public class Air365UserV2RestController {
       throw new ParameterException(ParameterException.NULL_PHONE_PARAMETER_EXCEPTION);
     } else if ("".equals(email)) {
       throw new ParameterException(ParameterException.NULL_EMAIL_PARAMETER_EXCEPTION);
-    } else if ("".equals(region)) {
-      throw new ParameterException(ParameterException.NULL_REGION_NUMBER_PARAMETER_EXCEPTION);
-    } else if ("".equals(name) || "".equals(regionName)) {
+    } else if ("".equals(name)) {
       throw new ParameterException(ParameterException.NULL_PARAMETER_EXCEPTION);
     } else if (!phoneNumber.matches(CommonConstant.REG_PHONE)) {
       throw new ParameterException(ParameterException.ILLEGAL_PHONE_PARAMETER_EXCEPTION);
@@ -379,7 +377,7 @@ public class Air365UserV2RestController {
       reqInfo.put("region", region);
       reqInfo.put("regionName", regionName);
       reqInfo.put("userEmail", email);
-
+      System.out.println(reqInfo);
       res = service.insertUserInfo(reqInfo);
     }
     return res;

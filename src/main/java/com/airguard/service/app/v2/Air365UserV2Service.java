@@ -1687,6 +1687,7 @@ public class Air365UserV2Service {
       resultCode = mapper.insertUserInfo(req);
 
     } catch (Exception e) {
+      e.printStackTrace();
       throw new SQLException(SQLException.DUPLICATE_TARGET_EXCEPTION);
     }
 
