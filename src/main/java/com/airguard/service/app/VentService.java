@@ -313,6 +313,8 @@ public class VentService {
       result.put("standardTemp", readOnlyMapper.selectSetTemp(iaqSerial) == null ? 26 : readOnlyMapper.selectSetTemp(iaqSerial));
       Map<String, Object> iaqInfo = readOnlyMapper.selectIaqRelatedOaq(iaqSerial);
       result.put("locationArea", iaqInfo.get("dfname"));
+      result.put("lat",iaqInfo.getOrDefault("lat","NA"));
+      result.put("lon",iaqInfo.getOrDefault("lon","NA"));
       result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
       result.put("outsideType", result.get("oaq").equals("NA")? "0" : "1");
       HashMap<String, Object> latLon = getLatLonRangeByDistance(iaqInfo.get("lat"), iaqInfo.get("lon"));
