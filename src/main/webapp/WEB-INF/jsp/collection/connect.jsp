@@ -9,6 +9,10 @@
 .content-wrapper{
     width:1655px;
 }
+
+.main-sidebar{
+    position : fixed !important;
+}
 </style>
 <div class="content-wrapper">
     <section class="content-header">

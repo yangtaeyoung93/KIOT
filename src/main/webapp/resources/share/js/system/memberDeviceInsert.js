@@ -541,4 +541,78 @@ $().ready(function () {
   $('#parentSpaceSelect').change(function () {
     selecetParentSpace($(this).val());
   })
+
+
+  $('#getAddressBtn').click(function(){
+            $.ajax({
+                   method: "GET",
+                   url: "https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat="+$('#lat').val()+"&lon="+$('#lon').val(),
+                   async : false,
+                   beforeSend: function (xhr) {
+                       xhr.setRequestHeader("auth","a3dlYXRoZXItYXBwLWF1dGg=");
+                   },
+                   success: function (d) {
+                     let data = d.data;
+                       $('#sCode option:contains('+data.sido_nm+')').attr("selected","selected");
+
+                       let func1 = new Promise((resolve,reject)=>{ //new Promise() 메서드로 생성되면 대기(pending) 상태
+                               $("#gCode").children('option').remove();
+                               let gCodeList = [];
+                               let html = "<option value='000'>선택</option>";
+                               $.ajax({
+                                   url: "/api/dong/guList/dev",
+                                   type: "get",
+                                   async : false,
+                                   data: "searchSdcode=" + $('#sCode option:contains('+data.sido_nm+')').val(),
+                                   success: function (param) {
+                                     param.data.forEach((datas) => {
+                                       gCodeList.push([datas.dname, datas.sggcode]);
+                                     });
+                                     gCodeList.forEach((gCodes) => {
+                                       html += "<option value='" + gCodes[1] + "'>" + gCodes[0] + "</option>";
+                                     });
+                                     $("#gCode").html(html);
+                                     $('#gCode option:contains('+data.sg_nm+')').attr("selected","selected");
+                                     resolve(data); //resolve 콜백으로 value 결과 값을 보내면 이행(fulfilled)상태
+                                   },
+                                   error : function(){
+                                      $('#gCode').html("<option value='000'>선택</option>");
+                                      reject();
+                                   }
+                               });
+                       });
+
+                       func1.then(function(data){ //promise.then : promise의 resolve 값을 다룬다.
+                          $("#dCode").children('option').remove();
+                            let dCodeList = [];
+                            let html = "<option value='0000000000'>선택</option>";
+                            $.ajax({
+                              url: "/api/dong/dongList/dev",
+                              type: "get",
+                              async : false,
+                              data: "searchSdcode=" + $('#sCode').val() + "&searchSggcode=" + $('#gCode').val(),
+                              success: function (param) {
+                                if (param) {
+                                  param.data.forEach((datas) => {
+                                    dCodeList.push([datas.dname, datas.dcode]);
+                                  });
+                                  dCodeList.forEach((dCodes) => {
+                                    html += "<option value='" + dCodes[1] + "'>" + dCodes[0]
+                                        + "</option>";
+                                  });
+                                } else {
+                                  html = "<option value='" + 0 + "'>표시할 동이 없습니다.</option>";
+                                }
+                                $("#dCode").html(html);
+                                $('#dCode option:contains('+data.emd_nm+')').attr("selected","selected");
+                              }
+                            });
+                       });
+                   },
+                   error(){
+                      alert("위경도 값을 확인해주세요");
+                   }
+            });
+   });
+
 })

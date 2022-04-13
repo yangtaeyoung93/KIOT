@@ -210,7 +210,7 @@
                                         <div class="custom-control">
                                             <label>설치 위치 (<font style="color:red">*</font>)</label>
                                             <div class="row col-12">
-                                                <div style="width: 18%; margin: 0 1%;">
+                                                <div style="width: 15%; margin: 0 1%;">
                                                     <label for="lat"
                                                            class="mt5 mr5">위도</label>
                                                     <input type="text"
@@ -218,7 +218,7 @@
                                                            id="lat" name="lat" value=""
                                                            placeholder="35.12752">
                                                 </div>
-                                                <div style="width: 18%; margin: 0 1%;">
+                                                <div style="width: 15%; margin: 0 1%;">
                                                     <label for="lon"
                                                            class="mt5 mr5">경도</label>
                                                     <input type="text"
@@ -226,19 +226,23 @@
                                                            id="lon" name="lon" value=""
                                                            placeholder="127.1234">
                                                 </div>
-                                                <div style="width: 18%; margin: 0 1%;">
+                                                <div style="width:15%;">
+                                                 <label class="mt5 mr5">위경도->주소 변환</label>
+                                                 <input type="button" id="getAddressBtn" class="btn btn-primary" value="변환"/>
+                                                </div>
+                                                <div style="width: 15%; margin: 0 1%;">
                                                     <label for="sCode"
                                                            class="mt5 mr5">행정시/도</label>
                                                     <select name="sCode" id="sCode"
                                                             class="form-control mr10"></select>
                                                 </div>
-                                                <div style="width: 18%; margin: 0 1%;">
+                                                <div style="width: 15%; margin: 0 1%;">
                                                     <label for="gCode"
                                                            class="mt5 mr5">행정시/군/구</label>
                                                     <select name="gCode" id="gCode"
                                                             class="form-control mr10"></select>
                                                 </div>
-                                                <div style="width: 18%; margin: 0 1%;">
+                                                <div style="width: 15%; margin: 0 1%;">
                                                     <label for="dCode"
                                                            class="mt5 mr5">행정읍/면/동</label>
                                                     <select name="dCode" id="dCode"

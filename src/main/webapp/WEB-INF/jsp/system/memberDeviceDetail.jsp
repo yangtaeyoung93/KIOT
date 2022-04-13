@@ -236,7 +236,7 @@
                             <input type="hidden" name="memberIdx" id="memberIdx" value="${idx }"/>
                             <hr>
                             <div class="row ">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="custom-control">
                                         <label for="stationName">
                                             스테이션명 (<span style="color:red">*</span>)
@@ -268,6 +268,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <class="col-2">
+                                <label>위/경도를 주소로 변환</label><br>
+                                <input type="button" id="getAddressBtn" class="btn btn-primary" value="변환"/>
+
                             </div>
                             <div class="row mt20">
                                 <div class="col-3">

@@ -15,6 +15,9 @@
 	color: white;
 	border-radius: 5px;
 }
+.main-sidebar{
+    position : fixed !important;
+}
 
 .content-wrapper{
     width:1655px;
