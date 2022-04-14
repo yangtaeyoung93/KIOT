@@ -292,7 +292,7 @@ $().ready(
 						s_day = "0"+s_day;
 					}
 
-					$('#endDt').val(s_year+"/"+s_month+"/"+s_day);
+					//$('#endDt').val(s_year+"/"+s_month+"/"+s_day);
 
 					$('#endDt').datepicker('option', {
 						minDate: selectDate,
@@ -300,6 +300,7 @@ $().ready(
 				        $("#endDt").datepicker( "option", "maxDate", edate );                
 				        setSdate = selectDate;
 				    }});
+
 			    }
 			})
 
@@ -323,7 +324,7 @@ $().ready(
 					}
 					
 
-					$('#startDt').val(s_year+"/"+s_month+"/"+s_day);
+					//$('#startDt').val(s_year+"/"+s_month+"/"+s_day);
 			      
 			    }
 			})

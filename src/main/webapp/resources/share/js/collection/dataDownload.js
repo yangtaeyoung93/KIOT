@@ -283,7 +283,6 @@ function datePickerCustom(referenceDate) {
 				}
 			});
 
-			$('#endDt').focus();
 		}
 	}).datepicker("setDate", new Date());
 
@@ -397,7 +396,7 @@ $().ready(() => {
 	initDataTableCustom();
 
 	$("#startDt").one("click", () => {
-		alert("최대 6개월치 데이터, 다운로드가 가능합니다.");
+		alert("최대 6개월치 데이터 다운로드가 가능합니다.");
 	})
 
 	$("#allCh").click(function() {
@@ -416,7 +415,6 @@ $().ready(() => {
 			$("input[name=chBox]").attr("checked", $("#allCh").prop("checked"));
 		}
 
-		console.log("deviceSerials :: ", deviceSerials);
 
 	})
 })

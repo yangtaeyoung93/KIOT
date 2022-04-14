@@ -152,6 +152,7 @@ function initMap() {
 }
 
 $().ready(function() {
+
 	var h_idx = $("#userIdx").val();
 	if(h_idx){
 		$("#userId").attr("readonly",true);
@@ -164,6 +165,7 @@ $().ready(function() {
 	}else{
 		$("#userId").attr("readonly",false);
 		$("#userPw").attr("disabled",false);
+		$('#loginCntReset').hide();
 		$("#chkpwDiv").hide();
 		$("#chk_userId").show();
 		$("#chk_id").val("0");

@@ -21,6 +21,7 @@ import com.airguard.util.KweatherElemeniUtil;
 import com.airguard.util.KweatherElementMessageManageUtil;
 import com.airguard.util.WeatherApiUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -293,35 +294,38 @@ public class Air365StationV2Service {
 
   public LinkedHashMap<String, Object> updateStation(HashMap<String, Object> req) throws Exception {
     LinkedHashMap<String, Object> res = new LinkedHashMap<>();
-    String lat = req.get("lat").toString();
-    String lon = req.get("lon").toString();
 
     try {
-    RestTemplate restTemplate = new RestTemplate();
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-    headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
-    headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
+      if(req.getOrDefault("lat",null)!=null && req.getOrDefault("lon",null)!=null) {
+        String lat = req.get("lat").toString();
+        String lon = req.get("lon").toString();
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+        headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
 
 
-    URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat="+lat+"&lon="+lon);
+        URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat=" + lat + "&lon=" + lon);
 
-    RequestEntity<String> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
-    ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+        RequestEntity<String> requestEntity = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
 
-    JSONObject jObj = new JSONObject(responseEntity.getBody());
-    JSONObject data = jObj.getJSONObject("data");
-    String hang_cd = data.getString("hang_cd");
-    String sido_nm = data.getString("sido_nm");
-    String sg_nm = data.getString("sg_nm");
-    String emd_nm = data.getString("emd_nm");
+        JSONObject jObj = new JSONObject(responseEntity.getBody());
+        JSONObject data = jObj.getJSONObject("data");
+        String hang_cd = data.getString("hang_cd");
+        String sido_nm = data.getString("sido_nm");
+        String sg_nm = data.getString("sg_nm");
+        String emd_nm = data.getString("emd_nm");
 
-    req.put("dcode",hang_cd);
-
+        req.put("dcode", hang_cd);
+      }
       memberDeviceMapper.updateMemberDevice(req);
 
       res.put("result", CommonConstant.R_SUCC_CODE);
 
+    }catch(JSONException e){
+      throw new ParameterException(ParameterException.ILLEGAL_LAT_LON_PARAMETER_EXCEPTION);
     } catch (Exception e) {
       throw new SQLException(SQLException.LIMIT_TARGET_EXCEPTION);
     }
