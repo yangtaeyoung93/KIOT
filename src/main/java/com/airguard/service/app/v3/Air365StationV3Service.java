@@ -441,8 +441,9 @@ public class Air365StationV3Service {
       resultData.put("totalIndex", KweatherElementMessageManageUtil.setElementLevelKorName("ci", String.valueOf(ciIndex)));
       resultData.put("totalGrade", (ciIndex == 0) ? "NA" : ciIndex);
       resultData.put("lastUpdated", !collectionData.containsKey("cusTm") ? "NA" : collectionData.get("cusTm").toString());
+      Long rt = (Long.parseLong(collectionData.get("timestamp").toString())) + 5 * 60;
       resultData.put("receiveError", !collectionData.containsKey("timestamp") ? "NA" : 
-        ((Long.parseLong(collectionData.get("timestamp").toString())) + (5 * 60)) > (System.currentTimeMillis()));
+        (Long.parseLong(rt.toString()+"000") < (System.currentTimeMillis())));
 
       resultData.put("action", (ciIndex == 0) ? "NA" : KweatherElementMessageManageUtil.CI_ACTION[ciIndex - 1]
           .concat(" 다만, 더욱 쾌적한 환경을 위해서 아래의 행동 요령을 참고해 주세요. ").concat(badTargetElements));
@@ -784,8 +785,9 @@ public class Air365StationV3Service {
       resultData.put("totalIndex", AES256Util.encrypt(KweatherElementMessageManageUtil.setElementLevelKorName("ci", String.valueOf(ciIndex))));
       resultData.put("totalGrade", AES256Util.encrypt((ciIndex == 0) ? "NA" : ciIndex+""));
       resultData.put("lastUpdated", AES256Util.encrypt(!collectionData.containsKey("cusTm") ? "NA" : collectionData.get("cusTm").toString()));
+      Long rt = (Long.parseLong(collectionData.get("timestamp").toString())) + 5 * 60;
       resultData.put("receiveError", AES256Util.encrypt(!collectionData.containsKey("timestamp") ? "NA" :
-              String.valueOf(((Long.parseLong(collectionData.get("timestamp").toString())) + (5 * 60)) > (System.currentTimeMillis()))));
+              String.valueOf(Long.parseLong(rt.toString()+"000")  < (System.currentTimeMillis()))));
 
       resultData.put("action", AES256Util.encrypt((ciIndex == 0) ? "NA" : KweatherElementMessageManageUtil.CI_ACTION[ciIndex - 1]
               .concat(" 다만, 더욱 쾌적한 환경을 위해서 아래의 행동 요령을 참고해 주세요. ").concat(badTargetElements)));
@@ -865,7 +867,7 @@ public class Air365StationV3Service {
       ventDataObj.put("exhMode", ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getExh_mode()));
       ventDataObj.put("autoMode", ventData.getAuto_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAuto_mode()));
       ventDataObj.put("airMode", ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAir_mode()));
-//      ventDataObj.put("airMode", aiMode == null ? CommonConstant.NULL_DATA : Integer.valueOf(aiMode));
+      ventDataObj.put("aiMode", aiMode == null ? CommonConstant.NULL_DATA : Integer.valueOf(aiMode));
 
       if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
         ventDataObj.put("ventMode","H1"); //바이패스 0 & 공청기모드 0 => 환기모드
@@ -991,9 +993,10 @@ public class Air365StationV3Service {
       }
       valueMap.put("temp",weatherParsingData.get("P_4"));
       valueMap.put("humi",weatherParsingData.get("P_5"));
-      String weatherDateTime = weatherParsingData.get("P_8").toString();
+
 
       //날씨정보 receiveError 계산(2시간 이상인 경우 error:true)
+      String weatherDateTime = weatherParsingData.get("P_8").toString();
       SimpleDateFormat weatherFormat = new SimpleDateFormat("yyyyMMddHH");
       sTime = weatherFormat.parse(weatherDateTime);
       long weatherTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
@@ -1095,8 +1098,15 @@ public class Air365StationV3Service {
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
       String hangCd = readOnlyMapper.selectDcode(iaqSerial);
-
       String aiMode = readOnlyMapper.getVentAiMode(ventSerial);
+      HashMap<String,Object> iaqInfo = readOnlyMapper.selectIaqRelatedOaq(iaqSerial);
+      String dfName = iaqInfo.get("dfname").toString();
+
+      stationDataObj.put("country_nm",AES256Util.encrypt("대한민국"));
+      stationDataObj.put("sido_nm",AES256Util.encrypt(dfName.split(" ")[0]));
+      stationDataObj.put("sg_nm",AES256Util.encrypt(dfName.split(" ")[1]));
+      stationDataObj.put("emd_nm",AES256Util.encrypt(dfName.split(" ")[2]));
+      stationDataObj.put("hang_cd",AES256Util.encrypt(hangCd));
 
       Long currentDateTime = Long.parseLong(today);
       Long collectionDateTime = Long.parseLong(
@@ -1134,7 +1144,7 @@ public class Air365StationV3Service {
       ventDataObj.put("exhMode", AES256Util.encrypt(ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : ventData.getExh_mode()));
       ventDataObj.put("autoMode", AES256Util.encrypt(ventData.getAuto_mode() == null ? CommonConstant.NULL_DATA : ventData.getAuto_mode()));
       ventDataObj.put("airMode", AES256Util.encrypt(ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : ventData.getAir_mode()));
-      //ventDataObj.put("airMode", AES256Util.encrypt(aiMode == null ? CommonConstant.NULL_DATA : aiMode));
+      ventDataObj.put("aiMode", AES256Util.encrypt(aiMode == null ? CommonConstant.NULL_DATA : aiMode));
 
       if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
         ventDataObj.put("ventMode",AES256Util.encrypt("H1")); //바이패스 0 & 공청기모드 0 => 환기모드
@@ -1232,6 +1242,14 @@ public class Air365StationV3Service {
       }
       valueMap.put("pm10",weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3"));
       valueMap.put("pm25",weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4"));
+      String dongOutDateTime = weatherData.get("P_3").toString();
+      //동별 미세먼지 receiveError 계산(30분 이상인 경우 error:true)
+      SimpleDateFormat dongFormat = new SimpleDateFormat("yyyyMMddHHmm");
+      Date eTime = new Date();
+      Date sTime = dongFormat.parse(dongOutDateTime);
+      long dongTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
+
+
 
       //동 날씨 데이터 humi, temp 구하기
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
@@ -1244,6 +1262,14 @@ public class Air365StationV3Service {
 
       valueMap.put("temp",weatherParsingData.get("P_4"));
       valueMap.put("humi",weatherParsingData.get("P_5"));
+
+      //날씨정보 receiveError 계산(2시간 이상인 경우 error:true)
+      String weatherDateTime = weatherParsingData.get("P_8").toString();
+      SimpleDateFormat weatherFormat = new SimpleDateFormat("yyyyMMddHH");
+      sTime = weatherFormat.parse(weatherDateTime);
+      long weatherTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
+
+
 
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> outElements = new ArrayList<>();
@@ -1302,11 +1328,10 @@ public class Air365StationV3Service {
       ventDataObj.put("waterAlarm", AES256Util.encrypt(ventData.getWater_alarm() == null ? CommonConstant.NULL_DATA : ventData.getWater_alarm()));
       ventDataObj.put("devStat", AES256Util.encrypt(ventData.getDev_stat() == null ? CommonConstant.NULL_DATA : ventData.getDev_stat()));
 
-//      stationDataObj.put("outPm10Grade", AES256Util.encrypt(weatherData.get("P_1") == null ? CommonConstant.NULL_DATA : weatherData.get("P_1")+""));
-//      stationDataObj.put("outPm25Grade", AES256Util.encrypt(weatherData.get("P_2") == null ? CommonConstant.NULL_DATA : weatherData.get("P_2")+""));
-//      stationDataObj.put("outPm10Value", AES256Util.encrypt(weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3")+""));
-//      stationDataObj.put("outPm25Value", AES256Util.encrypt(weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4")+""));
-//      stationDataObj.put("autoCause", AES256Util.encrypt("4"));
+      stationDataObj.put("outDateTime",AES256Util.encrypt(dongOutDateTime));
+      stationDataObj.put("airReceiveError",AES256Util.encrypt(String.valueOf(dongTimeGap >= 30 ? true : false)));
+      stationDataObj.put("weatherReceiveError",AES256Util.encrypt(String.valueOf(weatherTimeGap >= 120 ? true : false)));
+
       stationDataObj.put("outElements",outElements);
       stationDataObj.put("elements", elementList);
       resDataObj.put("ventData", ventDataObj);
