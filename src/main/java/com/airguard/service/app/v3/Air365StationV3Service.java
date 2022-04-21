@@ -864,17 +864,22 @@ public class Air365StationV3Service {
       ventDataObj.put("filterAlarm", ventData.getFilter_alarm() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getFilter_alarm()));
       ventDataObj.put("powerMode", ventData.getPower() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getPower()));
       ventDataObj.put("windMode", ventData.getAir_volume() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAir_volume()));
-      ventDataObj.put("exhMode", ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getExh_mode()));
+      ventDataObj.put("exhMode", ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getExh_mode()));//바이패스
       ventDataObj.put("autoMode", ventData.getAuto_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAuto_mode()));
-      ventDataObj.put("airMode", ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAir_mode()));
+      ventDataObj.put("airMode", ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getAir_mode()));//공청기
       ventDataObj.put("aiMode", aiMode == null ? CommonConstant.NULL_DATA : Integer.valueOf(aiMode));
 
-      if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
-        ventDataObj.put("ventMode","H1"); //바이패스 0 & 공청기모드 0 => 환기모드
-      }else if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("1")){
-        ventDataObj.put("ventMode","H2"); //바이패스 0 & 공청기모드 1 => 공청기모드
-      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")) {
-        ventDataObj.put("ventMode", "H3"); //바이패스 1 & 공청기모드 0 => 바이패스모드
+      if(ventDataObj.get("ventModel").equals("KESR")) { //KESR모델인 경우
+
+        if (ventData.getExh_mode().equals("0") && ventData.getAir_mode().equals("0")) {
+          ventDataObj.put("ventMode", "H1"); //바이패스 0 & 공청기모드 0 => 환기모드
+        } else if (ventData.getExh_mode().equals("0") && ventData.getAir_mode().equals("1")) {
+          ventDataObj.put("ventMode", "H2"); //바이패스 0 & 공청기모드 1 => 공청기모드
+        } else if (ventData.getExh_mode().equals("1") && ventData.getAir_mode().equals("0")) {
+          ventDataObj.put("ventMode", "H3"); //바이패스 1 & 공청기모드 0 => 바이패스모드
+        }
+      }else{
+        ventDataObj.put("ventMode", "H1");
       }
 
       ventDataObj.put("windMax",ventSerial.contains("AIC1")? 3 : 6);
@@ -1141,19 +1146,22 @@ public class Air365StationV3Service {
       ventDataObj.put("filterAlarm", AES256Util.encrypt(ventData.getFilter_alarm() == null ? CommonConstant.NULL_DATA : ventData.getFilter_alarm()));
       ventDataObj.put("powerMode", AES256Util.encrypt(ventData.getPower() == null ? CommonConstant.NULL_DATA : ventData.getPower()));
       ventDataObj.put("windMode", AES256Util.encrypt(ventData.getAir_volume() == null ? CommonConstant.NULL_DATA : ventData.getAir_volume()));
-      ventDataObj.put("exhMode", AES256Util.encrypt(ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : ventData.getExh_mode()));
+      ventDataObj.put("exhMode", AES256Util.encrypt(ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : ventData.getExh_mode()));//바이패스
       ventDataObj.put("autoMode", AES256Util.encrypt(ventData.getAuto_mode() == null ? CommonConstant.NULL_DATA : ventData.getAuto_mode()));
-      ventDataObj.put("airMode", AES256Util.encrypt(ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : ventData.getAir_mode()));
+      ventDataObj.put("airMode", AES256Util.encrypt(ventData.getAir_mode() == null ? CommonConstant.NULL_DATA : ventData.getAir_mode()));//공청기
       ventDataObj.put("aiMode", AES256Util.encrypt(aiMode == null ? CommonConstant.NULL_DATA : aiMode));
 
-      if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("0")) {
-        ventDataObj.put("ventMode",AES256Util.encrypt("H1")); //바이패스 0 & 공청기모드 0 => 환기모드
-      }else if(ventData.getExh_mode().equals("0") && ventData.getExh_mode().equals("1")){
-        ventDataObj.put("ventMode",AES256Util.encrypt("H2")); //바이패스 0 & 공청기모드 1 => 공청기모드
-      }else if(ventData.getExh_mode().equals("1") && ventData.getExh_mode().equals("0")){
-        ventDataObj.put("ventMode",AES256Util.encrypt("H3")); //바이패스 1 & 공청기모드 0 => 바이패스모드
+      if(ventDataObj.get("ventModel").equals("KESR")) {
+        if (ventData.getExh_mode().equals("0") && ventData.getAir_mode().equals("0")) {
+          ventDataObj.put("ventMode", AES256Util.encrypt("H1")); //바이패스 0 & 공청기모드 0 => 환기모드
+        } else if (ventData.getExh_mode().equals("0") && ventData.getAir_mode().equals("1")) {
+          ventDataObj.put("ventMode", AES256Util.encrypt("H2")); //바이패스 0 & 공청기모드 1 => 공청기모드
+        } else if (ventData.getExh_mode().equals("1") && ventData.getAir_mode().equals("0")) {
+          ventDataObj.put("ventMode", AES256Util.encrypt("H3")); //바이패스 1 & 공청기모드 0 => 바이패스모드
+        }
+      }else{
+        ventDataObj.put("ventMode", AES256Util.encrypt("H1"));
       }
-
       ventDataObj.put("windMax",AES256Util.encrypt(ventSerial.contains("AIC1")? "3" : "6"));
 
       String setTemp = readOnlyMapper.selectSetTemp(iaqSerial) == null ? CommonConstant.NULL_DATA : readOnlyMapper.selectSetTemp(iaqSerial);

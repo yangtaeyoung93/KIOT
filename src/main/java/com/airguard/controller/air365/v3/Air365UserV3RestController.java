@@ -11,6 +11,8 @@ import com.airguard.util.Sha256EncryptUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import java.util.LinkedHashMap;
 @RestController
 @RequestMapping(value = CommonConstant.URL_API_APP_AIR365_V3, produces = MediaType.APPLICATION_JSON_VALUE)
 public class Air365UserV3RestController {
+  private static final Logger logger = LoggerFactory.getLogger(Air365UserV3Service.class);
 
   @Autowired
   private Air365UserV3Service service;
@@ -43,17 +46,23 @@ public class Air365UserV3RestController {
   public HashMap<String, Object> appLogin(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     LinkedHashMap<String, Object> res;
+    logger.error("======================v3 /login API CALL ==============================");
 
+    //문자열 + 가 공백으로 들어오기때문에 trim 하지 않음.
     String userId =
-        request.getParameter("userId") == null ? "" : request.getParameter("userId").trim();
+        request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String password =
-        request.getParameter("password") == null ? "" : request.getParameter("password").trim();
+        request.getParameter("password") == null ? "" : request.getParameter("password");
     String userType =
-        request.getParameter("userType") == null ? "" : request.getParameter("userType").trim();
+        request.getParameter("userType") == null ? "" : request.getParameter("userType");
     String token =
-        request.getParameter("token") == null ? "" : request.getParameter("token").trim();
+        request.getParameter("token") == null ? "" : request.getParameter("token");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
+    logger.error("======================userId : {} ",userId);
+    logger.error("======================password : {} ",password);
+    logger.error("======================userType : {} ",userType);
+    logger.error("======================token : {} ",token);
 
     if(encoding){
       userId = AES256Util.decrypt(userId.replace(" ","+"));
@@ -74,7 +83,7 @@ public class Air365UserV3RestController {
       reqInfo.put("password", password);
       reqInfo.put("userType", userType);
       reqInfo.put("token", token);
-
+      logger.error("======================v3 /login == reqInfo : {}",reqInfo);
       if(encoding){
         res = service.loginEncodeVersion(reqInfo, response);
       }else{

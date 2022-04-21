@@ -58,7 +58,7 @@ public class Air365PushV2RestController {
     String userId =
             request.getParameter("userId") == null ? "" : request.getParameter("userId");
     String deviceType = request.getParameter("stationType") == null ? ""
-            : request.getParameter("stationType").trim();
+            : request.getParameter("stationType");
     String target =
             request.getParameter("target") == null ? "" : request.getParameter("target");
 

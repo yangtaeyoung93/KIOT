@@ -24,5 +24,10 @@ public class CorsConfig implements WebMvcConfigurer {
         .allowedOrigins("https://suncheontest.kweather.co.kr", "https://suncheon.kweather.co.kr")
         .allowedOrigins("*")
         .allowedMethods("*").allowCredentials(true);
+
+    registry.addMapping("/api/collection/history")
+            .allowedOrigins("http://localhost:8889","http://220.95.232.79:8889") //인천 서구 프로젝트의 데이터 수집용
+            .allowedMethods("*")
+            .allowCredentials(true);
   }
 }
