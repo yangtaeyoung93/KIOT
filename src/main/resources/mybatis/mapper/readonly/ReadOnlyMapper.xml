@@ -2789,15 +2789,29 @@
   <!--iaq 시리얼로 lat,lon, 주소,연동OAQ 가져오기-->
   <select id="selectIaqRelatedOaq" parameterType="String" resultType="HashMap">
     select
-    tmdm.lat,
-    tmdm.lon,
-    tmdm.related_device_serial,
-    dfname from
-    (select lat,lon,related_device_serial,dcode from TB_MEMBER_DEVICE_MANAGE
-    where device_idx =(select idx from TB_DEVICE td where serial_num =#{iaqSerial}))as tmdm
-    left outer join
-    (select dcode,dfname from TB_DONG_HCODE)as tdh
-    on tmdm.dcode = tdh.dcode
+      tmdm.lat,
+      tmdm.lon,
+      tmdm.related_device_serial,
+      (select lat  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =related_device_serial)) oaq_lat,
+      (select lon  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =related_device_serial)) oaq_lon,
+      dfname
+    from
+      (
+        select
+            lat,
+            lon,
+            related_device_serial,
+            dcode
+        from TB_MEMBER_DEVICE_MANAGE
+        where device_idx =(select idx from TB_DEVICE td where serial_num =#{iaqSerial}))as tmdm
+        left outer join
+        (select
+          dcode,
+          dfname
+          from
+          TB_DONG_HCODE
+        )as tdh
+        on tmdm.dcode = tdh.dcode
   </select>
 
   <!--위경도 범위내의 OAQ 장비리스트 가져오기-->
