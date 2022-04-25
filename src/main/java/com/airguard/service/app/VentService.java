@@ -316,9 +316,9 @@ public class VentService {
       result.put("lat",iaqInfo.getOrDefault("lat","NA"));
       result.put("lon",iaqInfo.getOrDefault("lon","NA"));
       result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
-      if (!iaqInfo.get("related_device_serial").equals("NA")) {
+      if (!result.get("oaq").equals("NA")) {
         HashMap<String, Double> lat = DMSCalculationForDistance(
-                Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
                 Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("seconds").toString())
         );
 

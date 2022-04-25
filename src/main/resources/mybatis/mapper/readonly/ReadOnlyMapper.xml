@@ -2792,8 +2792,8 @@
       tmdm.lat,
       tmdm.lon,
       tmdm.related_device_serial,
-      (select lat  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =related_device_serial)) oaq_lat,
-      (select lon  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =related_device_serial)) oaq_lon,
+      (select lat  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =tmdm.related_device_serial)) oaq_lat,
+      (select lon  from TB_MEMBER_DEVICE_MANAGE  where device_idx = (select idx from TB_DEVICE td where serial_num =tmdm.related_device_serial)) oaq_lon,
       dfname
     from
       (
