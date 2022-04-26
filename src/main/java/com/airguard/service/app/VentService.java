@@ -316,6 +316,20 @@ public class VentService {
       result.put("lat",iaqInfo.getOrDefault("lat","NA"));
       result.put("lon",iaqInfo.getOrDefault("lon","NA"));
       result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
+      if (!result.get("oaq").equals("NA")) {
+        HashMap<String, Double> lat = DMSCalculationForDistance(
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lat")).get("seconds").toString())
+        );
+
+        HashMap<String, Double> lon = DMSCalculationForDistance(
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lon")).get("seconds").toString()),
+                Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lon")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lon")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("oaq_lon")).get("seconds").toString())
+        );
+        result.put("distance", getDistanceByDms(lat.get("resultDeg"), lat.get("resultMin"), lat.get("resultSec"), lon.get("resultDeg"), lon.get("resultMin"), lon.get("resultSec")));
+      }
+
+      //result.put("distance",);
       result.put("outsideType", result.get("oaq").equals("NA")? "0" : "1");
       HashMap<String, Object> latLon = getLatLonRangeByDistance(iaqInfo.get("lat"), iaqInfo.get("lon"));
       HashMap<String, Object> nearByOaqs = new HashMap<>();
