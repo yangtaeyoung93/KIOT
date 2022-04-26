@@ -327,34 +327,42 @@ public class Air365StationV3Service {
         weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
-        logger.error("Weather TODAY API ERROR .");
+        e.printStackTrace();
+        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
       }
+      HashMap<String, Object> valueMap = new HashMap<>();
+      try {
+        String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region=" + region;
+        URL url = new URL(urlForDust);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-type", "text/plain");
 
 
-      String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region="+region;
-      URL url = new URL(urlForDust);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Content-type", "text/plain");
+        if (connection.getResponseCode() == 200) {
+          StringBuilder result = new StringBuilder();
+          BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+          String line = "";
+          while ((line = in.readLine()) != null) {
+            result.append(line);
+          }
+          in.close();
+          JSONParser parser = new JSONParser();
+          org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
 
-      HashMap<String,Object> valueMap = new HashMap<>();
-      if(connection.getResponseCode() == 200) {
-        StringBuilder result = new StringBuilder ();
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line = "";
-        while((line = in.readLine()) != null) {
-          result.append(line);
+
+          weatherData.put("pm10", outdoor.get("pm10Value").toString());
+          weatherData.put("pm25", outdoor.get("pm25Value").toString());
+          valueMap.put("pm10", outdoor.get("pm10Value"));
+          valueMap.put("pm25", outdoor.get("pm25Value"));
         }
-        in.close();
-        JSONParser parser = new JSONParser();
-        org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
-        weatherData.put("pm10", outdoor.get("pm10Value").toString());
-        weatherData.put("pm25", outdoor.get("pm25Value").toString());
-        valueMap.put("pm10", outdoor.get("pm10Value"));
-        valueMap.put("pm25",outdoor.get("pm25Value"));
+      }catch(Exception e){
+        e.printStackTrace();
+        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
       }
-      valueMap.put("temp",weatherParsingData.get("P_4"));
-      valueMap.put("humi",weatherParsingData.get("P_5"));
+
+        valueMap.put("temp", weatherParsingData.get("P_4"));
+        valueMap.put("humi", weatherParsingData.get("P_5"));
 
 
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
@@ -453,9 +461,19 @@ public class Air365StationV3Service {
       resultData.put("elementsAddition", elementDatas2);
       resultData.put("weather", weatherData);
 
-    } catch (Exception e) {
-      logger.error("Exception Message :: {}", e.getMessage());
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new ParameterException(ParameterException.PARAMETER_EXCEPTION);
+    }catch (SQLException e) {
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
+    }catch (Exception e) {
+      logger.error("Exception Message :: {}", e.getMessage());
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
 
     return resultData;
@@ -673,34 +691,40 @@ public class Air365StationV3Service {
         weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
 
       } catch (Exception e) {
-        logger.error("Weather TODAY API ERROR .");
+        e.printStackTrace();
+        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
       }
+      HashMap<String, Object> valueMap = new HashMap<>();
+      try {
+        String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region=" + region;
+        URL url = new URL(urlForDust);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-type", "text/plain");
 
-      String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region="+region;
-      URL url = new URL(urlForDust);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Content-type", "text/plain");
 
-      HashMap<String,Object> valueMap = new HashMap<>();
-      if(connection.getResponseCode() == 200) {
-        StringBuilder result = new StringBuilder ();
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line = "";
-        while((line = in.readLine()) != null) {
-          result.append(line);
+        if (connection.getResponseCode() == 200) {
+          StringBuilder result = new StringBuilder();
+          BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+          String line = "";
+          while ((line = in.readLine()) != null) {
+            result.append(line);
+          }
+          in.close();
+          JSONParser parser = new JSONParser();
+          org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
+          weatherData.put("pm10", AES256Util.encrypt(outdoor.get("pm10Value").toString()));
+          weatherData.put("pm25", AES256Util.encrypt(outdoor.get("pm25Value").toString()));
+          valueMap.put("pm10", outdoor.get("pm10Value"));
+          valueMap.put("pm25", outdoor.get("pm25Value"));
         }
-        in.close();
-        JSONParser parser = new JSONParser();
-        org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
-        weatherData.put("pm10", AES256Util.encrypt(outdoor.get("pm10Value").toString()));
-        weatherData.put("pm25", AES256Util.encrypt(outdoor.get("pm25Value").toString()));
-        valueMap.put("pm10", outdoor.get("pm10Value"));
-        valueMap.put("pm25",outdoor.get("pm25Value"));
-      }
-      valueMap.put("temp",weatherParsingData.get("P_4"));
-      valueMap.put("humi",weatherParsingData.get("P_5"));
+        valueMap.put("temp", weatherParsingData.get("P_4"));
+        valueMap.put("humi", weatherParsingData.get("P_5"));
 
+      }catch(Exception e){
+        e.printStackTrace();
+        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
+      }
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> elementInfoList = new ArrayList<>();
       for(String weatherElement : weatherElements){
@@ -797,9 +821,19 @@ public class Air365StationV3Service {
       resultData.put("elementsAddition", elementDatas2);
       resultData.put("weather", weatherData);
 
-    } catch (Exception e) {
-      logger.error("Exception Message :: {}", e.getMessage());
+    } catch(HttpClientErrorException e){
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.PLATFORM_API_CALL_EXCEPTION);
+    }catch(NumberFormatException e){
+      e.printStackTrace();
+      throw new ParameterException(ParameterException.PARAMETER_EXCEPTION);
+    }catch (SQLException e) {
+      e.printStackTrace();
       throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
+    }catch (Exception e) {
+      logger.error("Exception Message :: {}", e.getMessage());
+      e.printStackTrace();
+      throw new ExternalApiException(ExternalApiException.EXTERNAL_API_CALL_EXCEPTION);
     }
 
     return resultData;
@@ -1246,7 +1280,8 @@ public class Air365StationV3Service {
                   "pm10Grade_who", "pm25Grade_who", "pm10Value", "pm25Value"});
 
       } catch (Exception e) {
-        logger.error("\"==========V3 data vent(Encode version), Weather F.CAST API ERROR .");
+        e.printStackTrace();
+        logger.error("==========V3 data vent(Encode version), Weather F.CAST API ERROR .");
       }
       valueMap.put("pm10",weatherData.get("P_3") == null ? CommonConstant.NULL_DATA : weatherData.get("P_3"));
       valueMap.put("pm25",weatherData.get("P_4") == null ? CommonConstant.NULL_DATA : weatherData.get("P_4"));

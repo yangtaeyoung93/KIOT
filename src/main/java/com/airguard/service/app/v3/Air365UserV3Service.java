@@ -386,7 +386,7 @@ public class Air365UserV3Service {
     String userType = user.get("userType");
     String token = user.get("token");
 
-    try {
+
       switch (userType) {
         case "admin":
           Admin admin = new Admin();
@@ -707,10 +707,7 @@ public class Air365UserV3Service {
 
         res.put("result", CommonConstant.R_SUCC_CODE);
       }
-    }catch(Exception e){
-      logger.error("===============v3 /login Encode Version Service ERROR");
-      e.printStackTrace();
-    }
+
 
     return res;
   }
