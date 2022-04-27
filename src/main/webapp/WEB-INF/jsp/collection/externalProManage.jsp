@@ -68,8 +68,10 @@
 <!-- ##### Footer Area End ##### -->
 
 <script>
-const data = [{"number" : "1", "url" : "http://220.95.232.80:8002/admin/dashboard/receive","description" : "구로구청 데이터개방 어드민페이지"},
-                {"number" : "2", "url" : "http://220.95.232.80:8005/member/guroMap", "description" : "구로구청 데이터개방 사용자페이지"}
+const data = [{"number" : "1", "url" : "http://220.95.232.80:8002/admin/dashboard/receive","description" : "[공공데이터개방] 구로구청 관리자페이지"},
+                {"number" : "2", "url" : "http://220.95.232.80:8005/member/guroMap", "description" : "[공공데이터개방] 구로구청 사용자페이지"},
+                {"number" : "3", "url" : "http://220.95.232.79:8889/map", "description" : "[공공데이터개방] 인천서구 사용자페이지"},
+                {"number" : "4", "url" : "http://220.95.232.79:8889/admin", "description" : "[공공데이터개방] 인천서구 관리자페이지"}
 ]
 $(document).ready(function() {
     $('#urlTable').DataTable({
