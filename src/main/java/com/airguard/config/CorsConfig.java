@@ -16,7 +16,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
     registry.addMapping("/api/custom/**")
         .allowedOrigins("https://suncheontest.kweather.co.kr", "https://suncheon.kweather.co.kr",
-            "https://jejuairport.kweather.co.kr", "https://kohyoung.kweather.co.kr")
+            "https://jejuairport.kweather.co.kr", "https://kohyoung.kweather.co.kr","http://issi.kweather.co.kr:8889")
         .allowedOrigins("*")
         .allowedMethods("*").allowCredentials(true);
 
@@ -26,7 +26,7 @@ public class CorsConfig implements WebMvcConfigurer {
         .allowedMethods("*").allowCredentials(true);
 
     registry.addMapping("/api/collection/history")
-            .allowedOrigins("http://localhost:8889","http://220.95.232.79:8889") //인천 서구 프로젝트의 데이터 수집용
+            .allowedOrigins("http://localhost:8889","http://220.95.232.79:8889","http://issi.kweather.co.kr","http://issi.kweather.co.kr:8889") //인천 서구 프로젝트의 데이터 수집용
             .allowedMethods("*")
             .allowCredentials(true);
   }
