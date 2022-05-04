@@ -97,6 +97,7 @@ public class ResultCollectionHisVo {
   private Double coci_noise;
   private Double coai;
   private Double rainfall;
+  private Double day_rainfall;
 
   /*
    * 수집 데이터 (VENT)

@@ -1109,9 +1109,11 @@ public class PlatformService {
     Map<String, Double> cociNoiseMap = new LinkedHashMap<>();
     Map<String, Double> visitorMap = new LinkedHashMap<>();
     Map<String, Double> rainfallMap = new LinkedHashMap<>();
+    Map<String, Double> dayRainfallMap = new LinkedHashMap<>();
 
     Map<String, Double> atmMap = new LinkedHashMap<>();
     Map<String, Double> rainMap = new LinkedHashMap<>();
+
     Map<String, Double> nh3Map = new LinkedHashMap<>();
     Map<String, Double> h2sMap = new LinkedHashMap<>();
     Map<String, Double> gpsLatMap = new LinkedHashMap<>();
@@ -1166,7 +1168,6 @@ public class PlatformService {
 
     URI url = URI.create(
         CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + queryString);
-
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
@@ -1418,6 +1419,9 @@ public class PlatformService {
             rainfallMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
             break;
+          case "day_rainfall" :
+            dayRainfallMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
           case "atm":
             atmMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
@@ -1622,6 +1626,7 @@ public class PlatformService {
       vo.setCoci_noise(cociNoiseMap.get(key));
       vo.setVisitor(visitorMap.get(key));
       vo.setRainfall(rainfallMap.get(key));
+      vo.setDay_rainfall(dayRainfallMap.get(key));
       vo.setAtm(atmMap.get(key));
       vo.setRain(rainMap.get(key));
       vo.setNh3(nh3Map.get(key));
