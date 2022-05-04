@@ -151,18 +151,17 @@ public class MemberService {
 
       curSheet = workbook.getSheetAt(0);
 
-      String lat = "";
-      String lon = "";
 
       for (int rowIndex = 1; rowIndex <= curSheet.getLastRowNum(); rowIndex++) {
         curRow = curSheet.getRow(rowIndex);
+        String lat = "";
+        String lon = "";
         vo = new Member();
         String value;
 
         if (curRow.getCell(0) != null) {
           if (!"".equals(curRow.getCell(0).getStringCellValue())) {
             for (int cellIndex = 0; cellIndex < curSheet.getRow(0).getLastCellNum(); cellIndex++) {
-
               curCell = curRow.getCell(cellIndex);
               switch (curCell.getCellType()) {
                 case XSSFCell.CELL_TYPE_FORMULA:
@@ -206,16 +205,15 @@ public class MemberService {
                 case 3:
                   lon = value;
                   // 경도 lon
+                  List<Map<String, Object>> regionInfos = getRegionInfo(lon, lat);
+                  vo.setRegion(regionInfos.get(0).get("region_id").toString());
+                  vo.setRegionName(regionInfos.get(0).get("address").toString());
+                  vo.setStationShared("Y");
                   break;
                 default:
                   break;
               }
 
-              List<Map<String, Object>> regionInfos = getRegionInfo(lon, lat);
-
-              vo.setRegion(regionInfos.get(0).get("region_id").toString());
-              vo.setRegionName(regionInfos.get(0).get("address").toString());
-              vo.setStationShared("Y");
             }
 
             memberList.add(vo);
