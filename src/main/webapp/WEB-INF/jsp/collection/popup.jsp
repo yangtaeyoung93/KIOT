@@ -916,7 +916,7 @@
     <section class="content">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="float:left;">
                     <form role="form">
                         <div class="card-body">
                             <input type="hidden" id="p_h_serialNum"/>
@@ -967,7 +967,7 @@
                                        placeholder="종료일자 클릭 후 선택" style="width:150px; vertical-align: middle;">
                                 <input type="button" class="btn btn-primary ml3 mr10" style="min-width:100px;"
                                        id="modalSearchBtn" value="검 색">
-                                <div id="chartTypes" style="display: inline-block; float: right;">
+                                <div id="chartTypes" style="display: inline-block;">
                                 </div>
                             </div>
                             <div class="form-group mt10" id="timeChartDiv" style="width: 100%; height: 500px;"></div>
