@@ -585,6 +585,12 @@ function getSpace(val) {
 }
 
 $().ready(function () {
+$(function() {
+  var marginTop = parseInt( $(".main-sidebar").css('margin-top') );
+  $(window).scroll(function(e) {
+    $(".main-sidebar").css("margin-top", marginTop - $(this).scrollTop() );
+  });
+});
   $('.select2').select2();
   $('.select2bs4').select2({
     theme: 'bootstrap4'
