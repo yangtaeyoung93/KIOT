@@ -6,7 +6,7 @@ public class CommonConstant {
    * KWEATHER API
    */
 
-  public static final String auth = "a3dlYXRoZXItYXBwLWF1dGg=";
+  public static final String AUTH = "a3dlYXRoZXItYXBwLWF1dGg=";
 
 
   /*
