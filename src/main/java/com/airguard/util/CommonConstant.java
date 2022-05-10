@@ -2,6 +2,13 @@ package com.airguard.util;
 
 public class CommonConstant {
 
+  /**
+   * KWEATHER API
+   */
+
+  public static final String AUTH = "a3dlYXRoZXItYXBwLWF1dGg=";
+
+
   /*
    * ETC ==> APP
    * */

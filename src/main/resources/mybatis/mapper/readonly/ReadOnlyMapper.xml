@@ -1605,13 +1605,13 @@
     WHERE TMDM.device_idx = (SELECT TD.idx FROM TB_DEVICE AS TD WHERE TD.serial_num = #{serial})
   </select>
 
-  <select id="getGroupDid" parameterType="String" resultType="AppGroupDid">
+  <select id="getGroupDid" parameterType="String" resultType="AppGroupDidVO">
     SELECT (SELECT (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx)
             FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
             WHERE TMDM.member_idx = TGDMM.member_idx LIMIT 1) AS station_no,
 			(SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TGDMM.member_idx LIMIT 1) AS station_name,
-		    (SELECT TM.region FROM TB_MEMBER AS TM WHERE TM.idx=TGDMM.member_idx) AS region_no,
-			(SELECT TM.region_name FROM TB_MEMBER AS TM WHERE TM.idx=TGDMM.member_idx) AS region_name
+            (SELECT TMDM.lat FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TGDMM.member_idx Limit 1) as lat,
+            (SELECT TMDM.lon FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.member_idx=TGDMM.member_idx Limit 1) as lon
     FROM
       TB_GROUP_DID_MEMBER_MANAGE AS TGDMM
     WHERE
