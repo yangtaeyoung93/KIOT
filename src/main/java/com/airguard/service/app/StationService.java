@@ -8,6 +8,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import com.airguard.exception.SQLException;
+import com.airguard.model.app.*;
 import com.airguard.model.system.Device;
 import com.airguard.model.system.DeviceElements;
 import org.json.JSONArray;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +33,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.airguard.mapper.main.app.StationMapper;
 import com.airguard.mapper.main.app.UserMapper;
-import com.airguard.model.app.AppGroupDid;
-import com.airguard.model.app.AppStation;
-import com.airguard.model.app.ResponseModel;
-import com.airguard.model.app.StationItemModel;
 import com.airguard.model.platform.PlatformSensorDto;
 import com.airguard.model.platform.ResultCollectionHisVo;
 import com.airguard.model.platform.SensorDataDto;
@@ -43,13 +41,6 @@ import com.airguard.util.CommonConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.airguard.model.app.AppUser;
-import com.airguard.model.app.CategoryModel;
-import com.airguard.model.app.IotDataModel;
-import com.airguard.model.app.IotSignalDataModel;
-import com.airguard.model.app.ReportModel;
-import com.airguard.model.app.ResStationModel;
-import com.airguard.model.app.ResponseGroupDidModel;
 
 @Service
 public class StationService {
@@ -837,11 +828,53 @@ public class StationService {
     return res;
   }
 
+
   @Transactional(isolation = Isolation.READ_COMMITTED)
-  public ResponseGroupDidModel groupDid(String groupNo) {
+  public ResponseGroupDidModel groupDid(String groupNo) throws JSONException {
     ResponseGroupDidModel res = new ResponseGroupDidModel();
 
-    List<AppGroupDid> agd = readOnlyMapper.getGroupDid(groupNo);
+    List<AppGroupDidVO> list = readOnlyMapper.getGroupDid(groupNo);
+    List<AppGroupDid> agd = new ArrayList<>();
+
+
+    String lat = list.get(0).getLat();
+    String lon = list.get(0).getLon();
+
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    factory.setConnectTimeout(10 * 1000);
+    factory.setReadTimeout(30 * 1000);
+    RestTemplate restTemplate = new RestTemplate(factory);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-type",MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+    headers.add("auth",CommonConstant.auth);
+
+
+
+    URI uri = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat="+lat+"&lon="+lon);
+
+    RequestEntity<String> req = new RequestEntity<>(headers,HttpMethod.GET,uri);
+    ResponseEntity<String> response = restTemplate.exchange(req, String.class);
+    StringBuilder sb = new StringBuilder();
+    String cityId;
+    try {
+      JSONObject jobj = new JSONObject(response.getBody());
+      JSONObject obj = jobj.getJSONObject("data");
+
+      sb.append(obj.get("sido_nm")).append(" ").append(obj.get("sg_nm")).append(" ").append(obj.get("emd_nm"));
+      cityId = obj.get("city_id").toString();
+    } catch (Exception e) {
+      throw e;
+    }
+    AppGroupDid appGroupDid = new AppGroupDid();
+    for (AppGroupDidVO vo : list) {
+      appGroupDid.setStationNo(vo.getStationNo());
+      appGroupDid.setStationName(vo.getStationName());
+      appGroupDid.setRegionNo(cityId);
+      appGroupDid.setRegionName(sb.toString());
+      agd.add(appGroupDid);
+    }
+
     res.setListCount(agd.size());
     res.setObj(agd);
 

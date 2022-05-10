@@ -4,15 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.airguard.model.app.*;
 import com.airguard.model.dong.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.airguard.model.app.AppGroupDid;
-import com.airguard.model.app.AppStation;
-import com.airguard.model.app.AppUser;
-import com.airguard.model.app.AppVent;
-import com.airguard.model.app.ResponseLoginModel;
 import com.airguard.model.common.Admin;
 import com.airguard.model.common.Search;
 import com.airguard.model.system.Device;
@@ -222,7 +218,7 @@ public interface ReadOnlyMapper {
 
   AppStation getStationInfo(String serial);
 
-  List<AppGroupDid> getGroupDid(String groupNo);
+  List<AppGroupDidVO> getGroupDid(String groupNo);
 
   // App, User
   List<AppUser> selectUserList(String userId);
