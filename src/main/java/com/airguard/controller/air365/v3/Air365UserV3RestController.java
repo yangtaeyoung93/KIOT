@@ -83,7 +83,10 @@ public class Air365UserV3RestController {
       reqInfo.put("password", password);
       reqInfo.put("userType", userType);
       reqInfo.put("token", token);
+      reqInfo.put("clientIp",request.getHeader("X-Forwarded-For") == null ? request.getRemoteAddr()
+              : request.getHeader("X-Forwarded-For"));
       logger.error("======================v3 /login == reqInfo : {}",reqInfo);
+      System.out.println(reqInfo);
       if(encoding){
         res = service.loginEncodeVersion(reqInfo, response);
       }else{

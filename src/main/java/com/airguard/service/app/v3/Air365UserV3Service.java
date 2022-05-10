@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -63,6 +64,7 @@ public class Air365UserV3Service {
     String password = Sha256EncryptUtil.ShaEncoder(user.get("password"));
     String userType = user.get("userType");
     String token = user.get("token");
+    String clientIp = user.get("clientIp");
 
     switch (userType) {
       case "admin":
@@ -148,6 +150,8 @@ public class Air365UserV3Service {
 
         member.setUserId(userId);
         member.setUserPw(password);
+        member.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        member.setLoginIp(clientIp);
 
         checkCode = readOnlyMapper.loginCheckMemberId(member);
         if (checkCode == 3) {
@@ -204,6 +208,8 @@ public class Air365UserV3Service {
             }
 
             memberMapper.updateMemberLoginCount(userId, 1);
+            member.setIdx(Integer.valueOf(datas.get("idx").toString()));
+            memberMapper.memberLoginInfoUpdate(member);
 
             datas.put("deviceList", deviceList);
             res.put("data", datas);
@@ -385,7 +391,7 @@ public class Air365UserV3Service {
     String password = Sha256EncryptUtil.ShaEncoder(user.get("password"));
     String userType = user.get("userType");
     String token = user.get("token");
-
+    String clientIp = user.get("clientIp");
 
       switch (userType) {
         case "admin":
@@ -477,6 +483,8 @@ public class Air365UserV3Service {
 
           member.setUserId(userId);
           member.setUserPw(password);
+          member.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+          member.setLoginIp(clientIp);
 
           checkCode = readOnlyMapper.loginCheckMemberId(member);
           if (checkCode == 3) {
@@ -537,6 +545,8 @@ public class Air365UserV3Service {
               }
 
               memberMapper.updateMemberLoginCount(userId, 1);
+              member.setIdx(findMemberData.getIdx());
+              memberMapper.memberLoginInfoUpdate(member);
 
               datas.put("deviceList", deviceList);
               res.put("data", datas);

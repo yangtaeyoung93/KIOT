@@ -50,7 +50,6 @@ public class Air365UserV2RestController {
             request.getParameter("token") == null ? "" : request.getParameter("token");
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
-
     if(encoding){
       userId = AES256Util.decrypt(userId.replace(" ","+"));
       password = AES256Util.decrypt(password.replace(" ","+"));
@@ -71,6 +70,8 @@ public class Air365UserV2RestController {
       reqInfo.put("password", password);
       reqInfo.put("userType", userType);
       reqInfo.put("token", token);
+      reqInfo.put("clientIp",request.getHeader("X-Forwarded-For") == null ? request.getRemoteAddr()
+              : request.getHeader("X-Forwarded-For"));
       if(encoding){
         res = service.loginEncodeVersion(reqInfo, response);
       }else{

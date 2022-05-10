@@ -4,6 +4,7 @@ import com.airguard.exception.ParameterException;
 import com.airguard.exception.SQLException;
 import com.airguard.mapper.main.app.StationMapper;
 import com.airguard.mapper.main.app.UserMapper;
+import com.airguard.mapper.main.common.AdminMapper;
 import com.airguard.mapper.main.system.GroupMapper;
 import com.airguard.mapper.main.system.MemberDeviceMapper;
 import com.airguard.mapper.main.system.MemberMapper;
@@ -42,6 +43,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -73,6 +75,9 @@ public class Air365UserV2Service {
   @Autowired
   private ReadOnlyMapper readOnlyMapper;
 
+  @Autowired
+  private AdminMapper adminMapper;
+
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public LinkedHashMap<String, Object> login(HashMap<String, String> user, HttpServletResponse response) throws Exception {
     LinkedHashMap<String, Object> res = new LinkedHashMap<>();
@@ -89,6 +94,7 @@ public class Air365UserV2Service {
     String password = Sha256EncryptUtil.ShaEncoder(user.get("password"));
     String userType = user.get("userType");
     String token = user.get("token");
+    String clientIp = user.get("clientIp");
 
     switch (userType) {
       case "admin":
@@ -96,7 +102,6 @@ public class Air365UserV2Service {
 
         admin.setUserId(userId);
         admin.setUserPw(password);
-
         checkCode = readOnlyMapper.loginCheckAdminId(admin);
         if (checkCode == 3) {
 
@@ -159,7 +164,6 @@ public class Air365UserV2Service {
           } catch (Exception e) {
             throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
           }
-
           res.put("data", datas);
         }
 
@@ -170,8 +174,11 @@ public class Air365UserV2Service {
 
         member.setUserId(userId);
         member.setUserPw(password);
+        member.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        member.setLoginIp(clientIp);
 
         checkCode = readOnlyMapper.loginCheckMemberId(member);
+
         if (checkCode == 3) {
 
           try {
@@ -220,8 +227,10 @@ public class Air365UserV2Service {
               deviceSerials.add(mdi.getSerialNum());
             }
 
-            memberMapper.updateMemberLoginCount(userId, 1);
 
+            memberMapper.updateMemberLoginCount(userId, 1);
+            member.setIdx(Integer.valueOf(datas.get("idx").toString()));
+            memberMapper.memberLoginInfoUpdate(member);
             datas.put("deviceList", deviceList);
             res.put("data", datas);
             res.put("idx", findMemberData.getIdx());
@@ -396,6 +405,7 @@ public class Air365UserV2Service {
     String password = Sha256EncryptUtil.ShaEncoder(user.get("password"));
     String userType = user.get("userType");
     String token = user.get("token");
+    String clientIp = user.get("clientIp");
 
     switch (userType) {
       case "admin":
@@ -477,6 +487,8 @@ public class Air365UserV2Service {
 
         member.setUserId(userId);
         member.setUserPw(password);
+        member.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        member.setLoginIp(clientIp);
 
         checkCode = readOnlyMapper.loginCheckMemberId(member);
         if (checkCode == 3) {
@@ -528,6 +540,8 @@ public class Air365UserV2Service {
             }
 
             memberMapper.updateMemberLoginCount(userId, 1);
+            member.setIdx(findMemberData.getIdx());
+            memberMapper.memberLoginInfoUpdate(member);
 
             datas.put("deviceList", deviceList);
             res.put("data", datas);
