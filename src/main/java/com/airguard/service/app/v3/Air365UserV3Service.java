@@ -46,6 +46,9 @@ public class Air365UserV3Service {
   private MemberMapper memberMapper;
 
   @Autowired
+  private GroupMapper groupMapper;
+
+  @Autowired
   private ReadOnlyMapper readOnlyMapper;
 
   @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -240,7 +243,8 @@ public class Air365UserV3Service {
 
         group.setGroupId(userId);
         group.setGroupPw(password);
-
+        group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        group.setLoginIp(clientIp);
         checkCode = readOnlyMapper.loginCheckGroupId(group);
         if (checkCode == 3) {
 
@@ -322,6 +326,8 @@ public class Air365UserV3Service {
               memberDatas.add(memberData);
             }
 
+
+            groupMapper.groupLoginInfoUpdate(group);
             datas.put("memberList", memberDatas);
 
             res.put("data", datas);
@@ -580,6 +586,8 @@ public class Air365UserV3Service {
 
           group.setGroupId(userId);
           group.setGroupPw(password);
+          group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+          group.setLoginIp(clientIp);
 
           checkCode = readOnlyMapper.loginCheckGroupId(group);
           if (checkCode == 3) {
@@ -665,6 +673,7 @@ public class Air365UserV3Service {
                 memberDatas.add(memberData);
               }
 
+              groupMapper.groupLoginInfoUpdate(group);
               datas.put("memberList", memberDatas);
 
               res.put("data", datas);

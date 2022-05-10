@@ -10,6 +10,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.airguard.exception.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,7 +194,7 @@ public class LoginController {
   @ApiOperation(value = "로그인 API", tags = "데이터 센터 공용 API")
   @RequestMapping(value = "/doLogin", method = RequestMethod.POST)
   public String doLogin(HttpServletRequest request, HttpServletResponse response)
-      throws LoginErrorException, UnsupportedEncodingException, GeneralSecurityException {
+      throws LoginErrorException, UnsupportedEncodingException, GeneralSecurityException, SQLException{
     logger.info("************ LOGIN ************");
 
     final String username = request.getParameter("username");
@@ -297,6 +298,7 @@ public class LoginController {
       Group pGroup = new Group();
       pGroup.setGroupId(username);
       pGroup.setGroupPw(Sha256EncryptUtil.ShaEncoder(password));
+
       int checkCode = groupService.loginCheckGroupId(pGroup);
 
       if (checkCode == 1) {
@@ -305,7 +307,12 @@ public class LoginController {
         return "redirect:/?error=2";
       }
       Group group = groupService.findGroupByLoginId(username);
-
+      String connectIp = request.getHeader("X-Forwarded-For");
+      if (connectIp == null) {
+        connectIp = request.getRemoteAddr();
+      }
+      group.setLoginIp(connectIp);
+      group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         if (group == null || !group.getGroupPw().equals(Sha256EncryptUtil.ShaEncoder(password))) {
             return "redirect:/";
         }
@@ -314,7 +321,7 @@ public class LoginController {
       cookie.setPath("/");
       cookie.setDomain("kweather.co.kr");
       response.addCookie(cookie);
-
+      groupService.groupLoginInfoUpdate(group);
     }
 
     return "redirect:/loginSuccess";

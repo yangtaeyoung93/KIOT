@@ -93,4 +93,15 @@
 			group_idx = #{searchValue}
 	</delete>
 
+	<!--그룹 계정 로그인 ip와 접속일시 업데이트-->
+	<update id="groupLoginInfoUpdate" parameterType="Group">
+		UPDATE
+		TB_GROUP
+		SET
+		login_ip = #{loginIp},
+		login_dt = #{loginDt}
+		WHERE
+		group_id=#{groupId}
+	</update>
+
 </mapper>

@@ -110,4 +110,13 @@ public class GroupService {
     }
   }
 
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public void groupLoginInfoUpdate(Group group) throws SQLException {
+
+    if (mapper.groupLoginInfoUpdate(group) != 1) {
+      throw new SQLException(SQLException.SQL_EXCEPTION);
+    }
+
+  }
+
 }

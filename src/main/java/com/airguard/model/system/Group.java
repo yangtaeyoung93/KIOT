@@ -25,6 +25,8 @@ public class Group {
   String groupCustomUrl;
   String createDt;
   String useYn;
+  String loginIp;
+  String loginDt;
 
   // OutColum
   String groupIdx;

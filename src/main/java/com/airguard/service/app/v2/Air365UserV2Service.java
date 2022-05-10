@@ -260,6 +260,8 @@ public class Air365UserV2Service {
 
         group.setGroupId(userId);
         group.setGroupPw(password);
+        group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        group.setLoginIp(clientIp);
 
         checkCode = readOnlyMapper.loginCheckGroupId(group);
         if (checkCode == 3) {
@@ -337,6 +339,7 @@ public class Air365UserV2Service {
               memberDatas.add(memberData);
             }
 
+            groupMapper.groupLoginInfoUpdate(group);
             datas.put("memberList", memberDatas);
 
             res.put("data", datas);
@@ -572,6 +575,8 @@ public class Air365UserV2Service {
 
         group.setGroupId(userId);
         group.setGroupPw(password);
+        group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        group.setLoginIp(clientIp);
 
         checkCode = readOnlyMapper.loginCheckGroupId(group);
         if (checkCode == 3) {
@@ -648,6 +653,7 @@ public class Air365UserV2Service {
               memberDatas.add(memberData);
             }
 
+            groupMapper.groupLoginInfoUpdate(group);
             datas.put("memberList", memberDatas);
 
             res.put("data", datas);

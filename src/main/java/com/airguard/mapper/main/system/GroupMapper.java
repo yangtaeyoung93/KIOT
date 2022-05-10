@@ -55,4 +55,6 @@ public interface GroupMapper {
      */
     int deleteGroupMember(String idx);
 
+    int groupLoginInfoUpdate(Group group);
+
 }
