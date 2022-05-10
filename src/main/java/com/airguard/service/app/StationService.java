@@ -830,10 +830,25 @@ public class StationService {
 
 
   @Transactional(isolation = Isolation.READ_COMMITTED)
-  public ResponseGroupDidModel groupDid(String groupNo) throws JSONException {
+  public ResponseGroupDidModel groupDid(String groupNo){
     ResponseGroupDidModel res = new ResponseGroupDidModel();
 
-    List<AppGroupDidVO> list = readOnlyMapper.getGroupDid(groupNo);
+    List<AppGroupDid> agd = readOnlyMapper.getGroupDid(groupNo);
+
+    res.setListCount(agd.size());
+    res.setObj(agd);
+
+    res.setErrorCode(0L);
+    res.setResult(CommonConstant.R_SUCC_CODE);
+
+    return res;
+  }
+
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public ResponseGroupDidModel stationInfo(String groupNo) throws JSONException {
+    ResponseGroupDidModel res = new ResponseGroupDidModel();
+
+    List<AppGroupDidVO> list = readOnlyMapper.getStationDid(groupNo);
     List<AppGroupDid> agd = new ArrayList<>();
 
 

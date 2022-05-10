@@ -158,6 +158,9 @@ public class StationRestController {
         return res;
     }
 
+
+
+
     @ApiOperation(value = "스테이션 설치 장소 설정", tags = "AirGuard.K App, 프로젝트")
     @RequestMapping(value = "/setCategory", method = {RequestMethod.GET, RequestMethod.POST},
             produces = "application/xml")
@@ -252,6 +255,21 @@ public class StationRestController {
             throw new Exception();
         }
         res = service.groupDid(reqStation.getGroup_no());
+
+        return res;
+    }
+
+    @ApiOperation(value = "그룹 스테이션 정보 조회", tags = "AirGuard.K App, 프로젝트")
+    @RequestMapping(value = "/stationInfo", method = {RequestMethod.GET, RequestMethod.POST},
+            produces = "application/xml")
+    public ResponseGroupDidModel stationInfo(@ModelAttribute RequestModel reqStation) throws Exception {
+
+        ResponseGroupDidModel res;
+
+        if (reqStation.getGroup_no().isEmpty()) {
+            throw new Exception();
+        }
+        res = service.stationInfo(reqStation.getGroup_no());
 
         return res;
     }

@@ -218,7 +218,9 @@ public interface ReadOnlyMapper {
 
   AppStation getStationInfo(String serial);
 
-  List<AppGroupDidVO> getGroupDid(String groupNo);
+  List<AppGroupDid> getGroupDid(String groupNo);
+
+  List<AppGroupDidVO> getStationDid(String groupNo);
 
   // App, User
   List<AppUser> selectUserList(String userId);
