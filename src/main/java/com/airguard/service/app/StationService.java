@@ -847,7 +847,7 @@ public class StationService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-type",MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-    headers.add("auth",CommonConstant.auth);
+    headers.add("auth",CommonConstant.AUTH);
 
 
 
