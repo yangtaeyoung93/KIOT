@@ -22,4 +22,11 @@ public class AppGroupDid {
   private String regionNo;
   @XmlElement(name = "region_name")
   private String regionName;
+
+  public AppGroupDid(String stationNo, String stationName, String regionNo, String regionName) {
+    this.stationNo = stationNo;
+    this.stationName = stationName;
+    this.regionNo = regionNo;
+    this.regionName = regionName;
+  }
 }

@@ -851,10 +851,6 @@ public class StationService {
     List<AppGroupDidVO> list = readOnlyMapper.getStationDid(groupNo);
     List<AppGroupDid> agd = new ArrayList<>();
 
-
-    String lat = list.get(0).getLat();
-    String lon = list.get(0).getLon();
-
     HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
     factory.setConnectTimeout(10 * 1000);
     factory.setReadTimeout(30 * 1000);
@@ -864,35 +860,33 @@ public class StationService {
     headers.add("Content-type",MediaType.APPLICATION_FORM_URLENCODED_VALUE);
     headers.add("auth",CommonConstant.AUTH);
 
-
-
-    URI uri = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat="+lat+"&lon="+lon);
-
-    RequestEntity<String> req = new RequestEntity<>(headers,HttpMethod.GET,uri);
-    ResponseEntity<String> response = restTemplate.exchange(req, String.class);
-    StringBuilder sb = new StringBuilder();
     String cityId;
-    try {
-      JSONObject jobj = new JSONObject(response.getBody());
-      JSONObject obj = jobj.getJSONObject("data");
+    StringBuilder sb = new StringBuilder();
 
-      sb.append(obj.get("sido_nm")).append(" ").append(obj.get("sg_nm")).append(" ").append(obj.get("emd_nm"));
-      cityId = obj.get("city_id").toString();
-    } catch (Exception e) {
-      throw e;
-    }
-    AppGroupDid appGroupDid = new AppGroupDid();
     for (AppGroupDidVO vo : list) {
-      appGroupDid.setStationNo(vo.getStationNo());
-      appGroupDid.setStationName(vo.getStationName());
-      appGroupDid.setRegionNo(cityId);
-      appGroupDid.setRegionName(sb.toString());
-      agd.add(appGroupDid);
+
+      URI uri = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/loctoaddr?lat="+vo.getLat()+"&lon="+vo.getLon());
+
+      RequestEntity<String> req = new RequestEntity<>(headers,HttpMethod.GET,uri);
+      ResponseEntity<String> response = restTemplate.exchange(req, String.class);
+      try {
+        JSONObject jobj = new JSONObject(response.getBody());
+        JSONObject obj = jobj.getJSONObject("data");
+
+        sb.append(obj.get("sido_nm")).append(" ").append(obj.get("sg_nm")).append(" ").append(obj.get("emd_nm"));
+        cityId = obj.get("city_id").toString();
+
+        AppGroupDid appGroupDid = new AppGroupDid(vo.getStationNo(), vo.getStationName(), cityId, sb.toString());
+        agd.add(appGroupDid);
+
+        sb.setLength(0);
+      } catch (Exception e) {
+        throw e;
+      }
     }
 
     res.setListCount(agd.size());
     res.setObj(agd);
-
     res.setErrorCode(0L);
     res.setResult(CommonConstant.R_SUCC_CODE);
 
