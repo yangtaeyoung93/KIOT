@@ -112,6 +112,7 @@ public class CommonConstant {
   public static final String URL_SYSTEM_DEVICE_ATTRIBUTE = "/system/device/attribute";
   public static final String URL_SYSTEM_DEVICE_ELEMENTS = "/system/device/elements";
   public static final String URL_SYSTEM_FOTA = "/system/fota";
+  public static final String URL_SYSTEM_MASTER = "/system/master";
   public static final String URL_SYSTEM_GROUP = "/system/group";
   public static final String URL_SYSTEM_GROUP_DID = "/system/group/did";
   public static final String URL_SYSTEM_MEMBER = "/system/member";

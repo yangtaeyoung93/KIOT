@@ -464,6 +464,25 @@
     ORDER BY TG.group_name
   </select>
 
+  <select id="selectMasterList" parameterType="Search" resultType="Master">
+    SELECT
+    @rownum:=@rownum+1 as row_num
+    ,IDX
+    ,MASTER_ID
+    ,MASTER_PW
+    ,MASTER_NAME
+    ,MASTER_EMAIL
+    ,MASTER_PHONE_NUMBER
+    ,MASTER_COMPANY_NAME
+    ,GROUP_DEPART_NAME
+    ,USE_YN
+    ,CREATE_DT
+    ,LOGIN_IP
+    ,LOGIN_DT
+    FROM TB_MASTER tb,
+    (SELECT @rownum := 0) r
+  </select>
+
   <select id="selectGroupCustomList" parameterType="String" resultType="Group">
     SELECT @rownum:=@rownum+1 as row_num,
 			M.*
@@ -500,6 +519,22 @@
     FROM TB_GROUP AS TG
     WHERE TG.idx = #{idx}
       AND use_yn = 'Y'
+  </select>
+
+  <select id="selectMasterOne" parameterType="String" resultType="Master">
+    SELECT
+      TG.idx,
+      TG.master_id,
+      TG.master_name,
+      TG.master_email,
+      TG.master_company_name,
+      TG.group_depart_name,
+      TG.master_phone_number,
+      TG.create_dt,
+      TG.use_yn
+      FROM TB_MASTER AS TG
+      WHERE TG.idx = #{idx}
+    AND use_yn = 'Y'
   </select>
 
   <select id="selectGroupMembers" parameterType="String" resultType="HashMap">

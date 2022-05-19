@@ -6,25 +6,12 @@ import java.util.Map;
 
 import com.airguard.model.app.*;
 import com.airguard.model.dong.*;
+import com.airguard.model.system.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.airguard.model.common.Admin;
 import com.airguard.model.common.Search;
-import com.airguard.model.system.Device;
-import com.airguard.model.system.DeviceAttribute;
-import com.airguard.model.system.DeviceElements;
-import com.airguard.model.system.DeviceModel;
-import com.airguard.model.system.DeviceType;
-import com.airguard.model.system.FileVo;
-import com.airguard.model.system.Group;
-import com.airguard.model.system.GroupDid;
-import com.airguard.model.system.Member;
-import com.airguard.model.system.MemberDevice;
-import com.airguard.model.system.Menu;
-import com.airguard.model.system.PushMessage;
-import com.airguard.model.system.Space;
-import com.airguard.model.system.Vent;
 
 @Mapper
 public interface ReadOnlyMapper {
@@ -91,6 +78,11 @@ public interface ReadOnlyMapper {
   int checkDeviceType(String deviceType);
 
   int checkDeviceTypeName(String deviceTypeName);
+
+  //Master
+  List<Master> selectMasterList(Search search);
+  Master selectMasterOne(String idx);
+
 
   // Group
   Group findGroupByLoginId(@Param("groupId") String groupId);
