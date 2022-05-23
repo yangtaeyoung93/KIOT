@@ -1,19 +1,21 @@
 package com.airguard.controller.air365;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import com.airguard.util.NotifiTimeCheckUtil;
+import com.airguard.util.RedisManageUtil;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.airguard.service.app.Air365PushService;
 import com.airguard.util.CommonConstant;
 import com.airguard.util.RestApiCookieManageUtil;
@@ -27,6 +29,9 @@ public class Air365PushRestController {
 
   @Autowired
   private Air365PushService service;
+
+  @Autowired
+  private RedisManageUtil redisUtil;
 
   /*
    * AIR365 App, 알림 수신 설정 
@@ -98,6 +103,42 @@ public class Air365PushRestController {
     res = service.pushControlView(reqInfo);
 
     return res;
+  }
+
+  @GetMapping(value = "/get/redis")
+  public JSONObject getFlagList(List<String> memberTokenList, String userId, String serialNumber) throws Exception{
+    logger.info("memberTokenList ={}",memberTokenList);
+    logger.info("userId ={}",userId);
+    logger.info("serialNumber ={}",serialNumber);
+    List<String> filterTokenList = new ArrayList<String>();
+    String fcmReceiveFlagStr;
+    tokenLoop: for (String tokenInfo : memberTokenList) {
+
+      fcmReceiveFlagStr = redisUtil.getRedisData(
+              new StringBuilder("FLAG_")
+                      .append(userId)
+                      .append("_")
+                      .append(tokenInfo)
+                      .append("_")
+                      .append(serialNumber)
+                      .toString()).toString();
+
+      if (!"NA".equals(fcmReceiveFlagStr)) {
+        JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
+
+        if (0 == (Integer) fcmReceiveControlData.get("filter_alarm"))
+          continue tokenLoop;
+
+        if (!NotifiTimeCheckUtil.isNotifiTimeRangeCheck(fcmReceiveControlData.get("timeFlag").toString()))
+          continue tokenLoop;
+      }
+      filterTokenList.add(tokenInfo);
+    }
+
+    JSONObject jb = new JSONObject();
+    jb.put("getFilterTokenList", jb);
+
+    return jb;
   }
 
   /* ================================================ */
