@@ -40,6 +40,7 @@ public class Air365PushV2RestController {
           @ApiImplicitParam(name = "co2", value = "이산화탄소", allowableValues = "1(수신), 0(미수신)"),
           @ApiImplicitParam(name = "humi", value = "습도", allowableValues = "1(수신), 0(미수신)"),
           @ApiImplicitParam(name = "vocs", value = "휘발성유기화합물", allowableValues = "1(수신), 0(미수신)"),
+          @ApiImplicitParam(name = "filterAlarm", value = "필터알람", allowableValues = "1(수신), 0(미수신)"),
           @ApiImplicitParam(name = "startTime", value = "매너모드 시작 시간", paramType = "hhmm"),
           @ApiImplicitParam(name = "endTime", value = "매너모드 종료 시간", paramType = "hhmm")
   })
@@ -73,7 +74,8 @@ public class Air365PushV2RestController {
             request.getParameter("temp") == null ? "0" : request.getParameter("temp");
     String humiFlag =
             request.getParameter("humi") == null ? "0" : request.getParameter("humi");
-
+    String filterFlag =
+            request.getParameter("filterAlarm") == null ? "0" : request.getParameter("filterAlarm");
     String startTime = request.getParameter("startTime") == null ? "08:00"
             : request.getParameter("startTime");
     String endTime =
@@ -94,6 +96,7 @@ public class Air365PushV2RestController {
       vocs5Flag = AES256Util.decrypt(vocs5Flag.replace(" ","+"));
       tempFlag = AES256Util.decrypt(tempFlag.replace(" ","+"));
       humiFlag = AES256Util.decrypt(humiFlag.replace(" ","+"));
+      filterFlag = AES256Util.decrypt(filterFlag.replace(" ","+"));
       startTime = AES256Util.decrypt(startTime.replace(" ","+"));
       endTime = AES256Util.decrypt(endTime.replace(" ","+"));
     }
@@ -118,6 +121,7 @@ public class Air365PushV2RestController {
       reqInfo.put("vocs", vocs5Flag);
       reqInfo.put("temp", tempFlag);
       reqInfo.put("humi", humiFlag);
+      reqInfo.put("filter_alarm", filterFlag);
       reqInfo.put("startTime", startTime);
       reqInfo.put("endTime", endTime);
       res = service.pushControl(reqInfo);

@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -482,7 +483,13 @@ public class Air365StationV2Service {
     criteriaMp.put("humi", new Integer[]{50, 60, 75, 90, 100, 50, 40, 35, 20, 0}); // 습함, 건조
 
     String[] elNormalArray = {"pm10", "pm25", "co2", "voc", "noise"};
-
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    factory.setConnectTimeout(10 * 1000);
+    factory.setReadTimeout(30 * 1000);
+    RestTemplate restTemplate = new RestTemplate(factory);
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    headers.add("Content-Type", new StringBuilder(MediaType.APPLICATION_FORM_URLENCODED_VALUE).append(";charset=UTF-8").toString());
     try {
 
       String deviceType = String.valueOf(deviceInfo.get("device_type"));
@@ -492,7 +499,6 @@ public class Air365StationV2Service {
       String ci = "IAQ".equals(deviceType.toUpperCase())? "cici" : "coci";
 
       collectionData = getSerialToPlatFormData(deviceType, serialNum);
-
       ventDatas = new ArrayList<>();
       if ("IAQ".equals(deviceType.toUpperCase())) {
         for (Vent v : readOnlyMapper.selectMemberDeviceVentOne(deviceIdx)) {
@@ -500,7 +506,17 @@ public class Air365StationV2Service {
           ventData.put("ventDeviceIdx", v.getVentDeviceIdx() == null ? CommonConstant.NULL_DATA : v.getVentDeviceIdx());
           ventData.put("ventSerial", v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum());
           ventData.put("deviceModel", v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel());
-
+          try {
+            URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+            RequestEntity<String> req = null;
+            ResponseEntity<String> res = null;
+            req = new RequestEntity<>(headers, HttpMethod.GET, uri);
+            res = restTemplate.exchange(req, String.class);
+            JSONObject jo = new JSONObject(res.getBody()).getJSONObject("data");
+            ventData.put("filter_alarm", jo.getString("filter_alarm"));
+          }catch (Exception e){
+            logger.error("JSON NOT FOUND === {}",serialNum);
+          }
           ventDatas.add(ventData);
         }
       }
@@ -760,6 +776,14 @@ public class Air365StationV2Service {
 
       collectionData = getSerialToPlatFormData(deviceType, serialNum);
 
+      HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+      factory.setConnectTimeout(10 * 1000);
+      factory.setReadTimeout(30 * 1000);
+      RestTemplate restTemplate = new RestTemplate(factory);
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+      headers.add("Content-Type", new StringBuilder(MediaType.APPLICATION_FORM_URLENCODED_VALUE).append(";charset=UTF-8").toString());
+
       ventDatas = new ArrayList<>();
       if ("IAQ".equals(deviceType.toUpperCase())) {
         for (Vent v : readOnlyMapper.selectMemberDeviceVentOne(deviceIdx)) {
@@ -767,6 +791,20 @@ public class Air365StationV2Service {
           ventData.put("ventDeviceIdx", AES256Util.encrypt(v.getVentDeviceIdx() == null ? CommonConstant.NULL_DATA : v.getVentDeviceIdx()));
           ventData.put("ventSerial", AES256Util.encrypt(v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum()));
           ventData.put("deviceModel", AES256Util.encrypt(v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel()));
+
+try {
+  URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+  RequestEntity<String> req = null;
+  ResponseEntity<String> res = null;
+  req = new RequestEntity<>(headers, HttpMethod.GET, uri);
+  res = restTemplate.exchange(req, String.class);
+  JSONObject jo = new JSONObject(res.getBody()).getJSONObject("data");
+  logger.info("jo ={}",jo.toString());
+  ventData.put("filter_alarm", jo.getString("filter_alarm"));
+}catch (Exception e){
+e.printStackTrace();
+}
+
 
           ventDatas.add(ventData);
         }
@@ -1280,6 +1318,7 @@ public class Air365StationV2Service {
       ventDataObj.put("exhMode", AES256Util.encrypt(ventData.getExh_mode() == null ? CommonConstant.NULL_DATA : ventData.getExh_mode()));
       ventDataObj.put("autoMode", AES256Util.encrypt(ventData.getAuto_mode() == null ? CommonConstant.NULL_DATA : ventData.getAuto_mode()));
       ventDataObj.put("airMode", AES256Util.encrypt(aiMode == null ? CommonConstant.NULL_DATA : aiMode));
+      ventDataObj.put("filter_alarm", AES256Util.encrypt(ventData.getFilter_alarm() == null ? CommonConstant.NULL_DATA : ventData.getFilter_alarm()));
 
       int ciIndex = iaqData.getCici() == null ? 0 :
               KweatherElementMessageManageUtil.elementLevel(Double.parseDouble(iaqData.getCici().toString()));

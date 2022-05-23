@@ -46,6 +46,8 @@ public class FCMPushManageUtil {
       elObj.put("vocs", Integer.parseInt(req.get("vocs")));
       elObj.put("temp", Integer.parseInt(req.get("temp")));
       elObj.put("humi", Integer.parseInt(req.get("humi")));
+      elObj.put("filter_alarm", Integer.parseInt(req.get("filter_alarm")));
+
       timeObj.put("startTime", req.get("startTime"));
       timeObj.put("endTime", req.get("endTime"));
       elObj.put("timeFlag", timeObj);
@@ -71,6 +73,7 @@ public class FCMPushManageUtil {
     pushControlReqMp.put("vocs", "0");
     pushControlReqMp.put("temp", "0");
     pushControlReqMp.put("humi", "0");
+    pushControlReqMp.put("filter_alarm", "0");
     pushControlReqMp.put("startTime", "08:00");
     pushControlReqMp.put("endTime", "20:00");
 

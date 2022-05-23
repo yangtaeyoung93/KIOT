@@ -54,6 +54,7 @@ public class Air365PushRestController {
     String vocs5Flag = request.getParameter("vocs") == null ? "0" : request.getParameter("vocs");
     String tempFlag = request.getParameter("temp") == null ? "0" : request.getParameter("temp");
     String humiFlag = request.getParameter("humi") == null ? "0" : request.getParameter("humi");
+    String filterFlag = request.getParameter("filterAlarm") == null ? "0" : request.getParameter("filterAlarm");
 
     String startTime = request.getParameter("startTime") == null ? "00:00" : request.getParameter("startTime");
     String endTime = request.getParameter("endTime") == null ? "23:59" : request.getParameter("endTime");
@@ -71,11 +72,11 @@ public class Air365PushRestController {
     reqInfo.put("vocs", vocs5Flag);
     reqInfo.put("temp", tempFlag);
     reqInfo.put("humi", humiFlag);
+    reqInfo.put("filter_alarm", filterFlag);
     reqInfo.put("startTime", startTime);
     reqInfo.put("endTime", endTime);
 
     res = service.pushControl(reqInfo);
-
     return res;
   }
 
@@ -105,40 +106,42 @@ public class Air365PushRestController {
     return res;
   }
 
-  @GetMapping(value = "/get/redis")
-  public JSONObject getFlagList(List<String> memberTokenList, String userId, String serialNumber) throws Exception{
-    logger.info("memberTokenList ={}",memberTokenList);
-    logger.info("userId ={}",userId);
-    logger.info("serialNumber ={}",serialNumber);
+  @PostMapping(value = "/get/redis",produces = MediaType.APPLICATION_JSON_VALUE)
+  public HashMap<String, List<String>> getFlagList(String memberTokenList, String userId, String serialNum){
     List<String> filterTokenList = new ArrayList<String>();
-    String fcmReceiveFlagStr;
-    tokenLoop: for (String tokenInfo : memberTokenList) {
+    try {
+      String[] tokens = memberTokenList.split(",");
 
-      fcmReceiveFlagStr = redisUtil.getRedisData(
-              new StringBuilder("FLAG_")
-                      .append(userId)
-                      .append("_")
-                      .append(tokenInfo)
-                      .append("_")
-                      .append(serialNumber)
-                      .toString()).toString();
+      String fcmReceiveFlagStr;
+      tokenLoop: for (String tokenInfo : tokens) {
+        fcmReceiveFlagStr = redisUtil.getRedisData(
+                new StringBuilder("FLAG_")
+                        .append(userId)
+                        .append("_")
+                        .append(tokenInfo)
+                        .append("_")
+                        .append(serialNum)
+                        .toString()).toString();
+        if (!"NO_DATA".equals(fcmReceiveFlagStr)) {
 
-      if (!"NA".equals(fcmReceiveFlagStr)) {
-        JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
+          JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
 
-        if (0 == (Integer) fcmReceiveControlData.get("filter_alarm"))
-          continue tokenLoop;
+          if (0 == (Integer) fcmReceiveControlData.get("filter_alarm"))
+            continue tokenLoop;
 
-        if (!NotifiTimeCheckUtil.isNotifiTimeRangeCheck(fcmReceiveControlData.get("timeFlag").toString()))
-          continue tokenLoop;
+          if (!NotifiTimeCheckUtil.isNotifiTimeRangeCheck(fcmReceiveControlData.get("timeFlag").toString()))
+            continue tokenLoop;
+          filterTokenList.add(tokenInfo);
+        }
       }
-      filterTokenList.add(tokenInfo);
+    }catch (Exception e){
+      e.printStackTrace();
     }
-
     JSONObject jb = new JSONObject();
-    jb.put("getFilterTokenList", jb);
-
-    return jb;
+    HashMap<String, List<String>> map = new HashMap<>();
+    map.put("getFilterTokenList", filterTokenList);
+    jb = new JSONObject(map);
+    return map;
   }
 
   /* ================================================ */
