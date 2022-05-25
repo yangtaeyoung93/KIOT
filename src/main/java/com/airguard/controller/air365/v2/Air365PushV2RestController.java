@@ -10,6 +10,7 @@ import com.airguard.util.RestApiCookieManageUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+@Slf4j
 @RestController
 @RequestMapping(value = CommonConstant.URL_API_APP_AIR365_V2, produces = MediaType.APPLICATION_JSON_VALUE)
 public class Air365PushV2RestController {
@@ -44,6 +46,7 @@ public class Air365PushV2RestController {
           @ApiImplicitParam(name = "startTime", value = "매너모드 시작 시간", paramType = "hhmm"),
           @ApiImplicitParam(name = "endTime", value = "매너모드 종료 시간", paramType = "hhmm")
   })
+
   @RequestMapping(value = "/push/control", method = RequestMethod.POST)
   public HashMap<String, Object> pushControlElement(HttpServletRequest request) throws Exception {
     LinkedHashMap<String, Object> res;
@@ -74,13 +77,15 @@ public class Air365PushV2RestController {
             request.getParameter("temp") == null ? "0" : request.getParameter("temp");
     String humiFlag =
             request.getParameter("humi") == null ? "0" : request.getParameter("humi");
-    String filterFlag =
-            request.getParameter("filterAlarm") == null ? "0" : request.getParameter("filterAlarm");
+    String filterFlag = "0";
+
+    if(request.getParameter("filterAlarm") != null && !request.getParameter("filterAlarm").equals("")){
+      filterFlag = request.getParameter("filterAlarm");
+    }
     String startTime = request.getParameter("startTime") == null ? "08:00"
             : request.getParameter("startTime");
     String endTime =
             request.getParameter("endTime") == null ? "20:00" : request.getParameter("endTime");
-
 
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
@@ -121,7 +126,10 @@ public class Air365PushV2RestController {
       reqInfo.put("vocs", vocs5Flag);
       reqInfo.put("temp", tempFlag);
       reqInfo.put("humi", humiFlag);
-      reqInfo.put("filter_alarm", filterFlag);
+      if(filterFlag.equals("") || filterFlag.equals(null)){
+        filterFlag = "0";
+      }
+      reqInfo.put("filterAlarm", filterFlag);
       reqInfo.put("startTime", startTime);
       reqInfo.put("endTime", endTime);
       res = service.pushControl(reqInfo);

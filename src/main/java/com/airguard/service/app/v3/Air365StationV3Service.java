@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,7 +159,7 @@ public class Air365StationV3Service {
           ventData.put("ventDeviceIdx", v.getVentDeviceIdx() == null ? CommonConstant.NULL_DATA : v.getVentDeviceIdx());
           ventData.put("ventSerial", v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum());
           ventData.put("deviceModel", v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel());
-
+          ventData.put("filterAlarm", filterAlram(v).toString());
           ventDatas.add(ventData);
         }
       }
@@ -479,6 +480,29 @@ public class Air365StationV3Service {
     return resultData;
   }
 
+  private String filterAlram(Vent v) {
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    factory.setConnectTimeout(10 * 1000);
+    factory.setReadTimeout(30 * 1000);
+    RestTemplate restTemp = new RestTemplate(factory);
+    HttpHeaders hd = new HttpHeaders();
+    hd.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    hd.add("Content-Type", new StringBuilder(MediaType.APPLICATION_FORM_URLENCODED_VALUE).append(";charset=UTF-8").toString());
+    JSONObject jo = new JSONObject();
+    try {
+      URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+      RequestEntity<String> req = null;
+      ResponseEntity<String> res = null;
+      req = new RequestEntity<>(hd, HttpMethod.GET, uri);
+      res = restTemp.exchange(req, String.class);
+      jo = new JSONObject(res.getBody()).getJSONObject("data");
+      return jo.getString("filter_alarm");
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+   return "";
+  }
+
   public LinkedHashMap<String, Object> getIotDataDetailEncodeVersion(String serial) throws Exception {
     LinkedHashMap<String, Object> resultData = new LinkedHashMap<>();
     Map<String, Object> collectionData;
@@ -516,6 +540,13 @@ public class Air365StationV3Service {
       String ci = "IAQ".equals(deviceType.toUpperCase())? "cici" : "coci";
 
       collectionData = getSerialToPlatFormData(deviceType, serialNum);
+      HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+      factory.setConnectTimeout(10 * 1000);
+      factory.setReadTimeout(30 * 1000);
+      RestTemplate restTemp = new RestTemplate(factory);
+      HttpHeaders hd = new HttpHeaders();
+      hd.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+      hd.add("Content-Type", new StringBuilder(MediaType.APPLICATION_FORM_URLENCODED_VALUE).append(";charset=UTF-8").toString());
 
       ventDatas = new ArrayList<>();
       if ("IAQ".equals(deviceType.toUpperCase())) {
@@ -524,7 +555,17 @@ public class Air365StationV3Service {
           ventData.put("ventDeviceIdx", AES256Util.encrypt(v.getVentDeviceIdx() == null ? CommonConstant.NULL_DATA : v.getVentDeviceIdx()));
           ventData.put("ventSerial", AES256Util.encrypt(v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum()));
           ventData.put("deviceModel", AES256Util.encrypt(v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel()));
-
+          try {
+            URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+            RequestEntity<String> req = null;
+            ResponseEntity<String> res = null;
+            req = new RequestEntity<>(hd, HttpMethod.GET, uri);
+            res = restTemp.exchange(req, String.class);
+            JSONObject jo = new JSONObject(res.getBody()).getJSONObject("data");
+            ventData.put("filter_alarm", jo.getString("filter_alarm"));
+          }catch (Exception e){
+            e.printStackTrace();
+          }
           ventDatas.add(ventData);
         }
       }

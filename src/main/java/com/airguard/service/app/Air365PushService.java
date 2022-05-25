@@ -39,10 +39,11 @@ public class Air365PushService {
       elObj.put("vocs", Integer.parseInt(req.get("vocs")));
       elObj.put("temp", Integer.parseInt(req.get("temp")));
       elObj.put("humi", Integer.parseInt(req.get("humi")));
-      elObj.put("filter_alarm", Integer.parseInt(req.get("filter_alarm")));
+      elObj.put("filterAlarm", Integer.parseInt(req.get("filterAlarm")));
       timeObj.put("startTime", req.get("startTime"));
       timeObj.put("endTime", req.get("endTime"));
       elObj.put("timeFlag", timeObj);
+
 
       if (redisUtil.setRedisData("FLAG_".concat(req.get("token").toString()).concat("_").concat(target), elObj.toString())) 
         resultCode = 1;
@@ -102,7 +103,7 @@ public class Air365PushService {
       receiveData.put("vocs", 1);
       receiveData.put("temp", 1);
       receiveData.put("humi", 1);
-      receiveData.put("filter_alarm", 1);
+      receiveData.put("filterAlarm", 1);
       receiveData.put("timeFlag", timeMap);
 
     }

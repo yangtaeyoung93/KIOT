@@ -72,7 +72,7 @@ public class Air365PushRestController {
     reqInfo.put("vocs", vocs5Flag);
     reqInfo.put("temp", tempFlag);
     reqInfo.put("humi", humiFlag);
-    reqInfo.put("filter_alarm", filterFlag);
+    reqInfo.put("filterAlarm", filterFlag);
     reqInfo.put("startTime", startTime);
     reqInfo.put("endTime", endTime);
 
@@ -106,12 +106,11 @@ public class Air365PushRestController {
     return res;
   }
 
-  @PostMapping(value = "/get/redis",produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/get/redis")
   public HashMap<String, List<String>> getFlagList(String memberTokenList, String userId, String serialNum){
     List<String> filterTokenList = new ArrayList<String>();
     try {
       String[] tokens = memberTokenList.split(",");
-
       String fcmReceiveFlagStr;
       tokenLoop: for (String tokenInfo : tokens) {
         fcmReceiveFlagStr = redisUtil.getRedisData(
@@ -122,7 +121,7 @@ public class Air365PushRestController {
                         .append("_")
                         .append(serialNum)
                         .toString()).toString();
-        if (!"NO_DATA".equals(fcmReceiveFlagStr)) {
+        if (!"NO_DATA".equals(fcmReceiveFlagStr) || !"NA".equals(fcmReceiveFlagStr)) {
 
           JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
 
@@ -137,10 +136,8 @@ public class Air365PushRestController {
     }catch (Exception e){
       e.printStackTrace();
     }
-    JSONObject jb = new JSONObject();
     HashMap<String, List<String>> map = new HashMap<>();
     map.put("getFilterTokenList", filterTokenList);
-    jb = new JSONObject(map);
     return map;
   }
 

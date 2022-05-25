@@ -792,18 +792,17 @@ public class Air365StationV2Service {
           ventData.put("ventSerial", AES256Util.encrypt(v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum()));
           ventData.put("deviceModel", AES256Util.encrypt(v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel()));
 
-try {
-  URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
-  RequestEntity<String> req = null;
-  ResponseEntity<String> res = null;
-  req = new RequestEntity<>(headers, HttpMethod.GET, uri);
-  res = restTemplate.exchange(req, String.class);
-  JSONObject jo = new JSONObject(res.getBody()).getJSONObject("data");
-  logger.info("jo ={}",jo.toString());
-  ventData.put("filter_alarm", jo.getString("filter_alarm"));
-}catch (Exception e){
-e.printStackTrace();
-}
+            try {
+              URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+              RequestEntity<String> req = null;
+              ResponseEntity<String> res = null;
+              req = new RequestEntity<>(headers, HttpMethod.GET, uri);
+              res = restTemplate.exchange(req, String.class);
+              JSONObject jo = new JSONObject(res.getBody()).getJSONObject("data");
+              ventData.put("filter_alarm", jo.getString("filter_alarm"));
+            }catch (Exception e){
+            e.printStackTrace();
+            }
 
 
           ventDatas.add(ventData);
