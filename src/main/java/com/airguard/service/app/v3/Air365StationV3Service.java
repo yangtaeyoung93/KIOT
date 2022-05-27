@@ -354,6 +354,7 @@ public class Air365StationV3Service {
 
           weatherData.put("pm10", outdoor.get("pm10Value").toString());
           weatherData.put("pm25", outdoor.get("pm25Value").toString());
+          weatherData.put("date", outdoor.get("date").toString());
           valueMap.put("pm10", outdoor.get("pm10Value"));
           valueMap.put("pm25", outdoor.get("pm25Value"));
         }
