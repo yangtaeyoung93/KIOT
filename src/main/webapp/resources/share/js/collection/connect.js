@@ -86,6 +86,7 @@ function initDataTableCustom() {
           {data: "serial"},
           {data: "serial"},
           {data: "serial"},
+          {data: "serial"},
           {data: "serial"}
         ],
         createdRow: function (row, data) {
@@ -438,6 +439,14 @@ function initDataTableCustom() {
               return spaceName;
             },
           },
+{
+            targets: 23,
+            visible: false,
+            render: function (data, type, full, meta) {
+
+              return full.masterIdx;
+            },
+          },
         ],
       });
   $('.search_bottom input').unbind().bind('keyup', function () {
@@ -469,6 +478,21 @@ function initDataTableCustom() {
        }
        previousSearchType = colIndex;
     $("#searchValue").val("");
+  });
+
+  $("#searchMaster").change(function () {
+      table.column(19).search("").draw();
+      table.column(21).search("").draw();
+      const masterIdx = $('#searchMaster').val();
+      searchMasterId = this.value;
+      if(this.value == "") searchMasterId = "";
+      $(".filterDiv").each(function (index, item) {
+        $(item).removeClass("filter-cli");
+      });
+      $(".filterDiv").first().addClass("filter-cli");
+      table.column(23).search(searchMasterId).draw();
+      table.column(21).search("").draw();
+      getGroupList(masterIdx);
   });
 
   $("#searchGroup").change(function () {
@@ -518,11 +542,16 @@ function initDataTableCustom() {
   $("#connectTable_filter").hide();
 }
 
-function getGroupList() {
+function getGroupList(masterId) {
   let optHtml = "";
+  if(masterId == undefined || masterId == ""){
+      url =  "/system/group/get";
+    }else{
+      url = `/system/master/get/${masterId}/m`;
+  }
   $.ajax({
     method: "GET",
-    url: "/system/group/get",
+    url: url,
     contentType: "application/json; charset=utf-8",
     data: "searchUseYn=Y&searchValue2=IAQ",
     success: function (param) {
@@ -584,6 +613,31 @@ function getSpace(val) {
   }
 }
 
+function getMasterList() {
+  var optHtml = "";
+  $.ajax({
+    method: "GET",
+    url: "/system/master/get",
+    contentType: "application/json; charset=utf-8",
+    data: "searchUseYn=Y&searchValue2=IAQ",
+    success: function (param) {
+      optHtml += "<option value=''>전체</option>";
+      for (var i = 0; i < param.data.length; i++) {
+        optHtml +=
+          "<option value='" +
+          param.data[i].idx +
+          "'>" +
+          param.data[i].masterName +
+          "</option>";
+      }
+      $("#searchMaster").html(optHtml);
+    },
+  });
+}
+
+
+
+
 $().ready(function () {
 $(function() {
   var marginTop = parseInt( $(".main-sidebar").css('margin-top') );
@@ -599,6 +653,7 @@ $(function() {
   $(".select2-container").css("display", "inline-block");
 
   initDataTableCustom();
+  getMasterList();
   getGroupList();
   getHighSpace();
 

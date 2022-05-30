@@ -5,7 +5,8 @@
 
 	<!-- 수집 데이터 -->
 	<select id="selectCollectionDevice" parameterType="String" resultType="CollectionDto">
-		SELECT 
+		SELECT A.*, B.master_idx, B.master_name from(
+		SELECT
 			TMDM.member_idx,
 		    TMDM.device_idx,
 		    TMDM.space_idx,
@@ -20,7 +21,6 @@
 		    (SELECT (SELECT TG.group_depart_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDM.member_idx) AS group_depart_name,
 		    (SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDM.member_idx) AS group_company_name,
 		    (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
-	        (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
 	        (SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_id,
 			(SELECT (SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx) FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS parent_space_name,
     		(SELECT TSI.space_name FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS space_name,
@@ -73,6 +73,13 @@
 				</otherwise>
 			</choose>
 		</if>
+		) A
+		left outer JOIN (select tg.group_id,master_name,master_idx from TB_MASTER_GROUP_MANAGE tmgm
+		left outer join TB_GROUP tg
+		on tmgm.GROUP_IDX = tg.idx
+		left outer join TB_MASTER tm
+		on tmgm.MASTER_IDX = tm.IDX)B
+		on A.group_id=B.group_id
 	</select>
 
 
@@ -120,7 +127,6 @@
 
 		(SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDM.member_idx) AS group_company_name,
 		(SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
-
 		(SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_id,
 		(SELECT (SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx) FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS parent_space_name,
 		(SELECT TSI.space_name FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS space_name,

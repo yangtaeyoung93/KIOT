@@ -847,6 +847,8 @@ public class PlatformService {
         vo.setTestYn(collectionDto.getTestYn());
         vo.setGroupId(collectionDto.getGroupId());
         vo.setGroupName(collectionDto.getGroupName());
+        vo.setMasterName(collectionDto.getMasterName());
+        vo.setMasterIdx(collectionDto.getMasterIdx());
         vo.setParentSpaceName(collectionDto.getParentSpaceName());
         vo.setSpaceName(collectionDto.getSpaceName());
         vo.setUserId(collectionDto.getUserId());
