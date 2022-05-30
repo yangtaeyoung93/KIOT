@@ -62,6 +62,13 @@ public class Air365PushRestController {
     if ("".equals(token) || ("".equals(target) && "".equals(deviceType)))
       throw new RequestMatchException();
 
+    if (startTime.length() == 4) {
+      startTime = startTime.substring(0,1).concat(":").concat(startTime.substring(2,3));
+    } else if (endTime.length() == 4) {
+      endTime = endTime.substring(0,1).concat(":").concat(endTime.substring(2,3));
+    }
+
+
     HashMap<String, String> reqInfo = new HashMap<String, String>();
     reqInfo.put("token", token);
     reqInfo.put("target", target);
@@ -125,7 +132,7 @@ public class Air365PushRestController {
 
           JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
 
-          if (0 == (Integer) fcmReceiveControlData.get("filter_alarm"))
+          if (0 == (Integer) fcmReceiveControlData.get("filterAlarm"))
             continue tokenLoop;
 
           if (!NotifiTimeCheckUtil.isNotifiTimeRangeCheck(fcmReceiveControlData.get("timeFlag").toString()))
