@@ -465,25 +465,32 @@
   </select>
 
   <select id="selectMasterList" parameterType="Search" resultType="Master">
+    select
+    tm1.row_num
+    ,tm1.IDX
+    ,tm1.MASTER_ID
+    ,tm1.MASTER_PW
+    ,tm1.MASTER_NAME
+    ,tm1.MASTER_EMAIL
+    ,tm1.MASTER_PHONE_NUMBER
+    ,tm1.MASTER_COMPANY_NAME
+    ,tm1.group_depart_name
+    ,tm1.USE_YN
+    ,tm1.CREATE_DT
+    ,tm1.LOGIN_IP
+    ,tm1.LOGIN_DT,
+    case when tm2.groupCnt is null then '0' else tm2.groupCnt end as 'groupCnt'
+    from
+    (
     SELECT
-      @rownum:=@rownum+1 as row_num
-      ,tm.IDX
-      ,tm.MASTER_ID
-      ,tm.MASTER_PW
-      ,tm.MASTER_NAME
-      ,tm.MASTER_EMAIL
-      ,tm.MASTER_PHONE_NUMBER
-      ,tm.MASTER_COMPANY_NAME
-      ,tm.group_depart_name
-      ,count(tmgm.MASTER_IDX) groupCnt
-      ,tm.USE_YN
-      ,tm.CREATE_DT
-      ,tm.LOGIN_IP
-      ,tm.LOGIN_DT
+    @rownum:=@rownum+1 as row_num,
+    tm.*
     FROM (SELECT @rownum := 0) r,
-    TB_MASTER tm left join TB_MASTER_GROUP_MANAGE tmgm
-    ON tm.idx = tmgm.MASTER_IDX
-    GROUP BY tmgm.MASTER_IDX
+    TB_MASTER tm
+    ) tm1
+    left outer join
+    (select master_idx, count(master_idx) groupCnt from TB_MASTER_GROUP_MANAGE tmgm group by MASTER_IDX) tm2
+    on tm1.idx = tm2.master_idx
 
   </select>
 
