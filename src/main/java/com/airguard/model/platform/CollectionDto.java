@@ -13,6 +13,8 @@ public class CollectionDto {
   private String spaceIdx;
   private String groupId;
   private String groupName;
+  private String masterName;
+  private String masterIdx;
   private String spaceName;
   private String parentSpaceName;
   private String stationName;

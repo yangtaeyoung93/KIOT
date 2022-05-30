@@ -699,10 +699,10 @@ public class PlatformService {
     return resCol;
   }
 
-  public List<ResultCollectionVo> selectTotalSensorVentApi(String paramType,String masterId) throws Exception {
+  public List<ResultCollectionVo> selectTotalSensorVentApi(String paramType) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
-    List<CollectionDto> deviceList = mapper.selectCollectionMasterDeviceVent(masterId);
+    List<CollectionDto> deviceList = mapper.selectCollectionMasterDeviceVent();
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -729,6 +729,8 @@ public class PlatformService {
       vo.setUserId(collectionDto.getUserId());
       vo.setGroupId(collectionDto.getGroupId());
       vo.setGroupName(collectionDto.getGroupName());
+      vo.setMasterIdx(collectionDto.getMasterIdx());
+      vo.setMasterName(collectionDto.getMasterName());
       vo.setStationName(collectionDto.getStationName());
       vo.setProductDt(collectionDto.getProductDt());
       if (!jObj.isNull(serial)) {

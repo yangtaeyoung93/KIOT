@@ -57,8 +57,7 @@ function initDataTableCustom() {
     serverSide: false,
     ajax: {
       url : "/api/collection/list/vent",
-      type : "GET",
-      data :{"masterIdx" : masterIdx}
+      type : "GET"
     },
     columns: [
       {orderable: false},
@@ -78,10 +77,10 @@ function initDataTableCustom() {
       {data: "serial"},
       {data: "serial"},
       {data: "serial"},
+      {data: "serial"},
       {data: "serial"}
     ],
     createdRow: function (row, data) {
-      console.log(data);
       $(row).attr('id', 'row-' + data.serial);
 
       if (data.receiveFlag === false) {
@@ -481,10 +480,16 @@ function initDataTableCustom() {
           return receiveFlag;
         },
       },
+      {
+              targets: 20,
+              visible: false,
+              render: function (data, type, full, meta) {
+                return full.masterIdx;
+              },
+      },
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
-        //console.log(settings.json.data);
         const js = settings.json.data;
         let reCnt = 0;
         let unReCnt = 0;
@@ -556,8 +561,17 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+    table.column(18).search("").draw();
+    table.column(19).search("").draw();
     const masterIdx = $('#searchMaster').val();
-    initDataTableCustom();
+    searchMasterId = this.value;
+    if(this.value == "") searchMasterId = "";
+    $(".filterDiv").each(function (index, item) {
+         $(item).removeClass("filter-cli");
+    });
+    $(".filterDiv").first().addClass("filter-cli");
+    table.column(20).search(searchMasterId).draw();
+    table.column(19).search("").draw();
     getGroupList(masterIdx);
   });
 

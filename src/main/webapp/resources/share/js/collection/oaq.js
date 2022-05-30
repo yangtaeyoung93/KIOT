@@ -90,7 +90,6 @@ function initDataTableCustom() {
     ajax: {
       url: "/api/collection/list/oaq",
       type: "GET",
-      data: {"masterIdx" : masterIdx}
     },
     columns: [
       { orderable: false },
@@ -113,6 +112,7 @@ function initDataTableCustom() {
       { data: "serial" },
       { data: "serial" },
       { data: "serial" },
+      { data: "serial" }
     ],
     createdRow: function (row, data, dataIndex) {
       $(row).attr("id", "row-" + data.serial);
@@ -567,6 +567,13 @@ function initDataTableCustom() {
           return receiveFlag;
         },
       },
+      {
+              targets: 20,
+              visible: false,
+              render: function (data, type, full, meta) {
+                      return full.masterIdx;
+              },
+      },
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
@@ -649,8 +656,17 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+    table.column(16).search("").draw();
+    table.column(19).search("").draw();
     const masterIdx = $('#searchMaster').val();
-    initDataTableCustom();
+    searchMasterId = this.value;
+    if(this.value == "") searchMasterId = "";
+    $(".filterDiv").each(function (index, item) {
+         $(item).removeClass("filter-cli");
+    });
+    $(".filterDiv").first().addClass("filter-cli");
+    table.column(20).search(searchMasterId).draw();
+    table.column(19).search("").draw();
     getGroupList(masterIdx);
   });
 

@@ -144,6 +144,8 @@
 
 	<!-- 수집 데이터 (VENT) -->
 	<select id="selectCollectionMasterDeviceVent" resultType="CollectionDto" parameterType="String">
+		SELECT AA.*, B.master_name, B.master_idx from
+		(
 		SELECT A.*
 		FROM
 		(SELECT
@@ -162,16 +164,13 @@
 		(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
 		(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
 		FROM
-		TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) A
-		<if test='!masterIdx.equals("0")'>
-			WHERE   A.group_id in(
-			SELECT group_id
-			from TB_GROUP tg
-			where idx in(
-			SELECT tmgm.GROUP_IDX
-			FROM TB_MASTER_GROUP_MANAGE tmgm
-			WHERE tmgm.MASTER_IDX = #{masterIdx}))
-		</if>
+		TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) A ) AA
+		left outer JOIN (select tg.group_id,master_name,master_idx from TB_MASTER_GROUP_MANAGE tmgm
+		left outer join TB_GROUP tg
+		on tmgm.GROUP_IDX = tg.idx
+		left outer join TB_MASTER tm
+		on tmgm.MASTER_IDX = tm.IDX)B
+		on AA.group_id=B.group_id
 	</select>
 
 	<select id="selectCollectionDeviceVent" resultType="CollectionDto" parameterType="String">
