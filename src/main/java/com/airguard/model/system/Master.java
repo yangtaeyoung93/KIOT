@@ -20,7 +20,6 @@ public class Master {
     String masterName;
     String masterEmail;
     String masterPhoneNumber;
-    String masterTelephone;
     String masterCompanyName;
     String groupDepartName;
     String createDt;

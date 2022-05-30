@@ -193,26 +193,22 @@ $().ready(function() {
 
 	$('#insertBtn').click(function() {
 
-	    var masterId = $("#masterId").val();
-		var masterPw = $("#masterPw").val();
-		var masterEmail = $("#masterEmail").val();
-		var masterPhoneNumber = $("#masterPhoneNumber").val();
-		var masterName = $("#masterName").val();
-		var masterCompanyName = $("#masterCompanyName").val();
-		var groupDepartName = $("#groupDepartName").val();
+	    var masterId = $("#masterId").val(); //그룹아이디
+		var masterPw = $("#masterPw").val(); //비밀번호
+		var masterName = $("#masterName").val(); //그룹명
+		var masterCompanyName = $("#masterCompanyName").val(); //고객사
+		var groupDepartName = $("#groupDepartName").val(); //고객담당자
+		var masterEmail = $("#masterEmail").val(); //이메일
+		var masterPhoneNumber = $("#masterPhoneNumber").val(); //전화번호
 		var useYn = "Y";
 		var groupArr= new Array(); 
 		var use_GroupMember_len = $("#UseGroup > div > input:checkbox[name='UserMembers']").length;	
 		var chkId = $("#chk_id").val();
 
-		if(chkId == 0){
-			alert("아이디 중복 체크를 하시기 바랍니다.");
-			$("#masterId").focus();
-			return false;
-		}
 
 		$('.duallistbox').each(function() {
 			groupArr = $(this).val();
+			console.log(groupArr);
 		});
 
 		$("#UseGroup > div > .UserMembers").each(function() {
@@ -269,30 +265,20 @@ $().ready(function() {
 			return false;
 		}
 
-		if (!groupDepartName) {
-			alert("고객담당자를 입력 해주세요.");
-			$("#groupDepartName").focus();
-			return false;
-		}
-
-		if (!masterPhoneNumber) {
-			alert("전화번호를 입력 해주세요.");
-			$("#masterPhoneNumber").focus();
-			return false;
-		}
 
 		var obj = {
-			masterId : masterId,
-			masterPw : masterPw,
-			masterName : masterName,
-			masterEmail : masterEmail,
-			masterPhoneNumber : masterPhoneNumber,
-			memberIdxs : groupArr,
-			masterCompanyName : masterCompanyName,
-			groupDepartName : groupDepartName,
+			masterId : masterId, //그룹아이디
+			masterPw : masterPw, //비밀번호
+			masterName : masterName, //그룹명
+			masterCompanyName : masterCompanyName, //고객사
+            groupDepartName : groupDepartName, //고객담당자
+			masterEmail : masterEmail, //이메일
+			masterPhoneNumber : masterPhoneNumber, //전화번호
+			groupIdxs : groupArr,
+
 			useYn : useYn
 		};
-
+        console.log(obj);
 		$.ajax({
 			method : "POST",
 			url : "/system/master/post",

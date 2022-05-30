@@ -46,7 +46,7 @@
 								<div class="col-5 mx-auto">
 									<input type="hidden" name="chk_id" id="chk_id" value=""/>
 									<input type="hidden" name="masterIdx" id="masterIdx" value="${masterData.idx }"/>
-									<label for="masterId">그룹아이디 (<font style="color:red">*</font>)</label>
+									<label for="masterId">상위그룹아이디 (<font style="color:red">*</font>)</label>
 									<input type="text" class="form-control group-attribute" name="masterId" id="masterId" value="${masterData.masterId }" placeholder="내용을 입력해 주세요">
 									<div id="chk_txt" class="mt10"></div>
 
@@ -65,7 +65,7 @@
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="masterName">그룹명 (<font style="color:red">*</font>)</label>
+									<label for="masterName">상위그룹명 (<font style="color:red">*</font>)</label>
 									<input type="text" class="form-control group-attribute" name="masterName" id="masterName" value="${masterData.masterName }" placeholder="내용을 입력해 주세요">
 								</div>
 								<div class="col-5 mx-auto">
@@ -76,7 +76,7 @@
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="groupDepartName">고객담당자 (<font style="color:red">*</font>)</label>
+									<label for="groupDepartName">고객담당자 </label>
 									<input type="text" class="form-control group-attribute" name="groupDepartName" id="groupDepartName" value="${masterData.groupDepartName }" placeholder="내용을 입력해 주세요">
 								</div>
 								<div class="col-5 mx-auto">
@@ -87,7 +87,7 @@
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="masterPhoneNumber">전화번호 (<font style="color:red">*</font>)</label>
+									<label for="masterPhoneNumber">전화번호 </label>
 									<input type="tel" maxlength="13" onkeypress="validate(event)" class="form-control group-attribute" name="masterPhoneNumber" id="masterPhoneNumber" value="${masterData.masterPhoneNumber }" placeholder="내용을 입력해 주세요">
 								</div>
 

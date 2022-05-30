@@ -38,7 +38,7 @@
 					<!-- /.card-header -->
 					<div class="card-body">
 						<h3>
-							<strong>그룹 계정 </strong>
+							<strong>상위그룹 계정 </strong>
 						</h3>
 						<div class="opt_wrap">
 							<hr/>
@@ -46,7 +46,7 @@
 								<div class="col-5 mx-auto">
 									<input type="hidden" name="chk_id" id="chk_id" value=""/>
 									<input type="hidden" name="masterIdx" id="masterIdx" value="${masterData.idx }"/>
-									<label for="masterId">그룹아이디 (<font style="color:red">*</font>)</label>
+									<label for="masterId">상위그룹아이디 (<font style="color:red">*</font>)</label>
 									<input type="text" class="form-control group-attribute" name="masterId" id="masterId" value="${masterData.masterId }" placeholder="내용을 입력해 주세요">
 									<div id="chk_txt" class="mt10"></div>
 									
@@ -65,7 +65,7 @@
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="masterName">그룹명 (<font style="color:red">*</font>)</label>
+									<label for="masterName">상위그룹명 (<font style="color:red">*</font>)</label>
 									<input type="text" class="form-control group-attribute" name="masterName" id="masterName" value="${masterData.masterName }" placeholder="내용을 입력해 주세요">
 								</div>
 								<div class="col-5 mx-auto">
@@ -76,18 +76,18 @@
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="groupDepartName">고객담당자 (<font style="color:red">*</font>)</label>
+									<label for="masterDepartName">고객담당자 </label>
 									<input type="text" class="form-control group-attribute" name="groupDepartName" id="groupDepartName" value="${masterData.groupDepartName }" placeholder="내용을 입력해 주세요">
 								</div>
 								<div class="col-5 mx-auto">
-									<label for="groupEmail">이메일</label>
+									<label for="masterEmail">이메일</label>
 									<input type="text" class="form-control group-attribute" name="masterEmail" id="masterEmail" value="${masterData.masterEmail }" placeholder="내용을 입력해 주세요">
 								</div>
 							</div>
 							<hr/>
 							<div class ="row mt20">
 								<div class="col-5 mx-auto">
-									<label for="masterPhoneNumber">전화번호 (<font style="color:red">*</font>)</label>
+									<label for="masterPhoneNumber">전화번호 </label>
 									<input type="tel" maxlength="13" onkeypress="validate(event)" class="form-control group-attribute" name="masterPhoneNumber" id="masterPhoneNumber" value="${masterData.groupPhoneNumber }" placeholder="내용을 입력해 주세요">
 								</div>
 							</div>
@@ -100,14 +100,14 @@
 					<!-- /.card-header -->
 					<div class="card-body">
 						<h3>
-							<strong>사용자 목록</strong>
+							<strong>그룹 목록</strong>
 						</h3>
 						<div class="opt_wrap">
 							<hr/>
 							<div class ="row">
 								<div class="col-12">
 					                <div class="form-group" style="height: 285px;">
-					                	<Strong>미등록 사용자 / 등록 사용자</Strong>
+					                	<Strong>미등록 그룹 / 등록 그룹</Strong>
 					                  <select class="duallistbox" multiple="multiple" id="memberSelect">
 					                  </select>
 					                </div>

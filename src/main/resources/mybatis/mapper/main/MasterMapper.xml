@@ -3,10 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.airguard.mapper.main.system.MasterMapper">
 
-    <!-- 그룹 계정  추가 -->
+    <!-- 상위그룹 계정  추가 -->
 	<insert id="insertMaster" parameterType="Master" useGeneratedKeys="true" keyProperty="idx">
 		INSERT INTO
-		TB_GROUP(
+		TB_MASTER(
 			master_id,
 			master_pw,
 			master_name,
