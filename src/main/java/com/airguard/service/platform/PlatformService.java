@@ -260,7 +260,7 @@ public class PlatformService {
     return result;
   }
 
-  public List<ResultCollectionVo> selectTotalSensorApi(String paramType,String masterIdx) throws Exception {
+  public List<ResultCollectionVo> selectTotalSensorApi(String paramType) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
 
@@ -280,7 +280,7 @@ public class PlatformService {
         deviceTypeIdx = "3";
         break;
     }
-    List<ResultCollectionVo> deviceList = mapper.selectCollectionDeviceWithDeviceType("00", "N",deviceTypeIdx,masterIdx);
+    List<ResultCollectionVo> deviceList = mapper.selectCollectionDeviceWithDeviceType("00", "N",deviceTypeIdx);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);

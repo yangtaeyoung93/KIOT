@@ -105,7 +105,8 @@
 	</select>-->
 
 	<select id="selectCollectionDeviceWithDeviceType" parameterType="String" resultType="ResultCollectionVo">
-		SELECT
+		SELECT AA.*, B.master_name,B.master_idx from
+		(SELECT
 			A.*
 		FROM (
 			SELECT
@@ -131,16 +132,13 @@
 		TB_MEMBER_DEVICE_MANAGE AS TMDM
 		WHERE
 		TMDM.device_idx IS NOT NULL
-		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx})) A
-		<if test='!masterIdx.equals("0")'>
-			WHERE   A.group_id in(
-			SELECT group_id
-			from TB_GROUP tg
-			where idx in(
-			SELECT tmgm.GROUP_IDX
-			FROM TB_MASTER_GROUP_MANAGE tmgm
-			WHERE tmgm.MASTER_IDX = #{masterIdx}))
-		</if>
+		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx})) A ) AA
+		left outer JOIN (select tg.group_id,master_name,master_idx from TB_MASTER_GROUP_MANAGE tmgm
+		left outer join TB_GROUP tg
+		on tmgm.GROUP_IDX = tg.idx
+		left outer join TB_MASTER tm
+		on tmgm.MASTER_IDX = tm.IDX)B
+		on AA.group_id=B.group_id
 	</select>
 
 

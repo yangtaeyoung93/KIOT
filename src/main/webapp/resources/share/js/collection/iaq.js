@@ -91,12 +91,12 @@ function initDataTableCustom() {
     ajax: {
       url: "/api/collection/list/iaq",
       type: "GET",
-      data: {"masterIdx" : masterIdx}
     },
     columns: [
       { data: "" },
       { data: "serial" },
       { data: "dataTime" },
+      { data: "" },
       { data: "" },
       { data: "" },
       { data: "" },
@@ -619,6 +619,14 @@ function initDataTableCustom() {
           return receiveFlag;
         },
       },
+      {
+              targets: 22,
+              visible: false,
+              render: function (data, type, full, meta) {
+
+                return full.masterIdx;
+              },
+            },
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
@@ -642,10 +650,7 @@ function initDataTableCustom() {
 
         let groupSelect = document.querySelector("#searchGroup");
 
-        var txtGroupId =
-          searchGroupId == ""
-            ? "전체"
-            : groupSelect.options[groupSelect.selectedIndex].text;
+        var txtGroupId = searchGroupId == "" ? "전체"  : groupSelect.options[groupSelect.selectedIndex].text;
         $("#msgTxtTotal").html(
           txtGroupId +
             " " +
@@ -699,15 +704,16 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+    table.column(18).search("").draw();
+    table.column(21).search("").draw();
     const masterIdx = $('#searchMaster').val();
-    searchGroupId = "g_" + this.value;
-    if(this.value == "") searchGroupId = "";
+    searchMasterId = this.value;
+    if(this.value == "") searchMasterId = "";
     $(".filterDiv").each(function (index, item) {
       $(item).removeClass("filter-cli");
     });
     $(".filterDiv").first().addClass("filter-cli");
-
-    table.column(18).search(searchGroupId).draw();
+    table.column(22).search(searchMasterId).draw();
     table.column(21).search("").draw();
     getGroupList(masterIdx);
   });

@@ -45,9 +45,8 @@ public class CollectionRestController {
 
   @ApiOperation(value = "IAQ 최근 측정 데이터 조회 API", tags = "시스템 관리 API")
   @RequestMapping(value = "/list/iaq", method = RequestMethod.GET)
-  public ResponseEntity<Object> collectionTotalSensorApiIaq(@RequestParam String masterIdx) throws Exception {
-    masterIdx = masterIdx == "" ? "0" : masterIdx;
-    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_IAQ,masterIdx);
+  public ResponseEntity<Object> collectionTotalSensorApiIaq() throws Exception {
+    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_IAQ);
 
     result.put("data", res);
     return new ResponseEntity<>(result, HttpStatus.OK);
@@ -57,7 +56,7 @@ public class CollectionRestController {
   @RequestMapping(value = "/list/oaq", method = RequestMethod.GET)
   public ResponseEntity<Object> collectionTotalSensorApiOaq(@RequestParam String masterIdx) throws Exception {
     masterIdx = masterIdx == "" ? "0" : masterIdx;
-    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_OAQ,masterIdx);
+    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_OAQ);
     Map<String, Object> result = new HashMap<>();
     result.put("data", res);
 
@@ -68,7 +67,7 @@ public class CollectionRestController {
   @RequestMapping(value = "/list/dot", method = RequestMethod.GET)
   public ResponseEntity<Object> collectionTotalSensorApiDot(@RequestParam String masterIdx) throws Exception {
     masterIdx = masterIdx == "" ? "0" : masterIdx;
-    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_DOT,masterIdx);
+    List<ResultCollectionVo> res = service.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_DOT);
     Map<String, Object> result = new HashMap<>();
     result.put("data", res);
 

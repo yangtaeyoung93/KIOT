@@ -34,6 +34,8 @@ public class ResultCollectionVo {
   private String dataTime;
   private String groupId;
   private String groupName;
+  private String masterIdx;
+  private String masterName;
   private String spaceName;
   private String parentSpaceName;
   private String groupCompanyName;
