@@ -600,6 +600,7 @@
       TG.idx AS group_idx,
       TG.group_id AS group_id,
       TG.use_yn  AS use_yn,
+      TG.group_name AS group_name,
     CASE
       WHEN TMGG.MASTER_IDX  IS NULL
       THEN 'N' ELSE 'Y'

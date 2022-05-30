@@ -39,9 +39,10 @@ function getMembers(groupIdx) {
 				var data_idx = param[i].masterIdx;
 				var data_mem_idx = param[i].groupIdx; 
 				var data_use_id = param[i].groupId;
+				var data_group_name = param[i].groupName;
 
 				if (data_idx == 0) {
-					memberSelectHtml += "<option value='" + data_mem_idx + "'>" + data_use_id + "</option>";
+					memberSelectHtml += "<option value='" + data_mem_idx + "'>" + data_use_id +" ("+ data_group_name+")</option>";
 					not_use_html += "<div class='row col-12 mt10 userDiv' id='Member"+data_mem_idx+"' style='height: 20px;line-height: 20px;'>";
 					not_use_html += "<input type='checkbox' class='UserMembers mr10' name='UserMembers' id='chkMember"+data_mem_idx+"' value='"+data_mem_idx+"' style='width:20px;height:20px;' data-cartNum='"+data_mem_idx+"'/>";
 					not_use_html += "<label for='chkMember"+data_mem_idx+"'>"+data_use_id+"</label>";
@@ -51,7 +52,7 @@ function getMembers(groupIdx) {
 
 				} else {
 					if (groupIdx == data_idx) {
-						memberSelectHtml += "<option selected value='" + data_mem_idx + "'>" + data_use_id + "</option>";
+						memberSelectHtml += "<option selected value='" + data_mem_idx + "'>" + data_use_id +" ("+ data_group_name+")</option>";
 						use_html += "<div class='row col-12 mt10 userDiv' id='Member"+data_mem_idx+"' style='height: 20px;line-height: 20px;'>";
 						use_html += "<input type='checkbox' class='UserMembers mr10' name='UserMembers' id='chkMember"+data_mem_idx+"' value='"+data_mem_idx+"'style='width:20px;height:20px;' data-cartNum='"+data_mem_idx+"'/>";
 						use_html += "<label for='chkMember"+data_mem_idx+"'>"+data_use_id+"</label>";

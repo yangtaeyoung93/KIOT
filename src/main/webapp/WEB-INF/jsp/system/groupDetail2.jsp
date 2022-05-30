@@ -108,9 +108,9 @@
 							<hr/>
 							<div class ="row">
 								<div class="col-12">
-					                <div class="form-group" style="height: 285px;">
+					                <div class="form-group" style="height: 360px;">
 					                	<Strong>미등록 그룹 / 등록 그룹</Strong>
-					                  <select class="duallistbox" multiple="multiple" id="memberSelect">
+					                  <select class="duallistbox" multiple="multiple" id="memberSelect" style="height:280px;">
 					                  </select>
 					                </div>
 					                <!-- /.form-group -->
