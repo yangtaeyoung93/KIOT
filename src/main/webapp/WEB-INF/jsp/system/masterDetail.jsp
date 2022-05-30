@@ -106,37 +106,17 @@
 							<hr/>
 							<div class ="row">
 								<div class="col-12">
-					                <div class="form-group" style="height: 285px;">
+					                <div class="form-group" style="height: 360px;">
 					                	<Strong>미등록 그룹 / 등록 그룹</Strong>
-					                  <select class="duallistbox" multiple="multiple" id="memberSelect">
+					                  <select class="duallistbox" multiple="multiple" id="memberSelect" style="height:280px;">
 					                  </select>
 					                </div>
-					                <!-- /.form-group -->
 				            	</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<!-- <div class="card">
-					/.card-header
-					<div class="card-body">
-						<h3>
-							<strong>미등록 사용자 목록</strong>
-						</h3>
-						<div class="opt_wrap">
-							<hr/>
-							<div class ="row">
-								<select class="form-control select2" id="unSelectMemberList" data-placeholder="검 색" multiple="multiple" data-dropdown-css-class="select2-purple" style="width: 100%;">
-								</select>
-								<div class="col-12 mx-auto" id="userArea1" style="height: 135px; overflow-x: hidden;">
-									<div class="row" id="notUseMember" style="background-color:#e2e2e2;padding:5px 15px 15px 15px; height:auto; padding-left: 10px;">
-									</div>						
-								</div>
-								<input type="button" class="btn btn-primary mt10 float-right" style="min-width:100px;" value="추 가" id="addGroupMember"/>
-							</div>
-						</div>
-					</div>
-				</div> -->
+
 			</div>
 		</div>
 		<!-- /.row -->

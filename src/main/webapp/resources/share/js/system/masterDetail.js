@@ -208,7 +208,6 @@ $().ready(function() {
 
 		$('.duallistbox').each(function() {
 			groupArr = $(this).val();
-			console.log(groupArr);
 		});
 
 		$("#UseGroup > div > .UserMembers").each(function() {
@@ -278,7 +277,6 @@ $().ready(function() {
 
 			useYn : useYn
 		};
-        console.log(obj);
 		$.ajax({
 			method : "POST",
 			url : "/system/master/post",
@@ -315,7 +313,6 @@ $().ready(function() {
 			groupArr.push($(this).attr("data-cartNum"));
 		});
 
-		console.log(groupArr);
 		if(!masterId){
 			alert("그룹아이디를 입력 해주세요.");
 			$("#masterId").focus();
@@ -369,17 +366,6 @@ $().ready(function() {
 			return false;
 		}
 
-		if (!groupDepartName) {
-			alert("고객담당자를 입력 해주세요.");
-			$("#groupDepartName").focus();
-			return false;
-		}
-
-		if (!masterPhoneNumber) {
-			alert("전화번호를 입력 해주세요.");
-			$("#masterPhoneNumber").focus();
-			return false;
-		}
 
 		var obj = { 
 			idx : $("#masterIdx").val(),

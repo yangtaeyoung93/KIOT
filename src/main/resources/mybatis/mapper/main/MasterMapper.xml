@@ -63,9 +63,6 @@
 			<if test=" masterPhoneNumber != null ">
 				, master_phone_number = #{masterPhoneNumber}
 			</if>
-			<if test=" masterTelephone != null ">
-				, master_telephone = #{masterTelephone}
-			</if>
 		WHERE
 			idx = #{idx}
 	</update>
