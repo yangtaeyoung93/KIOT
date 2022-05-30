@@ -53,7 +53,8 @@ function viewData2(
 function initDataTableCustom() {
   var fontColor = "";
   var searchGroupId = "";
-
+  let searchMaster = document.getElementById('searchMaster');
+  let masterIdx = searchMaster.value;
   var table = $("#iaqTable").DataTable({
     scrollCollapse: true,
     autoWidth: false,
@@ -89,7 +90,8 @@ function initDataTableCustom() {
     ],
     ajax: {
       url: "/api/collection/list/iaq",
-      type: "GET"
+      type: "GET",
+      data: {"masterIdx" : masterIdx}
     },
     columns: [
       { data: "" },
@@ -638,10 +640,12 @@ function initDataTableCustom() {
           }
         }
 
+        let groupSelect = document.querySelector("#searchGroup");
+
         var txtGroupId =
           searchGroupId == ""
             ? "전체"
-            : $("#select2-searchGroup-container").attr("title");
+            : groupSelect.options[groupSelect.selectedIndex].text;
         $("#msgTxtTotal").html(
           txtGroupId +
             " " +
@@ -694,9 +698,25 @@ function initDataTableCustom() {
     $("#searchValue").val("");
   });
 
+  $("#searchMaster").change(function () {
+    const masterIdx = $('#searchMaster').val();
+    searchGroupId = "g_" + this.value;
+    if(this.value == "") searchGroupId = "";
+    $(".filterDiv").each(function (index, item) {
+      $(item).removeClass("filter-cli");
+    });
+    $(".filterDiv").first().addClass("filter-cli");
+
+    table.column(18).search(searchGroupId).draw();
+    table.column(21).search("").draw();
+    getGroupList(masterIdx);
+  });
+
+
+
   $("#searchGroup").change(function () {
     searchGroupId = "g_" + this.value;
-
+    if(this.value == "") searchGroupId = "";
     $(".filterDiv").each(function (index, item) {
       $(item).removeClass("filter-cli");
     });
@@ -762,11 +782,39 @@ function initDataTableCustom() {
   $("#iaqTable_filter").hide();
 }
 
-function getGroupList() {
+function getMasterList() {
   var optHtml = "";
   $.ajax({
     method: "GET",
-    url: "/system/group/get",
+    url: "/system/master/get",
+    contentType: "application/json; charset=utf-8",
+    data: "searchUseYn=Y&searchValue2=IAQ",
+    success: function (param) {
+      optHtml += "<option value=''>전체</option>";
+      for (var i = 0; i < param.data.length; i++) {
+        optHtml +=
+          "<option value='" +
+          param.data[i].idx +
+          "'>" +
+          param.data[i].masterName +
+          "</option>";
+      }
+      $("#searchMaster").html(optHtml);
+    },
+  });
+}
+
+function getGroupList(masterId) {
+  var optHtml = "";
+  let url;
+  if(masterId == undefined || masterId == ""){
+    url =  "/system/group/get";
+  }else{
+    url = `/system/master/get/${masterId}/m`;
+  }
+  $.ajax({
+    method: "GET",
+    url: url,
     contentType: "application/json; charset=utf-8",
     data: "searchUseYn=Y&searchValue2=IAQ",
     success: function (param) {
@@ -875,6 +923,7 @@ $(function() {
   $(".select2-container").css("display", "inline-block");
 
   initDataTableCustom();
+  getMasterList();
   getGroupList();
   getHighSpace();
 

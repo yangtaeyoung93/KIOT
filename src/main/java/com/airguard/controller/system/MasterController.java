@@ -40,7 +40,7 @@ public class MasterController {
 
     @ApiOperation(value = "시스템 관리 => 상위그룹 계정 등록 관리 (목록)", tags = "웹 페이지 Url")
     @GetMapping(value = "/list")
-    public String groupPageList(Model model) throws Exception {
+    public String masterPageList(Model model) throws Exception {
 
         model.addAttribute("superItem", SUPER_ITEM);
         model.addAttribute("item", "상위그룹 계정 관리");
@@ -51,22 +51,9 @@ public class MasterController {
         return "/system/masterList";
     }
 
-    @ApiOperation(value = "시스템 관리 => 커스텀 웹 페이지 관리 (목록)", tags = "웹 페이지 Url")
-    @GetMapping(value = "/custom")
-    public String groupPageCustomList(Model model) throws Exception {
-
-        model.addAttribute("superItem", SUPER_ITEM);
-        model.addAttribute("item", "커스텀 웹페이지");
-        model.addAttribute("oneDepth", "system");
-        model.addAttribute("twoDepth", "group");
-        model.addAttribute("threeDepth", "custom");
-
-        return "/system/groupCustomList";
-    }
-
     @ApiOperation(value = "시스템 관리 => 그룹 계정 관리 (등록)", tags = "웹 페이지 Url")
     @GetMapping(value = "/detail")
-    public String groupPageInsert(Model model) throws Exception {
+    public String masterPageInsert(Model model) throws Exception {
 
         model.addAttribute("btn", "id='insertBtn' value='등 록'");
         model.addAttribute("superItem", SUPER_ITEM);
@@ -82,7 +69,6 @@ public class MasterController {
     @GetMapping(value = "/detail/{idx}")
     public String groupPageDetail(@PathVariable("idx") String idx, Model model) throws Exception {
         Master master = service.selectMasterOne(idx);
-        logger.info("master ={}", master.getMasterName());
         model.addAttribute("masterData", master);
 
         model.addAttribute("idx", idx);
@@ -92,14 +78,13 @@ public class MasterController {
         model.addAttribute("oneDepth", "system");
         model.addAttribute("twoDepth", "master");
         model.addAttribute("threeDepth", "group");
-        logger.info("master ={}", master.getMasterName());
-        return "/system/masterDetail";
+        return "/system/groupDetail2";
     }
 
-    @ApiOperation(value = "그룹 & 사용자 연동 계정 조회 API", tags = "시스템 관리 API")
-    @RequestMapping(value = "/members", method = RequestMethod.GET)
-    public ResponseEntity<Object> groupMemberList() throws Exception {
-        return new ResponseEntity<>(service.selectGroupMemberList(), HttpStatus.OK);
+    @ApiOperation(value = "상위그룹 & 그룹 연동 계정 조회 API", tags = "시스템 관리 API")
+    @RequestMapping(value = "/groups", method = RequestMethod.GET)
+    public ResponseEntity<Object> masterGroupList() throws Exception {
+        return new ResponseEntity<>(service.selectMasterGroupList(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "그룹 계정 목록 조회 API", tags = "시스템 관리 API")
@@ -124,10 +109,22 @@ public class MasterController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     @ApiOperation(value = "그룹 계정 조회 API", tags = "시스템 관리 API")
+    @RequestMapping(value = "/get/{idx}/{flag}", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> groupGetOne(@PathVariable("idx") String idx,@PathVariable("flag") String flag) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        logger.error("/system/group/get API REQUEST :: idx => {},flag => {}", idx,flag);
+        result.put("data", service.selectMasterGroupOne(idx,flag));
+        logger.error("/system/group/get API RESPONSE :: {} ", result);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+
+
+    @ApiOperation(value = "상위그룹 계정 조회 API", tags = "시스템 관리 API")
     @RequestMapping(value = "/get/{idx}", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Object>> groupGetOne(@PathVariable("idx") String idx) throws Exception {
+    public ResponseEntity<Map<String, Object>> masterGetOn(@PathVariable("idx") String idx) throws Exception {
         Map<String, Object> result = new HashMap<>();
         logger.error("/system/master/get API REQUEST :: idx => {}", idx);
         result.put("data", service.selectMasterOne(idx));
@@ -137,59 +134,35 @@ public class MasterController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "커스텀 웹 페이지 계정 목록 조회 API", tags = "시스템 관리 API")
-    @RequestMapping(value = "/custom/get", method = RequestMethod.GET)
-    public ResponseEntity<Object> groupCustomListGet(HttpServletRequest request) throws Exception {
-        String searchValue = request.getParameter("searchValue") == null ? "" : request.getParameter("searchValue");
-        List<Group> groupCustomList = service.selectGroupCustomList(searchValue);
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", groupCustomList);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "그룹 계정 등록 API", tags = "시스템 관리 API")
+    @ApiOperation(value = "상위그룹 계정 등록 API", tags = "시스템 관리 API")
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    public ResponseEntity<Group> groupInsert(HttpServletRequest req, @RequestBody Group reqBody) throws Exception {
-        service.insertGroup(reqBody);
-        platformService.publisherPlatform(reqBody.getGroupId(), "GROUP", true, req.getLocalName());
-        platformService.publisherPlatform(reqBody.getGroupId(), "GROUP", false, req.getLocalName());
+    public ResponseEntity<Master> masterInsert(HttpServletRequest req, @RequestBody Master reqBody) throws Exception {
+        service.insertMaster(reqBody);
         reqBody.setRestApiMessage(CommonConstant.SUCCESS);
 
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "그룹 계정 수정 API", tags = "시스템 관리 API")
+    @ApiOperation(value = "상위그룹 계정 수정 API", tags = "시스템 관리 API")
     @RequestMapping(value = "/put", method = RequestMethod.PUT)
-    public ResponseEntity<Group> groupUpdate(HttpServletRequest req, @RequestBody Group reqBody) throws Exception {
-        service.updateGroup(reqBody, true);
-        platformService.publisherPlatform(
-                platformService.idxToGroupId(Integer.toString(reqBody.getIdx())), "GROUP", true,
-                req.getLocalName());
-        platformService.publisherPlatform(
-                platformService.idxToGroupId(Integer.toString(reqBody.getIdx())), "GROUP", false,
-                req.getLocalName());
+    public ResponseEntity<Master> masterUpdate(HttpServletRequest req, @RequestBody Master reqBody) throws Exception {
+        logger.error("reqBody ={}",reqBody.getIdx());
+        service.updateMaster(reqBody, true);
         reqBody.setRestApiMessage(CommonConstant.SUCCESS);
-
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }
 
     @ApiOperation(value = "그룹 계정 삭제 API", tags = "시스템 관리 API")
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<Group> groupDelete(HttpServletRequest req, @RequestBody Group reqBody) throws Exception {
+    public ResponseEntity<Master> masterDelete(HttpServletRequest req, @RequestBody Master reqBody) throws Exception {
         int index = 0;
         for (String s : reqBody.getChArr()) {
-            reqBody.setResultCode(service.deleteGroup(s));
+            reqBody.setResultCode(service.deleteMaster(s));
             if (reqBody.getResultCode() != 1) {
                 reqBody.setCheckName(reqBody.getNameArr().get(index));
                 break;
             }
-
-            platformService.publisherPlatform(platformService.idxToGroupId(s), "GROUP", true,
-                    req.getLocalName());
-            platformService.publisherPlatform(platformService.idxToGroupId(s), "GROUP", false,
-                    req.getLocalName());
             index++;
         }
 
@@ -198,15 +171,15 @@ public class MasterController {
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "그룹 계정 비밀번호 변경 API", tags = "시스템 관리 API")
+    @ApiOperation(value = "상위그룹 계정 비밀번호 변경 API", tags = "시스템 관리 API")
     @RequestMapping(value = "/change/password", method = RequestMethod.PUT)
     public ResponseEntity<Map<String, Object>> groupPwChg(HttpServletRequest req) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
-        Group groupInfo = new Group();
-        groupInfo.setGroupIdx(req.getParameter("groupIdx"));
-        groupInfo.setGroupPw(req.getParameter("password"));
-        service.updateGroup(groupInfo, false);
+        Master masterInfo = new Master();
+        masterInfo.setMasterIdx(req.getParameter("masterIdx"));
+        masterInfo.setMasterPw(req.getParameter("password"));
+        service.updateMaster(masterInfo, false);
         result.put("resultCode", CommonConstant.SUCCESS);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

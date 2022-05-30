@@ -338,17 +338,19 @@ public class CustomController {
 
   @ApiOperation(value = "OAQ 장비 최근 데이터 조회", tags = "외부 프로젝트용 API")
   @RequestMapping(value = "/oaqRealTime", method = RequestMethod.GET)
-  public List<ResultCollectionVo> oaqRealTime() throws Exception {
+  public List<ResultCollectionVo> oaqRealTime(@RequestParam String masterIdx) throws Exception {
+    masterIdx = masterIdx == "" ? "0" : masterIdx;
     List<ResultCollectionVo> res =
-        platformService.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_OAQ);
+        platformService.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_OAQ,masterIdx);
     return res;
   }
 
   @ApiOperation(value = "DOT 장비 최근 데이터 조회", tags = "외부 프로젝트용 API")
   @RequestMapping(value = "/dotRealTime", method = RequestMethod.GET)
-  public List<ResultCollectionVo> dotRealTime() throws Exception {
+  public List<ResultCollectionVo> dotRealTime(@RequestParam String masterIdx) throws Exception {
+    masterIdx = masterIdx == "" ? "0" : masterIdx;
     List<ResultCollectionVo> res =
-        platformService.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_DOT);
+        platformService.selectTotalSensorApi(CommonConstant.PARAM_SENSOR_DOT,masterIdx);
 
     return res;
   }

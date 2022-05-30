@@ -51,22 +51,29 @@
 					<!-- /.card-header -->
 					<div class="card-body">
 						<div class="search_area" style="width:90%">
-							<div class="search_top" style="max-width:610px;">
-								<label for="searchGroup">그룹</label>
-								<select name="searchGroup" id="searchGroup" 
-								class="select2 custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:180px;height:38px;">
-									<option value="">전체</option>
-								</select>
-								<label for="searchParentSpace">상위 카테고리</label>
-								<select name="searchParentSpace" id="searchParentSpace" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:100px;height:38px;" onChange="getSpace(this.value);">
-									<option value="">전체</option>
-								</select>
-								<label for="searchParentSpace">하위 카테고리</label>
-								<select name="searchSpace" id="searchSpace" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:100px;height:38px;">
-									<option value="">전체</option>
-								</select>
+							<div class="search_top" style="max-width: 100%;">
+								<div style="float: left; width: 50%;">
+									<label for="searchMaster">상위그룹</label>
+									<select name="searchMaster" id="searchMaster" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:180px;height:38px;">
+										<option value="">전체</option>
+									</select>
+									<label for="searchGroup">그룹</label>
+									<select name="searchGroup" id="searchGroup" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:180px;height:38px;">
+										<option value="">전체</option>
+									</select>
+								</div>
+								<div style="width: 100%;">
+									<label for="searchParentSpace">상위 카테고리</label>
+									<select name="searchParentSpace" id="searchParentSpace" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:100px;height:38px;" onChange="getSpace(this.value);">
+										<option value="">전체</option>
+									</select>
+									<label for="searchParentSpace">하위 카테고리</label>
+									<select name="searchSpace" id="searchSpace" class="custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:100px;height:38px;">
+										<option value="">전체</option>
+									</select>
+								</div>
 							</div>
-							<div class="search_bottom mt10" style="max-width:510px;">						
+							<div class="search_bottom mt10" style="max-width:100%; text-align: center;">						
 								<select name="searchType" id="searchType" class="custom-select custom-select-sm form-control form-control-sm mr10" style="max-width:100px;height:38px;">
 									<option value="">전체</option>
 									<option value ="sch_serialNum">시리얼번호</option>

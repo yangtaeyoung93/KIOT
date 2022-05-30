@@ -58,6 +58,7 @@ function initDataTableCustom() {
   var table = $("#dotTable").DataTable({
     scrollCollapse: true,
     autoWidth: false,
+    
     language: {
       emptyTable: "데이터가 없습니다.",
       lengthMenu: "페이지당 _MENU_ 개씩 보기",
@@ -91,6 +92,7 @@ function initDataTableCustom() {
     ajax: {
       url: "/api/collection/list/dot",
       type: "GET",
+      data: {"masterIdx" : ""}
     },
     columns: [
       { orderable: false },
@@ -624,11 +626,11 @@ function initDataTableCustom() {
             else if (!js[idx].receiveFlag) unReCnt++;
           }
         }
-
+        const groupSelect = document.querySelector("#searchGroup");
         var txtGroupId =
           searchGroupId == ""
-            ? "전체"
-            : $("#select2-searchGroup-container").attr("title");
+          ? "전체"
+          : groupSelect.options[groupSelect.selectedIndex].text;
         $("#msgTxtTotal").html(
           txtGroupId +
             " " +
@@ -686,7 +688,7 @@ function initDataTableCustom() {
 
   $("#searchGroup").change(function () {
     searchGroupId = "g_" + this.value;
-
+    if(this.value == "") searchGroupId = "";
     $(".filterDiv").each(function (index, item) {
       $(item).removeClass("filter-cli");
     });

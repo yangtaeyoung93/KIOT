@@ -73,6 +73,16 @@ public class CheckService {
 
     return resultCode;
   }
+  public int checkMasterId(String masterId) {
+    int resultCode = 0;
+    int result = readOnlyMapper.checkMasterId(masterId);
+
+    if (result == 0) {
+      resultCode = 1;
+    }
+
+    return resultCode;
+  }
 
   public int checkDidCode(String didCode) {
     int resultCode = 0;

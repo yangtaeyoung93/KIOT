@@ -1,5 +1,5 @@
 /**
- * 시스템관리 > 그룹 게정 등록/수정
+ * 시스템관리 > 상위그룹 게정 등록/수정
  */
 var obj = new Object();
 var customUrlFormIdx = 1;

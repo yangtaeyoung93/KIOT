@@ -466,21 +466,25 @@
 
   <select id="selectMasterList" parameterType="Search" resultType="Master">
     SELECT
-    @rownum:=@rownum+1 as row_num
-    ,IDX
-    ,MASTER_ID
-    ,MASTER_PW
-    ,MASTER_NAME
-    ,MASTER_EMAIL
-    ,MASTER_PHONE_NUMBER
-    ,MASTER_COMPANY_NAME
-    ,GROUP_DEPART_NAME
-    ,USE_YN
-    ,CREATE_DT
-    ,LOGIN_IP
-    ,LOGIN_DT
-    FROM TB_MASTER tb,
-    (SELECT @rownum := 0) r
+      @rownum:=@rownum+1 as row_num
+      ,tm.IDX
+      ,tm.MASTER_ID
+      ,tm.MASTER_PW
+      ,tm.MASTER_NAME
+      ,tm.MASTER_EMAIL
+      ,tm.MASTER_PHONE_NUMBER
+      ,tm.MASTER_COMPANY_NAME
+      ,tm.group_depart_name
+      ,count(tmgm.MASTER_IDX) groupCnt
+      ,tm.USE_YN
+      ,tm.CREATE_DT
+      ,tm.LOGIN_IP
+      ,tm.LOGIN_DT
+    FROM (SELECT @rownum := 0) r,
+    TB_MASTER tm left join TB_MASTER_GROUP_MANAGE tmgm
+    ON tm.idx = tmgm.MASTER_IDX
+    GROUP BY tmgm.MASTER_IDX
+
   </select>
 
   <select id="selectGroupCustomList" parameterType="String" resultType="Group">
@@ -507,18 +511,30 @@
 
   <select id="selectGroupOne" parameterType="String" resultType="Group">
     SELECT TG.idx,
-           TG.group_id,
-           TG.group_name,
-           TG.group_email,
-           TG.group_company_name,
-           TG.group_depart_name,
-           TG.group_phone_number,
-           TG.group_custom_url,
-           TG.create_dt,
-           TG.use_yn
+      TG.group_id,
+      TG.group_name,
+      TG.group_email,
+      TG.group_company_name,
+      TG.group_depart_name,
+      TG.group_phone_number,
+      TG.group_custom_url,
+      TG.create_dt,
+      TG.use_yn
     FROM TB_GROUP AS TG
     WHERE TG.idx = #{idx}
-      AND use_yn = 'Y'
+    AND use_yn = 'Y'
+  </select>
+
+  <select id="selectMasterGroupOne" parameterType="String" resultType="Master">
+    SELECT TG.idx,
+      TG.group_id,
+      TG.group_name
+    FROM TB_GROUP AS TG
+    LEFT JOIN TB_MASTER_GROUP_MANAGE tmgm
+    ON TG.idx  = tmgm.GROUP_IDX
+    WHERE 1 = 1
+    AND tmgm.MASTER_IDX = #{idx}
+    AND use_yn = 'Y'
   </select>
 
   <select id="selectMasterOne" parameterType="String" resultType="Master">
@@ -567,10 +583,41 @@
     WHERE TM.use_yn = 'Y'
   </select>
 
+
+  <select id="selectMasterGroupList" resultType="Master">
+    SELECT
+      CASE
+        WHEN TM.IDX IS NULL
+        THEN '0' ELSE TM.idx
+      END AS master_idx,
+      TG.idx AS group_idx,
+      TG.group_id AS group_id,
+      TG.use_yn  AS use_yn,
+    CASE
+      WHEN TMGG.MASTER_IDX  IS NULL
+      THEN 'N' ELSE 'Y'
+    END AS gubun
+    FROM
+      TB_GROUP AS TG
+    LEFT JOIN TB_MASTER_GROUP_MANAGE AS TMGG
+      ON TG.idx = TMGG.GROUP_IDX
+    LEFT JOIN TB_MASTER AS TM
+      ON TMGG.MASTER_IDX = TM.idx
+    WHERE
+      TG.use_yn = 'Y'
+    ORDER BY group_idx
+  </select>
+
   <select id="checkGroupId" parameterType="String" resultType="Integer">
     SELECT COUNT(TG.idx)
     FROM TB_GROUP AS TG
     WHERE TG.group_id = #{groupId}
+  </select>
+
+  <select id="checkMasterId" parameterType="String" resultType="Integer">
+    SELECT COUNT(TG.idx)
+    FROM TB_MASTER AS TG
+    WHERE TG.master_id = #{masterId}
   </select>
 
   <select id="deleteGroupDidCheck" parameterType="String" resultType="Integer">

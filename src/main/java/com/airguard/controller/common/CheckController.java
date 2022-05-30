@@ -51,6 +51,15 @@ public class CheckController {
     return new ResponseEntity<>(res, HttpStatus.OK);
   }
 
+  @ApiOperation(value = "상위그룹 사용자 계정 검사 API", tags = "유효성 검사")
+  @RequestMapping(value = "/masterId", method = RequestMethod.GET)
+  public ResponseEntity<ResultResponse> checkMasterId(HttpServletRequest request) throws Exception {
+    ResultResponse res = new ResultResponse();
+    res.setInputValue(request.getParameter("masterId"));
+    res.setResultCode(service.checkMasterId(request.getParameter("masterId")));
+    return new ResponseEntity<>(res, HttpStatus.OK);
+  }
+
   @ApiOperation(value = "DID 코드 검사 API", tags = "유효성 검사")
   @RequestMapping(value = "/didCode", method = RequestMethod.GET)
   public ResponseEntity<ResultResponse> checkDidCode(HttpServletRequest request) throws Exception {

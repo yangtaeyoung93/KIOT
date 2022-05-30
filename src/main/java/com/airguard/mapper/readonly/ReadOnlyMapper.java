@@ -82,7 +82,8 @@ public interface ReadOnlyMapper {
   //Master
   List<Master> selectMasterList(Search search);
   Master selectMasterOne(String idx);
-
+  List<Master> selectMasterGroupList();
+  List<Master> selectMasterGroupOne(String idx,String flag);
 
   // Group
   Group findGroupByLoginId(@Param("groupId") String groupId);
@@ -95,11 +96,14 @@ public interface ReadOnlyMapper {
 
   Group selectGroupOne(String idx);
 
+
+
   List<Map<String, Object>> selectGroupMembers(String idx);
 
   List<Group> selectGroupMemberList();
 
   int checkGroupId(String groupId);
+  int checkMasterId(String masterId);
 
   int deleteGroupDidCheck(String groupIdx);
 

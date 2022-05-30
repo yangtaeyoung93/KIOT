@@ -28,17 +28,17 @@ function getMembers(groupIdx) {
 	var use_html = "";
 
 	var memberSelectHtml = "";
-	$("#notUseMember").html("");
-	$("#UseMember").html("");
+	$("#notUseGroup").html("");
+	$("#UseGroup").html("");
 
 	$.ajax({
-		 url:"/system/group/members",
+		 url:"/system/master/groups",
 		 type:"GET",
 		 success : function (param) {
 			for (var i = 0; i < param.length; i++) {
-				var data_idx = param[i].groupIdx;
-				var data_mem_idx = param[i].memberIdx; 
-				var data_use_id = param[i].userId;
+				var data_idx = param[i].masterIdx;
+				var data_mem_idx = param[i].groupIdx; 
+				var data_use_id = param[i].groupId;
 
 				if (data_idx == 0) {
 					memberSelectHtml += "<option value='" + data_mem_idx + "'>" + data_use_id + "</option>";
@@ -47,7 +47,7 @@ function getMembers(groupIdx) {
 					not_use_html += "<label for='chkMember"+data_mem_idx+"'>"+data_use_id+"</label>";
 					not_use_html += "</div>";
 
-					$("#notUseMember").html(not_use_html);
+					$("#notUseGroup").html(not_use_html);
 
 				} else {
 					if (groupIdx == data_idx) {
@@ -56,7 +56,7 @@ function getMembers(groupIdx) {
 						use_html += "<input type='checkbox' class='UserMembers mr10' name='UserMembers' id='chkMember"+data_mem_idx+"' value='"+data_mem_idx+"'style='width:20px;height:20px;' data-cartNum='"+data_mem_idx+"'/>";
 						use_html += "<label for='chkMember"+data_mem_idx+"'>"+data_use_id+"</label>";
 						use_html += "</div>";
-						$("#UseMember").html(use_html);
+						$("#UseGroup").html(use_html);
 					}
 				}
 			}
@@ -68,9 +68,11 @@ function getMembers(groupIdx) {
 	})
 }
 
+
+
 function autoheight() {
-	var notuseMember = $("#notUseMember > .userDiv").length;
-	var useMember = $("#UseMember > .userDiv").length;
+	var notuseMember = $("#notUseGroup > .userDiv").length;
+	var useMember = $("#UseGroup > .userDiv").length;
 
 	if (notuseMember < 4) {
 		$("#userArea1").css("height","auto");
@@ -92,16 +94,16 @@ function autoheight() {
 }
 
 function chkGroupId(){
-	var groupId = $("#groupId").val();
+	var masterId = $("#masterId").val();
 	
-	if(!groupId){
+	if(!masterId){
 		$("#chk_txt").css("color","red");
 		$("#chk_txt").css("font-weight","bold");
 		$("#chk_txt").text("아이디를 입력해주세요.");
 		return false;
 	}
 
-	if (!re_email.test(groupId)) {
+	if (!re_email.test(masterId)) {
 		$("#chk_txt").css("color","red");
 		$("#chk_txt").css("font-weight","bold");
 		$("#chk_txt").text("이메일 형식이 아닙니다.");
@@ -109,10 +111,10 @@ function chkGroupId(){
 	}
 
 	$.ajax({
-		 url:"/check/groupId",
+		 url:"/check/masterId",
 		 type:"GET",
 		 async : false,
-		 data : "groupId="+groupId,
+		 data : "masterId="+masterId,
 		 success : function (param) {
 			var result_val = param.resultCode;
 			if(result_val == 1){
@@ -133,7 +135,7 @@ function chkGroupId(){
 }
 
 $().ready(function() {
-	var groupIdx = $("#groupIdx").val();
+	var groupIdx = $("#masterIdx").val();
 
     $('.duallistbox').bootstrapDualListbox({
     	height: "400px",
@@ -160,16 +162,16 @@ $().ready(function() {
     getMembers(groupIdx);
 	$("#addGroupMember").click(function(){
 		var html = "";
-		$("#notUseMember > div > input[name='UserMembers']:checked").each(function() {
+		$("#notUseGroup > div > input[name='UserMembers']:checked").each(function() {
 			var memberIdx = $(this).val();
 			$("#UseMember").append($("#Member"+memberIdx));
 		});	
 		autoheight();
 	})
-	$("#delGroupMember").click(function(){
+	$("#delMasterGroup").click(function(){
 		var html = "";
 		
-		$("#UseMember > div > input[name='UserMembers']:checked").each(function() {
+		$("#UseGroup > div > input[name='UserMembers']:checked").each(function() {
 			var memberIdx = $(this).val();
 			$("#notUseMember").append($("#Member"+memberIdx));
 		});	
@@ -177,103 +179,93 @@ $().ready(function() {
 	})
 
 	$('#listBtn').click(function() {
-		location.href="/system/group/list";
+		location.href="/system/master/list";
 	})
 
-	$("#chkGroupPw").click(function(){
-		var chkPw = $("input:checkbox[id='chkGroupPw']").is(":checked");
+	$("#chkmasterPw").click(function(){
+		var chkPw = $("input:checkbox[id='chkmasterPw']").is(":checked");
 		if(chkPw == true){
-			$("#groupPw").attr("disabled",false);
+			$("#masterPw").attr("disabled",false);
 		}else{
-			$("#groupPw").attr("disabled",true);
+			$("#masterPw").attr("disabled",true);
 		}
 	})
 
 	$('#insertBtn').click(function() {
-		var groupCustomUrl = "";
 
-		var customUrlList = Array();
-	    var obj = document.getElementsByName("groupCustomUrl");
-	    for (var i = 0; i < obj.length; i++) {
-	    	if (document.getElementsByName("groupCustomUrl")[i].value != "") {
-	    		groupCustomUrl += (groupCustomUrl == "" ? "" : ",") + document.getElementsByName("groupCustomUrl")[i].value;
-	    		console.log(i, groupCustomUrl);
-	    	}
-	    }
-
-	    var groupId = $("#groupId").val();
-		var groupPw = $("#groupPw").val();
-		var groupEmail = $("#groupEmail").val();
-		var groupPhoneNumber = $("#groupPhoneNumber").val();
-		var groupName = $("#groupName").val();
-		var groupCompanyName = $("#groupCompanyName").val();
+	    var masterId = $("#masterId").val();
+		var masterPw = $("#masterPw").val();
+		var masterEmail = $("#masterEmail").val();
+		var masterPhoneNumber = $("#masterPhoneNumber").val();
+		var masterName = $("#masterName").val();
+		var masterCompanyName = $("#masterCompanyName").val();
 		var groupDepartName = $("#groupDepartName").val();
 		var useYn = "Y";
-		var memberArr= new Array(); 
-		var use_GroupMember_len = $("#UseMember > div > input:checkbox[name='UserMembers']").length;	
+		var groupArr= new Array(); 
+		var use_GroupMember_len = $("#UseGroup > div > input:checkbox[name='UserMembers']").length;	
 		var chkId = $("#chk_id").val();
 
 		if(chkId == 0){
 			alert("아이디 중복 체크를 하시기 바랍니다.");
-			$("#groupId").focus();
+			$("#masterId").focus();
 			return false;
 		}
 
 		$('.duallistbox').each(function() {
-			memberArr = $(this).val();
+			groupArr = $(this).val();
 		});
 
-		$("#UseMember > div > .UserMembers").each(function() {
-			memberArr.push($(this).attr("data-cartNum"));
+		$("#UseGroup > div > .UserMembers").each(function() {
+			groupArr.push($(this).attr("data-cartNum"));
 		});
 
-		if(!groupId){
+		if(!masterId){
 			alert("그룹아이디를 입력해주세요.");
-			$("#groupId").focus();
+			$("#masterId").focus();
 			return false;
 		}
 
-		if (!groupPw) {
+		if (!masterPw) {
 			alert("비밀번호를 입력해주세요.");
-			$("#groupPw").focus();
+			$("#masterPw").focus();
 			return false;
 		} else {
-			if (re_script.test(groupPw)) {
+			if (re_script.test(masterPw)) {
 				alert("스크립트는 사용할 수 없습니다.");
-				groupPw = groupPw.replace(re_script,"");
+				masterPw = masterPw.replace(re_script,"");
 				$("#groupPw").focus();
 				return false;
 			}
 
-			if (re_tag.test(groupPw)) {
+			if (re_tag.test(masterPw)) {
 				alert("태그를 사용할 수 없습니다.");
-				groupPw = groupPw.replace(re_tag,"");
-				$("#groupPw").focus();
+				masterPw = masterPw.replace(re_tag,"");
+				$("#masterPw").focus();
 				return false;
 			}
 
-			if (re_blank.test(groupPw)) {
+			if (re_blank.test(masterPw)) {
 				alert("공백만 사용할 수 없습니다.");
-				$("#groupPw").focus();
+				$("#masterPw").focus();
 				return false;
 			}
 
-			if (re_blank1.test(groupPw)) {
+			if (re_blank1.test(masterPw)) {
 				alert("공백을 사용할 수 없습니다.");
-				$("#groupPw").focus();
+				$("#masterPw").focus();
 				return false;
 			}
 		}
 
-		if (!groupName) {
+		if (!masterName) {
 			alert("그룹명을 입력해주세요.");
-			$("#groupName").focus();
+			$("#masterName").focus();
 			return false;
 		}
 
-		if (!groupCompanyName) {
+		if (!masterCompanyName) {
 			alert("고객사를 입력해주세요.");
-			$("#groupCompanyName").focus();
+			$("#masterCompanyName").focus();
 			return false;
 		}
 
@@ -283,28 +275,27 @@ $().ready(function() {
 			return false;
 		}
 
-		if (!groupPhoneNumber) {
+		if (!masterPhoneNumber) {
 			alert("전화번호를 입력 해주세요.");
-			$("#groupPhoneNumber").focus();
+			$("#masterPhoneNumber").focus();
 			return false;
 		}
 
 		var obj = {
-			groupId : groupId,
-			groupPw : groupPw,
-			groupName : groupName,
-			groupEmail : groupEmail,
-			groupPhoneNumber : groupPhoneNumber,
-			groupCustomUrl : groupCustomUrl,
-			memberIdxs : memberArr,
-			groupCompanyName : groupCompanyName,
+			masterId : masterId,
+			masterPw : masterPw,
+			masterName : masterName,
+			masterEmail : masterEmail,
+			masterPhoneNumber : masterPhoneNumber,
+			memberIdxs : groupArr,
+			masterCompanyName : masterCompanyName,
 			groupDepartName : groupDepartName,
 			useYn : useYn
 		};
 
 		$.ajax({
 			method : "POST",
-			url : "/system/group/post",
+			url : "/system/master/post",
 			data : JSON.stringify(obj),
 			contentType : "application/json; charset=utf-8",
 			success : function(d) {
@@ -315,88 +306,80 @@ $().ready(function() {
 	})
 
 	$('#updateBtn').click(function() {
-		var groupCustomUrl = "";
 
-		var customUrlList = Array();
-	    var obj = document.getElementsByName("groupCustomUrl");
-	    for (var i = 0; i < obj.length; i++) {
-	    	if (document.getElementsByName("groupCustomUrl")[i].value != "") {
-	    		groupCustomUrl += (groupCustomUrl == "" ? "" : ",") + document.getElementsByName("groupCustomUrl")[i].value;
-	    		console.log(i, groupCustomUrl);
-	    	}
-	    }
+		
 
-	    var groupId = $("#groupId").val();
-		var groupPw = $("#groupPw").val();
-		var groupEmail = $("#groupEmail").val();
-		var groupPhoneNumber = $("#groupPhoneNumber").val();
-		var groupName = $("#groupName").val();
-		var groupCompanyName = $("#groupCompanyName").val();
+		var masterId = $("#masterId").val();
+		var masterPw = $("#masterPw").val();
+		var masterEmail = $("#masterEmail").val();
+		var masterPhoneNumber = $("#masterPhoneNumber").val();
+		var masterName = $("#masterName").val();
+		var masterCompanyName = $("#masterCompanyName").val();
 		var groupDepartName = $("#groupDepartName").val();
-		var memberArr= new Array(); 
 		var useYn = "Y";
-		var chkPw = $("input:checkbox[id='chkGroupPw']").is(":checked");
-		var use_GroupMember_len = $("#UseMember > div > input:checkbox[name='UserMembers']").length;	
+		var groupArr= new Array(); 
+		var chkPw = $("input:checkbox[id='chkmasterPw']").is(":checked");
+		var use_GroupMember_len = $("#UseGroup > div > input:checkbox[name='UserMembers']").length;	
 
 		$('.duallistbox').each(function() {
-			memberArr = $(this).val();
+			groupArr = $(this).val();
 		});
 
-		$("#UseMember > div > .UserMembers").each(function() {
-			memberArr.push($(this).attr("data-cartNum"));
+		$("#UseGroup > div > .UserMembers").each(function() {
+			groupArr.push($(this).attr("data-cartNum"));
 		});
 
-		console.log(memberArr);
-		if(!groupId){
+		console.log(groupArr);
+		if(!masterId){
 			alert("그룹아이디를 입력 해주세요.");
-			$("#groupId").focus();
+			$("#masterId").focus();
 			return false;
 		}
 
 		if(chkPw == true){
-			if(!groupPw){
+			if(!masterPw){
 				alert("비밀번호를 입력 해주세요.");
-				$("#groupPw").focus();
+				$("#masterPw").focus();
 				return false;
 			}else{
-				if(re_script.test(groupPw)){
+				if(re_script.test(masterPw)){
 					alert("스크립트는 사용할 수 없습니다.");
-					groupPw = groupPw.replace(re_script,"");
-					$("#groupPw").focus();
+					masterPw = masterPw.replace(re_script,"");
+					$("#masterPw").focus();
 					return false;
 				}
 
 				if(re_tag.test(groupPw)){
 					alert("태그를 사용할 수 없습니다.");
-					groupPw = groupPw.replace(re_tag,"");
-					$("#groupPw").focus();
+					masterPw = masterPw.replace(re_tag,"");
+					$("#masterPw").focus();
 					return false;
 				}
 				
-				if(re_blank.test(groupPw)) {
+				if(re_blank.test(masterPw)) {
 					alert("공백만 사용할 수 없습니다.");
-					$("#groupPw").focus();
+					$("#masterPw").focus();
 					return false;
 				}
 				
 				
-				if(re_blank1.test(groupPw)) {
+				if(re_blank1.test(masterPw)) {
 					alert("공백을 사용할 수 없습니다.");
-					$("#groupPw").focus();
+					$("#masterPw").focus();
 					return false;
 				}
 			}
 		}
 
-		if(!groupName){
+		if(!masterName){
 			alert("그룹명을 입력해주세요.");
-			$("#groupName").focus();
+			$("#masterName").focus();
 			return false;
 		}
 
-		if(!groupCompanyName){
+		if(!masterCompanyName){
 			alert("고객사를 입력해주세요.");
-			$("#groupCompanyName").focus();
+			$("#masterCompanyName").focus();
 			return false;
 		}
 
@@ -406,29 +389,28 @@ $().ready(function() {
 			return false;
 		}
 
-		if (!groupPhoneNumber) {
+		if (!masterPhoneNumber) {
 			alert("전화번호를 입력 해주세요.");
-			$("#groupPhoneNumber").focus();
+			$("#masterPhoneNumber").focus();
 			return false;
 		}
 
 		var obj = { 
-			idx : $("#groupIdx").val(),
-			groupPw : groupPw,
-			groupId : groupId,
-			groupName : groupName,
-			groupEmail : groupEmail,
-			groupPhoneNumber : groupPhoneNumber,
-			groupCustomUrl : groupCustomUrl,
-			memberIdxs : memberArr,
-			groupCompanyName : groupCompanyName,
+			idx : $("#masterIdx").val(),
+			masterId : masterId,
+			masterPw : masterPw,
+			masterName : masterName,
+			masterEmail : masterEmail,
+			masterPhoneNumber : masterPhoneNumber,
+			groupIdxs : groupArr,
+			masterCompanyName : masterCompanyName,
 			groupDepartName : groupDepartName,
 			useYn : useYn
 		}
 
 		$.ajax({
-			method : "PUT",
-			url : "/system/group/put",
+			type : "PUT",
+			url : "/system/master/put",
 			data : JSON.stringify(obj),
 			contentType : "application/json; charset=utf-8",
 			success : function(d) {

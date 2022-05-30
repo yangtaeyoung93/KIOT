@@ -16,8 +16,8 @@ public interface PlatformMapper {
 
   List<CollectionDto> selectCollectionDevice(@Param("siDo") String siDo, @Param("airMapYn") String airMapYn);
 
-  List<ResultCollectionVo> selectCollectionDeviceWithDeviceType(@Param("siDo") String siDo, @Param("airMapYn") String airMapYn, @Param("deviceTypeIdx") String deviceTypeIdx);
-
+  List<ResultCollectionVo> selectCollectionDeviceWithDeviceType(@Param("siDo") String siDo, @Param("airMapYn") String airMapYn, @Param("deviceTypeIdx") String deviceTypeIdx,@Param("masterIdx") String masterIdx);
+  List<CollectionDto> selectCollectionMasterDeviceVent(@Param("masterIdx") String masterId);
   List<CollectionDto> selectCollectionDeviceVent();
 
   List<CollectionDto> selectCollectionDeviceConnect();

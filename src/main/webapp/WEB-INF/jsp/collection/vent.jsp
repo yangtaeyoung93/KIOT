@@ -45,6 +45,10 @@
                     <div class="card-body">
                         <div class="search_area" style="width:60%">
                             <div class="search_bottom mt10" style="max-width:900px;">
+                                <label for="searchMaster">상위그룹</label>
+									<select name="searchMaster" id="searchMaster" class="select2 custom-select custom-select-sm form-control form-control-sm ml5 mr10" style="max-width:180px;height:38px;">
+										<option value="">전체</option>
+									</select>
                                 <label for="searchGroup">그룹</label>
                                 <select name="searchGroup" id="searchGroup"
                                         class="select2 custom-select custom-select-sm form-control form-control-sm ml5 mr10"

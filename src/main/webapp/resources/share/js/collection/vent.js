@@ -32,7 +32,8 @@ function viewData2(serialNum, productDt, standard) {
 function initDataTableCustom() {
   let fontWeight = "";
   let searchGroupId = "";
-
+  let searchMaster = document.getElementById('searchMaster');
+  let masterIdx = searchMaster.value;
   const table = $('#ventTable').DataTable({
     scrollCollapse: true,
     autoWidth: false,
@@ -55,8 +56,9 @@ function initDataTableCustom() {
     processing: true,
     serverSide: false,
     ajax: {
-      "url": "/api/collection/list/vent",
-      "type": "GET"
+      url : "/api/collection/list/vent",
+      type : "GET",
+      data :{"masterIdx" : masterIdx}
     },
     columns: [
       {orderable: false},
@@ -482,7 +484,7 @@ function initDataTableCustom() {
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
-        console.log(settings.json.data);
+        //console.log(settings.json.data);
         const js = settings.json.data;
         let reCnt = 0;
         let unReCnt = 0;
@@ -553,9 +555,15 @@ function initDataTableCustom() {
     $("#searchValue").val("");
   });
 
+  $("#searchMaster").change(function () {
+    const masterIdx = $('#searchMaster').val();
+    initDataTableCustom();
+    getGroupList(masterIdx);
+  });
+
   $("#searchGroup").change(function () {
     searchGroupId = "g_" + this.value;
-
+    if(this.value == "") searchGroupId = "";
     $(".filterDiv").each(function (index, item) {
       $(item).removeClass("filter-cli");
     }).first().addClass("filter-cli");
@@ -605,12 +613,38 @@ function initDataTableCustom() {
   $("#ventTable_filter").hide();
 }
 
-function getGroupList() {
-  let optHtml = "";
-
+function getMasterList() {
+  var optHtml = "";
   $.ajax({
     method: "GET",
-    url: "/system/group/get",
+    url: "/system/master/get",
+    contentType: "application/json; charset=utf-8",
+    data: "searchUseYn=Y&searchValue2=IAQ",
+    success: function (param) {
+      optHtml += "<option value=''>전체</option>";
+      for (var i = 0; i < param.data.length; i++) {
+        optHtml +=
+          "<option value='" +
+          param.data[i].idx +
+          "'>" +
+          param.data[i].masterName +
+          "</option>";
+      }
+      $("#searchMaster").html(optHtml);
+    },
+  });
+}
+
+function getGroupList(masterId) {
+  let optHtml = "";
+  if(masterId == undefined || masterId == ""){
+    url =  "/system/group/get";
+  }else{
+    url = `/system/master/get/${masterId}/m`;
+  }
+  $.ajax({
+    method: "GET",
+    url: url,
     contentType: "application/json; charset=utf-8",
     data: "searchUseYn=Y&searchValue2=IAQ",
     success: function (param) {
@@ -641,6 +675,7 @@ $(function() {
   $(".select2-container").css("display", "inline-block");
 
   initDataTableCustom();
+  getMasterList();
   getGroupList();
   $("#ventTable_filter").hide();
 

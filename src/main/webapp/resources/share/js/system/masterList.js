@@ -42,14 +42,14 @@ function initDataTableCustom() {
 		},
         columns : [
         	{data: "rowNum"},
-        	{data: "rowNum"},
+			{data: "rowNum"},
         	{data: "masterName"},
         	{data: "masterId"},
             {data: "masterCompanyName"},
-            {data: "masterDepartName"},
+            {data: "groupDepartName"},
             {data: "masterEmail"},
             {data: "masterPhoneNumber"},
-            {data: "memberCnt"},
+            {data: "groupCnt"},
             {data: "createDt"},
             {data: "useYn"}
         ],
@@ -61,8 +61,9 @@ function initDataTableCustom() {
 				},
         	},
 	        {
-	        	targets:   [1, 2, 3, 4, 5, 6, 7, 8],
+	        	targets:   [1, 2, 3, 4, 5, 6, 7, 8,10],
 	        	render: function(data, type, full, meta) {
+					console.log(data);
 	        		return "<a href='#' style='cursor: pointer; width: 100%;' onclick='groupDetail(\""+full.idx+"\")'><strong>" + data + "</strong></a> ";
 				},
 	        },
@@ -106,7 +107,7 @@ function deleteGroup(){
 		});
 		$.ajax({
 			method : "DELETE",
-			url : "/system/group/delete",
+			url : "/system/master/delete",
 			data : JSON.stringify({
 				chArr : checkArr,
 				nameArr : nameArr
@@ -135,7 +136,7 @@ function deleteGroup(){
 
 $().ready(function() {
 	initDataTableCustom();
-	$("#groupTable_filter").hide();
+	$("#masterTable_filter").hide();
 	
 	$('#deleteBtn').click(function() {
 		deleteGroup();

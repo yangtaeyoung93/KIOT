@@ -77,7 +77,7 @@
 
 
 	<!-- 장비 타입 지정 수집 데이터 조회 -->
-	<select id="selectCollectionDeviceWithDeviceType" parameterType="String" resultType="ResultCollectionVo">
+<!--	<select id="selectCollectionDeviceWithDeviceType" parameterType="String" resultType="ResultCollectionVo">
 		SELECT
 		TMDM.member_idx,
 		TMDM.device_idx,
@@ -102,29 +102,98 @@
 		WHERE
 		TMDM.device_idx IS NOT NULL
 		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx})
+	</select>-->
+
+	<select id="selectCollectionDeviceWithDeviceType" parameterType="String" resultType="ResultCollectionVo">
+		SELECT
+			A.*
+		FROM (
+			SELECT
+			TMDM.member_idx,
+			TMDM.device_idx,
+			TMDM.space_idx,
+			TMDM.station_name,
+			TMDM.lat,
+			TMDM.lon,
+			TMDM.etc,
+
+		(SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDM.member_idx) AS group_company_name,
+		(SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_name,
+
+		(SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDM.member_idx=TGMM.member_idx) AS group_id,
+		(SELECT (SELECT TSI2.space_name FROM TB_SPACE_INFO AS TSI2 WHERE TSI2.idx=TSI.parent_space_idx) FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS parent_space_name,
+		(SELECT TSI.space_name FROM TB_SPACE_INFO AS TSI WHERE TMDM.space_idx=TSI.idx) AS space_name,
+		(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDM.member_idx=TM.idx) AS user_id,
+		(SELECT TM.create_dt FROM TB_MEMBER AS TM WHERE TMDM.member_idx=TM.idx) AS create_dt,
+		(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS serial,
+		(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDM.device_idx=TD.idx) AS product_dt
+		FROM
+		TB_MEMBER_DEVICE_MANAGE AS TMDM
+		WHERE
+		TMDM.device_idx IS NOT NULL
+		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx})) A
+		<if test='!masterIdx.equals("0")'>
+			WHERE   A.group_id in(
+			SELECT group_id
+			from TB_GROUP tg
+			where idx in(
+			SELECT tmgm.GROUP_IDX
+			FROM TB_MASTER_GROUP_MANAGE tmgm
+			WHERE tmgm.MASTER_IDX = #{masterIdx}))
+		</if>
 	</select>
 
 
 	<!-- 수집 데이터 (VENT) -->
-	<select id="selectCollectionDeviceVent" resultType="CollectionDto">
+	<select id="selectCollectionMasterDeviceVent" resultType="CollectionDto" parameterType="String">
+		SELECT A.*
+		FROM
+		(SELECT
+		TMDCM.member_idx,
+		TMDCM.iaq_device_idx,
+		TMDCM.vent_device_idx AS device_idx,
+		(SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name,
+		TMDCM.ai_mode,
+		TMDCM.create_dt,
+		(SELECT (SELECT TG.group_depart_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_depart_name,
+		(SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_company_name,
+		(SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_name,
+		(SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_id,
+		(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDCM.member_idx=TM.idx) AS user_id,
+		(SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS test_yn,
+		(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
+		(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
+		FROM
+		TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM) A
+		<if test='!masterIdx.equals("0")'>
+			WHERE   A.group_id in(
+			SELECT group_id
+			from TB_GROUP tg
+			where idx in(
+			SELECT tmgm.GROUP_IDX
+			FROM TB_MASTER_GROUP_MANAGE tmgm
+			WHERE tmgm.MASTER_IDX = #{masterIdx}))
+		</if>
+	</select>
+
+	<select id="selectCollectionDeviceVent" resultType="CollectionDto" parameterType="String">
 		SELECT
 			TMDCM.member_idx,
-		    TMDCM.iaq_device_idx,
-		    TMDCM.vent_device_idx AS device_idx,
-	        (SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name,
-    		(SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_company_name,
-		    TMDCM.ai_mode,
-		    TMDCM.create_dt,
-  			(SELECT (SELECT TG.group_depart_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_depart_name,
-		    (SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_company_name,
-		    (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_name,
-		    (SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_id,
-		    (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDCM.member_idx=TM.idx) AS user_id,
-		    (SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS test_yn,
-		    (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
-		    (SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
-		FROM 
-			TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
+			TMDCM.iaq_device_idx,
+			TMDCM.vent_device_idx AS device_idx,
+			(SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name,
+			TMDCM.ai_mode,
+			TMDCM.create_dt,
+			(SELECT (SELECT TG.group_depart_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_depart_name,
+			(SELECT (SELECT TG.group_company_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TGMM.member_idx = TMDCM.member_idx) AS group_company_name,
+			(SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_name,
+			(SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx=TGMM.group_idx) FROM TB_GROUP_MEMBER_MANAGE AS TGMM WHERE TMDCM.member_idx=TGMM.member_idx) AS group_id,
+			(SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TMDCM.member_idx=TM.idx) AS user_id,
+			(SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS test_yn,
+			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
+			(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
+		FROM
+		TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
 	</select>
 
 	<!-- 수집 데이터 (IAQ-VENT Connect) -->

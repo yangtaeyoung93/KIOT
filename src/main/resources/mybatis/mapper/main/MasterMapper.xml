@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.airguard.mapper.main.system.MasterMapper">
+
+    <!-- 그룹 계정  추가 -->
+	<insert id="insertMaster" parameterType="Master" useGeneratedKeys="true" keyProperty="idx">
+		INSERT INTO
+		TB_GROUP(
+			master_id,
+			master_pw,
+			master_name,
+			master_company_name,
+			group_depart_name,
+			master_email,
+			master_phone_number,
+			use_yn
+		) values(
+			#{masterId},
+			#{masterPw},
+			#{masterName},
+			#{masterCompanyName},
+			#{groupDepartName},
+			#{masterEmail},
+			#{masterPhoneNumber},
+			'Y'
+		)
+	</insert>
+
+    <!-- 상위그룹 계정  추가 (그룹계정 추가) -->
+	<insert id="insertMasterGroup" parameterType="String">
+		INSERT INTO
+			TB_MASTER_GROUP_MANAGE(
+				master_idx,
+				group_idx
+			) VALUES (
+				#{idx},
+				#{groupIdx}
+			)
+	</insert>
+
+    <!-- 상위그룹 계정  수정 -->
+    <update id="updateMaster" parameterType="HashMap">
+	    UPDATE
+			TB_MASTER
+		SET
+			master_id = #{masterId}
+			<if test=' masterPw != null '>
+				, master_pw = #{masterPw}
+			</if>
+			<if test=" masterName != null ">
+				, master_name = #{masterName}
+			</if>
+			<if test=" masterEmail != null ">
+				, master_email = #{masterEmail}
+			</if>
+			<if test=" masterCompanyName != null ">
+				, master_company_name = #{masterCompanyName}
+			</if>
+			<if test=" groupDepartName != null ">
+				, group_depart_name = #{groupDepartName}
+			</if>
+			<if test=" masterPhoneNumber != null ">
+				, master_phone_number = #{masterPhoneNumber}
+			</if>
+			<if test=" masterTelephone != null ">
+				, master_telephone = #{masterTelephone}
+			</if>
+		WHERE
+			idx = #{idx}
+	</update>
+
+    <!-- 그룹 계정  삭제 -->
+	<update id="deleteMaster" parameterType="String">
+		UPDATE
+			TB_MASTER
+		SET
+			use_yn = 'N'
+		WHERE
+			idx = #{idx }
+	</update>
+
+	<!-- 그룹 사용자 삭제 -->
+	<delete id="deleteMasterGroup" parameterType="String">
+		DELETE
+			FROM TB_MASTER_GROUP_MANAGE
+		WHERE
+			master_idx = #{idx}
+	</delete>
+
+	<!--그룹 계정 로그인 ip와 접속일시 업데이트-->
+	<update id="masterLoginInfoUpdate" parameterType="Master">
+		UPDATE
+		TB_MASTER
+		SET
+		login_ip = #{loginIp},
+		login_dt = #{loginDt}
+		WHERE
+		master_id=#{master_id}
+	</update>
+
+</mapper>

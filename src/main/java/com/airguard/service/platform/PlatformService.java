@@ -260,7 +260,7 @@ public class PlatformService {
     return result;
   }
 
-  public List<ResultCollectionVo> selectTotalSensorApi(String paramType) throws Exception {
+  public List<ResultCollectionVo> selectTotalSensorApi(String paramType,String masterIdx) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
 
@@ -280,7 +280,7 @@ public class PlatformService {
         deviceTypeIdx = "3";
         break;
     }
-    List<ResultCollectionVo> deviceList = mapper.selectCollectionDeviceWithDeviceType("00", "N",deviceTypeIdx);
+    List<ResultCollectionVo> deviceList = mapper.selectCollectionDeviceWithDeviceType("00", "N",deviceTypeIdx,masterIdx);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -294,28 +294,6 @@ public class PlatformService {
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
     JSONObject jObj = new JSONObject(res.getBody());
-//    Gson gson = new Gson();
-//    for (ResultCollectionVo resultCollectionVo : deviceList) {
-//      String serial = resultCollectionVo.getSerial();
-//
-//      try {
-//        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
-//        resultCollectionVo.setSensor(resData.getData());
-//        String timestamp = resData.getService().getTimestamp();
-//        resultCollectionVo.setReceiveFlag(((Long.parseLong(timestamp)) + (5 * 60)) > (
-//                System.currentTimeMillis()
-//                        / 1000));
-//        resultCollectionVo.setTimestamp(timestamp);
-//        resultCollectionVo.setDataTime(timeStampToString(timestamp));
-//      }catch(Exception e){
-//        continue;
-//      }finally {
-//        resCol.add(resultCollectionVo);
-//      }
-//
-//
-//    }
-
     ObjectMapper objectMapper = new ObjectMapper();
 
     for (ResultCollectionVo resultCollectionVo : deviceList) {
@@ -334,59 +312,10 @@ public class PlatformService {
       }finally {
         resCol.add(resultCollectionVo);
       }
-
     }
-
-
-
-
-
-//    int size = deviceList.size();
-//    for (int i=0; i<size;i++) {
-//      ResultCollectionVo vo = new ResultCollectionVo();
-//      String serial = deviceList.get(i).getSerialNum();
-//      Gson gson = new Gson();
-//
-//      if (!deviceType.equals(deviceList.get(i).getDeviceType())) {
-//        continue;
-//      }
-//
-//      vo.setSerial(serial);
-//      vo.setMemberIdx(deviceList.get(i).getMemberIdx());
-//      vo.setDeviceIdx(deviceList.get(i).getDeviceIdx());
-//      vo.setGroupCompanyName(deviceList.get(i).getGroupCompanyName());
-//      vo.setGroupDepartName(deviceList.get(i).getGroupDepartName());
-//      vo.setTestYn(deviceList.get(i).getTestYn());
-//      vo.setGroupId(deviceList.get(i).getGroupId());
-//      vo.setGroupName(deviceList.get(i).getGroupName());
-//      vo.setEtc(deviceList.get(i).getEtc());
-//      vo.setLat(deviceList.get(i).getLat());
-//      vo.setLon(deviceList.get(i).getLon());
-//      vo.setAirMapYn(deviceList.get(i).getAirMapYn());
-//      vo.setDCode(deviceList.get(i).getDCode());
-//      vo.setParentSpaceName(deviceList.get(i).getParentSpaceName());
-//      vo.setSpaceName(deviceList.get(i).getSpaceName());
-//      vo.setUserId(deviceList.get(i).getUserId());
-//      vo.setCreateDt(deviceList.get(i).getCreateDt());
-//      vo.setCreateDt(deviceList.get(i).getCreateDt());
-//      vo.setStationName(deviceList.get(i).getStationName());
-//      vo.setProductDt(deviceList.get(i).getProductDt());
-//
-//      if (!jObj.isNull(serial)) {
-//        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
-//        vo.setSensor(resData.getData());
-//
-//        vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp())) + (5 * 60)) > (
-//            System.currentTimeMillis()
-//                / 1000));
-//
-//        vo.setTimestamp(resData.getService().getTimestamp());
-//      }
-//
-//      resCol.add(vo);
-//    }
     return resCol;
   }
+
 
   public Map<String, Object> selectAirMapStationInfo(String serial, String deviceType)
       throws Exception {
@@ -770,10 +699,10 @@ public class PlatformService {
     return resCol;
   }
 
-  public List<ResultCollectionVo> selectTotalSensorVentApi(String paramType) throws Exception {
+  public List<ResultCollectionVo> selectTotalSensorVentApi(String paramType,String masterId) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<ResultCollectionVo> resCol = new ArrayList<>();
-    List<CollectionDto> deviceList = mapper.selectCollectionDeviceVent();
+    List<CollectionDto> deviceList = mapper.selectCollectionMasterDeviceVent(masterId);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
