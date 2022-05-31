@@ -370,9 +370,11 @@ function initDataTableCustom() {
             } else if (filter_alarm === "1") {
               filter_alarm_str = "점검";
             } else if (filter_alarm === "2") {
-              filter_alarm_str = "청소";
-            } else {
+              filter_alarm_str = "필터";
+            } else if (filter_alarm === "4"){
               filter_alarm_str = "교환";
+            }else if (filter_alarm === "8"){
+                filter_alarm_str = "소자 교환";
             }
           }
 
