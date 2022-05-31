@@ -444,7 +444,7 @@ function initDataTableCustom() {
             visible: false,
             render: function (data, type, full, meta) {
 
-              return full.masterIdx;
+              return full.masterName;
             },
           },
         ],
@@ -481,18 +481,21 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+      $('#searchGroup').val('');
       table.column(19).search("").draw();
       table.column(21).search("").draw();
       const masterIdx = $('#searchMaster').val();
-      searchMasterId = this.value;
+      searchMasterId = $('#searchMaster option:selected').text();
       if(this.value == "") searchMasterId = "";
       $(".filterDiv").each(function (index, item) {
         $(item).removeClass("filter-cli");
       });
       $(".filterDiv").first().addClass("filter-cli");
+
+      getGroupList(masterIdx);
       table.column(23).search(searchMasterId).draw();
       table.column(21).search("").draw();
-      getGroupList(masterIdx);
+
   });
 
   $("#searchGroup").change(function () {

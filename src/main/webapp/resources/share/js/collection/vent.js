@@ -484,7 +484,7 @@ function initDataTableCustom() {
               targets: 20,
               visible: false,
               render: function (data, type, full, meta) {
-                return full.masterIdx;
+                return full.masterName;
               },
       },
     ],
@@ -494,40 +494,57 @@ function initDataTableCustom() {
         let reCnt = 0;
         let unReCnt = 0;
         for (const idx in js) {
-          if (searchGroupId !== "") {
-            if (js[idx].receiveFlag && ("g_" + js[idx].groupId
-                == searchGroupId)) {
-              reCnt++;
-            } else if (!js[idx].receiveFlag && ("g_" + js[idx].groupId
-                == searchGroupId)) {
-              unReCnt++;
-            }
-          } else {
-            if (js[idx].receiveFlag) {
-              reCnt++;
-            } else if (!js[idx].receiveFlag) {
-              unReCnt++;
-            }
+          if ($('#searchGroup').val() != "") { //선택한 그룹이 있는 경우
+                if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId) reCnt++;
+                else if (  !js[idx].receiveFlag &&  "g_" + js[idx].groupId == searchGroupId) unReCnt++;
+          }else { //선택한 그룹이 없는 경우
+                if($('#searchMaster').val() != ""){ //선택한 상위그룹이 있는 경우
+                    if(js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()){ reCnt++;}
+                    else if (!js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()) unReCnt++;
+                }else{
+                    if (js[idx].receiveFlag) reCnt++;
+                    else if (!js[idx].receiveFlag) unReCnt++;
+                }
           }
         }
 
-        const txtGroupId = searchGroupId === "" ? "전체" : $(
-            "#select2-searchGroup-container").attr("title");
-        if (reCnt + unReCnt != 0) {
-          $("#msgTxtTotal").html(txtGroupId + " " + (reCnt + unReCnt) +
-              "개 (" + (((reCnt + unReCnt) / (reCnt + unReCnt)) * 100) + "%)");
-          $("#msgTxtReceive").html(
-              "수신  " + reCnt + "개 (" + ((reCnt / (reCnt + unReCnt))
-              * 100).toFixed(1) + "%)");
-          $("#msgTxtUnReceive").html(
-              "미수신  " + unReCnt + "개 (" + ((unReCnt / (reCnt + unReCnt))
-              * 100).toFixed(1) + "%)");
-        } else {
-          $("#msgTxtTotal").html(txtGroupId + " 0개 ");
-          $("#msgTxtReceive").html("수신  0개");
-          $("#msgTxtUnReceive").html("미수신  0개");
+let groupSelect = document.querySelector("#searchGroup");
+        var txtGroupId;
+        if($('#searchMaster').val() != "" && $('#searchGroup').val() == ""){
+            txtGroupId = $('#searchMaster option:selected').text();
+        }else{
+            txtGroupId = searchGroupId == "" ? "전체"  : groupSelect.options[groupSelect.selectedIndex].text;
         }
-      }
+        let receivePercentage;
+        let unreceivePercentage;
+        if(reCnt + unReCnt ==0){
+            receivePercentage = 0;
+            unreceivePercentage = 0;
+        }else{
+            receivePercentage = (( reCnt / (reCnt + unReCnt) ) * 100).toFixed(1);
+            unreceivePercentage = (( unReCnt / (reCnt + unReCnt) ) * 100).toFixed(1);
+        }
+        $("#msgTxtTotal").html(
+          txtGroupId +
+            " " +
+            (reCnt + unReCnt) +
+            "개 (" +
+            receivePercentage +
+            "%)"
+        );
+        $("#msgTxtReceive").html(
+          "수신  " +
+            reCnt +
+            "개 (" + receivePercentage +
+            "%)"
+        );
+        $("#msgTxtUnReceive").html(
+          "미수신  " +
+            unReCnt +
+            "개 (" +
+            unreceivePercentage +
+            "%)"
+        );      }
     }
   });
 
@@ -561,18 +578,21 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+    $('#searchGroup').val('');
     table.column(18).search("").draw();
     table.column(19).search("").draw();
     const masterIdx = $('#searchMaster').val();
-    searchMasterId = this.value;
+    searchMasterId = $('#searchMaster option:selected').text();
     if(this.value == "") searchMasterId = "";
     $(".filterDiv").each(function (index, item) {
          $(item).removeClass("filter-cli");
     });
     $(".filterDiv").first().addClass("filter-cli");
+
+    getGroupList(masterIdx);
     table.column(20).search(searchMasterId).draw();
     table.column(19).search("").draw();
-    getGroupList(masterIdx);
+
   });
 
   $("#searchGroup").change(function () {

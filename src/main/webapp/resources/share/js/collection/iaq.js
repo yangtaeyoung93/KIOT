@@ -117,6 +117,7 @@ function initDataTableCustom() {
       { data: "" },
     ],
     createdRow: function (row, data, dataIndex) {
+
       $(row).attr("id", "row-" + data.serial);
 
       if (data.receiveFlag == false)
@@ -620,13 +621,13 @@ function initDataTableCustom() {
         },
       },
       {
-              targets: 22,
-              visible: false,
-              render: function (data, type, full, meta) {
+        targets: 22,
+        visible: true,
+        render: function (data, type, full, meta) {
 
-                return full.masterIdx;
-              },
-            },
+        return full.masterName;
+        },
+     },
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
@@ -634,43 +635,55 @@ function initDataTableCustom() {
         var reCnt = 0;
         var unReCnt = 0;
         for (var idx in js) {
-          if (searchGroupId != "") {
-            if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId)
-              reCnt++;
-            else if (
-              !js[idx].receiveFlag &&
-              "g_" + js[idx].groupId == searchGroupId
-            )
-              unReCnt++;
-          } else {
-            if (js[idx].receiveFlag) reCnt++;
-            else if (!js[idx].receiveFlag) unReCnt++;
+          if ($('#searchGroup').val() != "") { //선택한 그룹이 있는 경우
+                if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId) reCnt++;
+                else if (  !js[idx].receiveFlag &&  "g_" + js[idx].groupId == searchGroupId) unReCnt++;
+          }else { //선택한 그룹이 없는 경우
+                if($('#searchMaster').val() != ""){ //선택한 상위그룹이 있는 경우
+                    if(js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()){ reCnt++;}
+                    else if (!js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()) unReCnt++;
+                }else{
+                    if (js[idx].receiveFlag) reCnt++;
+                    else if (!js[idx].receiveFlag) unReCnt++;
+                }
           }
         }
 
         let groupSelect = document.querySelector("#searchGroup");
-
-        var txtGroupId = searchGroupId == "" ? "전체"  : groupSelect.options[groupSelect.selectedIndex].text;
+        var txtGroupId;
+        if($('#searchMaster').val() != "" && $('#searchGroup').val() == ""){
+            txtGroupId = $('#searchMaster option:selected').text();
+        }else{
+            txtGroupId = searchGroupId == "" ? "전체"  : groupSelect.options[groupSelect.selectedIndex].text;
+        }
+        let receivePercentage;
+        let unreceivePercentage;
+        if(reCnt + unReCnt ==0){
+            receivePercentage = 0;
+            unreceivePercentage = 0;
+        }else{
+            receivePercentage = (( reCnt / (reCnt + unReCnt) ) * 100).toFixed(1);
+            unreceivePercentage = (( unReCnt / (reCnt + unReCnt) ) * 100).toFixed(1);
+        }
         $("#msgTxtTotal").html(
           txtGroupId +
             " " +
             (reCnt + unReCnt) +
             "개 (" +
-            ((reCnt + unReCnt) / (reCnt + unReCnt)) * 100 +
+            receivePercentage +
             "%)"
         );
         $("#msgTxtReceive").html(
           "수신  " +
             reCnt +
-            "개 (" +
-            ((reCnt / (reCnt + unReCnt)) * 100).toFixed(1) +
+            "개 (" + receivePercentage +
             "%)"
         );
         $("#msgTxtUnReceive").html(
           "미수신  " +
             unReCnt +
             "개 (" +
-            ((unReCnt / (reCnt + unReCnt)) * 100).toFixed(1) +
+            unreceivePercentage +
             "%)"
         );
       }
@@ -704,18 +717,20 @@ function initDataTableCustom() {
   });
 
   $("#searchMaster").change(function () {
+    $('#searchGroup').val('');
     table.column(18).search("").draw();
     table.column(21).search("").draw();
     const masterIdx = $('#searchMaster').val();
-    searchMasterId = this.value;
+    searchMasterId = $('#searchMaster option:selected').text();
     if(this.value == "") searchMasterId = "";
     $(".filterDiv").each(function (index, item) {
       $(item).removeClass("filter-cli");
     });
     $(".filterDiv").first().addClass("filter-cli");
+
+    getGroupList(masterIdx);
     table.column(22).search(searchMasterId).draw();
     table.column(21).search("").draw();
-    getGroupList(masterIdx);
   });
 
 
