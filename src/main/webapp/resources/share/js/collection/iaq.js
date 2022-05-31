@@ -622,7 +622,7 @@ function initDataTableCustom() {
       },
       {
         targets: 22,
-        visible: true,
+        visible: false,
         render: function (data, type, full, meta) {
 
         return full.masterName;

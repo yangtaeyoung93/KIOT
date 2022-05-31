@@ -17,7 +17,7 @@
 
 .main-sidebar{
     position : fixed !important;
-    height : 1000px !important;
+    height : 1140px !important;
 }
 </style>
 <div class="content-wrapper">
