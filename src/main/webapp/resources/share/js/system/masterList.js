@@ -63,7 +63,6 @@ function initDataTableCustom() {
 	        {
 	        	targets:   [1, 2, 3, 4, 5, 6, 7, 8,10],
 	        	render: function(data, type, full, meta) {
-					console.log(data);
 	        		return "<a href='#' style='cursor: pointer; width: 100%;' onclick='groupDetail(\""+full.idx+"\")'><strong>" + data + "</strong></a> ";
 				},
 	        },
@@ -115,7 +114,6 @@ function deleteGroup(){
 			
 			contentType : "application/json; charset=utf-8",
 			success : function(d) {
-				console.log(d);
 				if(d.resultCode == 2){
 					alert("등록된 DID가 존재합니다. \n 그룹아이디:"+d.checkName);
 					return false;
