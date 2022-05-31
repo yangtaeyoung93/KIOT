@@ -56,25 +56,29 @@ public class Air365PushV2Service {
           for (HashMap<String, String> deviceInfo : readOnlyMapper
                   .getSerialListToFcmToken(req.get("token"), req.get("userId"))) {
             if ("all".equals(deviceType) || deviceInfo.get("device_type").equals(deviceType)) {
-              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req);
+              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req,deviceInfo.get("device_type"));
             }
           }
 
         } else {
-          pushUtil.pushControlOneF(target, req);
+          pushUtil.pushControlOneF(target, req,deviceType);
         }
 
       } else {
         if ("all".equals(target)) {
+
           for (HashMap<String, String> deviceInfo : readOnlyMapper
                   .getSerialListToFcmToken(req.get("token"), req.get("userId"))) {
+            if (deviceInfo.get("device_type").equals("OAQ")){
+              req.put("filterAlarm","0");
+            }
             if ("all".equals(deviceType) || deviceInfo.get("device_type").equals(deviceType)) {
-              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req);
+              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req,deviceInfo.get("device_type"));
             }
           }
 
         } else {
-          pushUtil.pushControlOneF(target, req);
+          pushUtil.pushControlOneF(target, req,deviceType);
         }
       }
 

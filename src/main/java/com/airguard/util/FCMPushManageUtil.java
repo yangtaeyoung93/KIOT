@@ -32,7 +32,7 @@ public class FCMPushManageUtil {
     }
   }
 
-  public void pushControlOneF(String target, HashMap<String, String> req) throws Exception {
+  public void pushControlOneF(String target, HashMap<String, String> req,String deviceInfo) throws Exception {
     JSONObject elObj = new JSONObject();
     JSONObject timeObj = new JSONObject();
 
@@ -46,7 +46,9 @@ public class FCMPushManageUtil {
       elObj.put("vocs", Integer.parseInt(req.get("vocs")));
       elObj.put("temp", Integer.parseInt(req.get("temp")));
       elObj.put("humi", Integer.parseInt(req.get("humi")));
-      elObj.put("filterAlarm", Integer.parseInt(req.get("filterAlarm")));
+      if(!deviceInfo.equals("OAQ")){
+        elObj.put("filterAlarm", Integer.parseInt(req.get("filterAlarm")));
+      }
       timeObj.put("startTime", req.get("startTime"));
       timeObj.put("endTime", req.get("endTime"));
       elObj.put("timeFlag", timeObj);
@@ -78,7 +80,7 @@ public class FCMPushManageUtil {
     for (String serial : serials) {
       if ("NO_DATA".equals(redisUtil.getRedisData("FLAG_".concat("group".equals(userType) ? "g-".concat(userId) : userId)
           .concat("_").concat(token).concat("_").concat(serial)).toString())) 
-        pushControlOneF(serial, pushControlReqMp);
+        pushControlOneF(serial, pushControlReqMp,"");
     }
 
   }
