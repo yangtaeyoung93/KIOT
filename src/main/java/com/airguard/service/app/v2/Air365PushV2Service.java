@@ -2,17 +2,25 @@ package com.airguard.service.app.v2;
 
 import com.airguard.exception.SQLException;
 import com.airguard.mapper.readonly.ReadOnlyMapper;
+import com.airguard.model.app.TempVO;
 import com.airguard.util.AES256Util;
 import com.airguard.util.CommonConstant;
 import com.airguard.util.FCMPushManageUtil;
 import com.airguard.util.RedisManageUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.util.*;
 
 import io.swagger.models.auth.In;
+import org.apache.poi.util.TempFile;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,25 +56,29 @@ public class Air365PushV2Service {
           for (HashMap<String, String> deviceInfo : readOnlyMapper
                   .getSerialListToFcmToken(req.get("token"), req.get("userId"))) {
             if ("all".equals(deviceType) || deviceInfo.get("device_type").equals(deviceType)) {
-              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req);
+              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req,deviceInfo.get("device_type"));
             }
           }
 
         } else {
-          pushUtil.pushControlOneF(target, req);
+          pushUtil.pushControlOneF(target, req,deviceType);
         }
 
       } else {
         if ("all".equals(target)) {
+
           for (HashMap<String, String> deviceInfo : readOnlyMapper
                   .getSerialListToFcmToken(req.get("token"), req.get("userId"))) {
+            if (deviceInfo.get("device_type").equals("OAQ")){
+              req.put("filterAlarm","0");
+            }
             if ("all".equals(deviceType) || deviceInfo.get("device_type").equals(deviceType)) {
-              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req);
+              pushUtil.pushControlOneF(deviceInfo.get("serial_num"), req,deviceInfo.get("device_type"));
             }
           }
 
         } else {
-          pushUtil.pushControlOneF(target, req);
+          pushUtil.pushControlOneF(target, req,deviceType);
         }
       }
 
@@ -106,6 +118,7 @@ public class Air365PushV2Service {
       receiveData.put("vocs", 0);
       receiveData.put("temp", 0);
       receiveData.put("humi", 0);
+      receiveData.put("filterAlarm", 0);
       receiveData.put("timeFlag", timeMap);
       receiveData.put("serial", target);
 
@@ -155,6 +168,7 @@ public class Air365PushV2Service {
       receiveData.put("vocs", AES256Util.encrypt("0"));
       receiveData.put("temp", AES256Util.encrypt("0"));
       receiveData.put("humi", AES256Util.encrypt("0"));
+      receiveData.put("filterAlarm", AES256Util.encrypt("0"));
       receiveData.put("timeFlag", timeMap);
       receiveData.put("serial", AES256Util.encrypt(target));
 

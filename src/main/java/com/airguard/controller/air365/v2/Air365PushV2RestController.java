@@ -87,6 +87,14 @@ public class Air365PushV2RestController {
     String endTime =
             request.getParameter("endTime") == null ? "20:00" : request.getParameter("endTime");
 
+    if (startTime.length() == 4) {
+      startTime = startTime.substring(0,2).concat(":").concat(startTime.substring(2));
+    }
+    if (endTime.length() == 4) {
+      endTime = endTime.substring(0,2).concat(":").concat(endTime.substring(2));
+    }
+
+
     Boolean encoding = request.getParameter("encoding") == null ?  false : true;
 
     if(encoding){
