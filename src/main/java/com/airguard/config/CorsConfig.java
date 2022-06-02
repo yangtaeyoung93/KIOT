@@ -29,5 +29,10 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins("http://localhost:8889","http://220.95.232.79:8889","http://issi.kweather.co.kr","http://issi.kweather.co.kr:8889") //인천 서구 프로젝트의 데이터 수집용
             .allowedMethods("*")
             .allowCredentials(true);
+
+    registry.addMapping("/api/air365/v3/data/detail")
+            .allowedOrigins("http://localhost")
+            .allowedOrigins("*")
+            .allowedMethods("*").allowCredentials(true);
   }
 }

@@ -2,7 +2,6 @@ package com.airguard.service.app.v2;
 
 import com.airguard.exception.SQLException;
 import com.airguard.mapper.readonly.ReadOnlyMapper;
-import com.airguard.model.app.TempVO;
 import com.airguard.util.AES256Util;
 import com.airguard.util.CommonConstant;
 import com.airguard.util.FCMPushManageUtil;
