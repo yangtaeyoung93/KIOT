@@ -113,12 +113,13 @@ public class Air365PushRestController {
     return res;
   }
 
-  @PostMapping(value = "/get/redis")
+  @GetMapping(value = "/get/redis")
   public HashMap<String, List<String>> getFlagList(String memberTokenList, String userId, String serialNum){
     List<String> filterTokenList = new ArrayList<String>();
     try {
       String[] tokens = memberTokenList.split(",");
       String fcmReceiveFlagStr;
+
       tokenLoop: for (String tokenInfo : tokens) {
         fcmReceiveFlagStr = redisUtil.getRedisData(
                 new StringBuilder("FLAG_")
@@ -128,8 +129,7 @@ public class Air365PushRestController {
                         .append("_")
                         .append(serialNum)
                         .toString()).toString();
-        if (!"NO_DATA".equals(fcmReceiveFlagStr) || !"NA".equals(fcmReceiveFlagStr)) {
-
+        if (!"NO_DATA".equals(fcmReceiveFlagStr)) {
           JSONObject fcmReceiveControlData = new JSONObject(fcmReceiveFlagStr);
 
           if (0 == (Integer) fcmReceiveControlData.get("filterAlarm"))
