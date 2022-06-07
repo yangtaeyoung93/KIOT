@@ -1549,9 +1549,9 @@ public class Air365StationV2Service {
         List<Object> avgElData = new ArrayList<>(), maxElData = new ArrayList<>(), minElData = new ArrayList<>();
         List<Object> avgElDouData = new ArrayList<>(), maxElDouData = new ArrayList<>(), minElDouData = new ArrayList<>();
 
-        avgElData = new ArrayList<>();
-        maxElData = new ArrayList<>();
-        minElData = new ArrayList<>();
+       // avgElData = new ArrayList<>();
+       // maxElData = new ArrayList<>();
+       // minElData = new ArrayList<>();
 
         for (String tm : tmList) {
           double avgElVal, maxElVal, minElVal;
@@ -1891,7 +1891,20 @@ public class Air365StationV2Service {
           dataMp.put("value", "temp".equals(engName) ? elDataTempList : elRawDataList);
 
         } else {
-          continue elLoop;
+          List<Object> elRawDataList = new ArrayList<>();
+          for (String tm : tmList) {
+            int elData = -999;
+
+              elRawDataList.add(elData);
+          }
+
+          dataMp.put("korName", el.getKorName());
+          dataMp.put("engName", el.getEngName());
+          dataMp.put("viewName", el.getViewName());
+          dataMp.put("unit", el.getElementUnit());
+
+          dataMp.put("value",  elRawDataList);
+          //continue elLoop;
         }
 
         dataList.add(dataMp);
