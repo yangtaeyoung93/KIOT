@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import com.airguard.model.app.FilterVO;
 import com.airguard.util.NotifiTimeCheckUtil;
 import com.airguard.util.RedisManageUtil;
 import org.json.JSONObject;
@@ -113,9 +114,14 @@ public class Air365PushRestController {
     return res;
   }
 
-  @GetMapping(value = "/get/redis")
-  public HashMap<String, List<String>> getFlagList(String memberTokenList, String userId, String serialNum){
+  @PostMapping(value = "/get/redis")
+  public HashMap<String, List<String>> getFlagList(FilterVO filterVO){
     List<String> filterTokenList = new ArrayList<String>();
+
+    String memberTokenList = filterVO.getMemberTokenList();
+    String userId = filterVO.getUserId();
+    String serialNum = filterVO.getSerialNum();
+
     try {
       String[] tokens = memberTokenList.split(",");
       String fcmReceiveFlagStr;
