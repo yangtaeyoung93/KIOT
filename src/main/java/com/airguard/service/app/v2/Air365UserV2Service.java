@@ -1135,9 +1135,15 @@ public class Air365UserV2Service {
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("country_nm","대한민국");
-              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              if(mdi.getDfname() == null){
+                deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+              }else{
+                deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+                deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+                deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              }
               deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
@@ -1223,9 +1229,15 @@ public class Air365UserV2Service {
             deviceInfo.put("stationName",
                     mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
             deviceInfo.put("country_nm","대한민국");
-            deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-            deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-            deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+            if(mdi.getDfname() == null){
+              deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+              deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+              deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+            }else{
+              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+            }
             deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
             deviceInfo.put("lat",
                     mdi.getLat() == null ? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLat()));
@@ -1332,9 +1344,16 @@ public class Air365UserV2Service {
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("country_nm","대한민국");
-              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              if(mdi.getDfname() == null){
+                deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+              }else{
+                deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+                deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+                deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              }
+
               deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
               deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
@@ -1372,6 +1391,7 @@ public class Air365UserV2Service {
           datas.put("memberData", memberDatas);
 
         } catch (Exception e) {
+          e.printStackTrace();
           throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
         }
 
