@@ -146,9 +146,9 @@ public class Air365UserV2Service {
                         mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType());
                 deviceInfo.put("stationName",
                         mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
-                deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lat", mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                         : Double.parseDouble(mdi.getLat()));
-                deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lon", mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                         : Double.parseDouble(mdi.getLon()));
 
                 deviceList.add(deviceInfo);
@@ -217,9 +217,9 @@ public class Air365UserV2Service {
                       mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType());
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
-              deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lat", mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
-              deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lon", mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLon()));
 
               deviceList.add(deviceInfo);
@@ -316,7 +316,7 @@ public class Air365UserV2Service {
               for (MemberDevice mdi : readOnlyMapper
                       .selectMemberDeviceOne(memberInfo.get("memberIdx").toString())) {
                 deviceInfo = new LinkedHashMap<>();
-
+                System.out.println(" lat : lon ::::: " + mdi.getLat() + ", " + mdi.getLon());
                 deviceInfo.put("deviceIdx", Integer.parseInt(mdi.getDeviceIdx()));
                 deviceInfo.put("serial",
                         mdi.getSerialNum() == null ? CommonConstant.NULL_DATA : mdi.getSerialNum());
@@ -324,9 +324,9 @@ public class Air365UserV2Service {
                         mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType());
                 deviceInfo.put("stationName",
                         mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
-                deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lat", mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                         : Double.parseDouble(mdi.getLat()));
-                deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lon", mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                         : Double.parseDouble(mdi.getLon()));
 
                 deviceList.add(deviceInfo);
@@ -349,6 +349,7 @@ public class Air365UserV2Service {
             }
 
           } catch (Exception e) {
+            e.printStackTrace();
             throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
           }
 
@@ -461,9 +462,9 @@ public class Air365UserV2Service {
                         AES256Util.encrypt(mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType()));
                 deviceInfo.put("stationName",
                         AES256Util.encrypt(mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName()));
-                deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                         : mdi.getLat()));
-                deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                         : mdi.getLon()));
 
                 deviceList.add(deviceInfo);
@@ -532,9 +533,9 @@ public class Air365UserV2Service {
                       AES256Util.encrypt(mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType()));
               deviceInfo.put("stationName",
                       AES256Util.encrypt(mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName()));
-              deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                       : mdi.getLat()));
-              deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                       : mdi.getLon()));
 
               deviceList.add(deviceInfo);
@@ -639,9 +640,9 @@ public class Air365UserV2Service {
                         AES256Util.encrypt(mdi.getDeviceType() == null ? CommonConstant.NULL_DATA : mdi.getDeviceType()));
                 deviceInfo.put("stationName",
                         AES256Util.encrypt(mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName()));
-                deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lat", AES256Util.encrypt(mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                         : mdi.getLat()));
-                deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null ? CommonConstant.NULL_DATA
+                deviceInfo.put("lon", AES256Util.encrypt(mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                         : mdi.getLon()));
 
                 deviceList.add(deviceInfo);
@@ -1135,13 +1136,19 @@ public class Air365UserV2Service {
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("country_nm","대한민국");
-              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              if(mdi.getDfname() == null){
+                deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+              }else{
+                deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+                deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+                deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              }
               deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
-              deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lat", mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
-              deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lon", mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLon()));
               ventDeviceList = new ArrayList<>();
               if ("IAQ".equals(mdi.getDeviceType())) {
@@ -1223,14 +1230,20 @@ public class Air365UserV2Service {
             deviceInfo.put("stationName",
                     mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
             deviceInfo.put("country_nm","대한민국");
-            deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-            deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-            deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+            if(mdi.getDfname() == null){
+              deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+              deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+              deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+            }else{
+              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+            }
             deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
             deviceInfo.put("lat",
-                    mdi.getLat() == null ? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLat()));
+                    mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLat()));
             deviceInfo.put("lon",
-                    mdi.getLon() == null ? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLon()));
+                    mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA : Double.parseDouble(mdi.getLon()));
 
             ventDeviceList = new ArrayList<>();
             if ("IAQ".equals(mdi.getDeviceType())) {
@@ -1332,13 +1345,20 @@ public class Air365UserV2Service {
               deviceInfo.put("stationName",
                       mdi.getStationName() == null ? CommonConstant.NULL_DATA : mdi.getStationName());
               deviceInfo.put("country_nm","대한민국");
-              deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
-              deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
-              deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              if(mdi.getDfname() == null){
+                deviceInfo.put("sido_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("sg_nm",CommonConstant.NULL_DATA);
+                deviceInfo.put("emd_nm",CommonConstant.NULL_DATA);
+              }else{
+                deviceInfo.put("sido_nm",mdi.getDfname().split(" ")[0]);
+                deviceInfo.put("sg_nm",mdi.getDfname().split(" ")[1]);
+                deviceInfo.put("emd_nm",mdi.getDfname().split(" ")[2]);
+              }
+
               deviceInfo.put("hang_cd",readOnlyMapper.selectDcode(mdi.getSerialNum()));
-              deviceInfo.put("lat", mdi.getLat() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lat", mdi.getLat() == null || mdi.getLat().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLat()));
-              deviceInfo.put("lon", mdi.getLon() == null ? CommonConstant.NULL_DATA
+              deviceInfo.put("lon", mdi.getLon() == null || mdi.getLon().equals("")? CommonConstant.NULL_DATA
                       : Double.parseDouble(mdi.getLon()));
 
               ventDeviceList = new ArrayList<>();
@@ -1372,6 +1392,7 @@ public class Air365UserV2Service {
           datas.put("memberData", memberDatas);
 
         } catch (Exception e) {
+          e.printStackTrace();
           throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
         }
 
