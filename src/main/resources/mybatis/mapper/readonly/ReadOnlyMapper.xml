@@ -641,6 +641,12 @@
     WHERE TGMM.group_idx = #{groupIdx}
   </select>
 
+  <select id="deleteMasterGroupCheck" parameterType="String" resultType="Integer">
+    SELECT COUNT(TMGM.GROUP_IDX) AS cnt
+    FROM TB_MASTER_GROUP_MANAGE TMGM
+    WHERE TMGM.MASTER_IDX =  #{masterIdx}
+  </select>
+
   <select id="selectGroupDidList" parameterType="Search" resultType="GroupDid">
     SELECT
     @rownum:=@rownum+1 AS row_num,

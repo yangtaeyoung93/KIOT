@@ -108,6 +108,7 @@ public interface ReadOnlyMapper {
   int deleteGroupDidCheck(String groupIdx);
 
   int deleteGroupMemberCheck(String groupIdx);
+  int deleteMasterGroupCheck(String masterIdx);
 
   // GroupDid
   List<GroupDid> selectGroupDidList(Search search);

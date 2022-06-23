@@ -152,7 +152,7 @@ public class MasterController {
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "그룹 계정 삭제 API", tags = "시스템 관리 API")
+    @ApiOperation(value = "상위그룹 계정 삭제 API", tags = "시스템 관리 API")
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<Master> masterDelete(HttpServletRequest req, @RequestBody Master reqBody) throws Exception {
