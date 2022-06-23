@@ -310,8 +310,9 @@ public class Air365StationV3Service {
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
       headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
-
-
+      HashMap<String, Object> valueMap = new HashMap<>();
+      Map<String, Object> weatherParsingData = new LinkedHashMap<>();
+      if (!dcode.equals("")) {
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -320,7 +321,7 @@ public class Air365StationV3Service {
       JSONObject data = jObj.getJSONObject("data");
       String region = data.getString("city_id");
 
-      Map<String, Object> weatherParsingData = new LinkedHashMap<>();
+
 
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
@@ -331,7 +332,7 @@ public class Air365StationV3Service {
         e.printStackTrace();
         logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
       }
-      HashMap<String, Object> valueMap = new HashMap<>();
+
       try {
         String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region=" + region;
         URL url = new URL(urlForDust);
@@ -366,14 +367,16 @@ public class Air365StationV3Service {
         valueMap.put("temp", weatherParsingData.get("P_4"));
         valueMap.put("humi", weatherParsingData.get("P_5"));
 
-
+      }
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> elementInfoList = new ArrayList<>();
       for(String weatherElement : weatherElements){
         HashMap<String,Object> elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
         elementInfo.put("value",valueMap.get(weatherElement));
-
-        int score = weatherElement.equals("temp") || weatherElement.equals("humi") ? -999 : KweatherElemeniUtil.elementCiCalculator(Integer.valueOf(valueMap.get(weatherElement).toString()),weatherElement);
+        if(valueMap.isEmpty()){
+          break;
+        }
+        int score = weatherElement.equals("temp") || weatherElement.equals("humi") ? -999 :  KweatherElemeniUtil.elementCiCalculator(Integer.valueOf(valueMap.get(weatherElement).toString()),weatherElement);
         elementInfo.put("score",score != -999 ? score : "NA");
 
         int grade = 0;
@@ -441,10 +444,15 @@ public class Air365StationV3Service {
       resultData.put("deviceType", deviceType);
       resultData.put("stationName", stationName);
       resultData.put("country_nm","대한민국");
-      resultData.put("sido_nm",dfname.split(" ")[0]);
-      resultData.put("sg_nm",dfname.split(" ")[1]);
-      resultData.put("emd_nm",dfname.split(" ")[2]);
-      resultData.put("hang_cd",dcode);
+
+      if(dfname != null && dfname.split(" ").length >= 2){
+        resultData.put("sido_nm",dfname.split(" ")[0]);
+        resultData.put("sg_nm",dfname.split(" ")[1]);
+        resultData.put("emd_nm",dfname.split(" ")[2]);
+        resultData.put("hang_cd",dcode);
+      }
+
+
       resultData.put("lat",lat);
       resultData.put("lon",lon);
       resultData.put("total", !collectionData.containsKey(ci) ? "NA" : Math.round(Double.parseDouble(collectionData.get(ci).toString())));
@@ -715,61 +723,64 @@ public class Air365StationV3Service {
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
       headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
-
-
-      URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
-      RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
-      ResponseEntity<String> res = restTemplate.exchange(req, String.class);
-
-      JSONObject jObj = new JSONObject(res.getBody());
-      JSONObject data = jObj.getJSONObject("data");
-      String region = data.getString("city_id");
-
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
-
-      // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
-      try {
-
-        weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
-      }
       HashMap<String, Object> valueMap = new HashMap<>();
-      try {
-        String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region=" + region;
-        URL url = new URL(urlForDust);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Content-type", "text/plain");
 
+      if(!dcode.equals("")){
+        URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
+        RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
+        ResponseEntity<String> res = restTemplate.exchange(req, String.class);
 
-        if (connection.getResponseCode() == 200) {
-          StringBuilder result = new StringBuilder();
-          BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-          String line = "";
-          while ((line = in.readLine()) != null) {
-            result.append(line);
-          }
-          in.close();
-          JSONParser parser = new JSONParser();
-          org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
-          weatherData.put("pm10", AES256Util.encrypt(outdoor.get("pm10Value").toString()));
-          weatherData.put("pm25", AES256Util.encrypt(outdoor.get("pm25Value").toString()));
-          valueMap.put("pm10", outdoor.get("pm10Value"));
-          valueMap.put("pm25", outdoor.get("pm25Value"));
+        JSONObject jObj = new JSONObject(res.getBody());
+        JSONObject data = jObj.getJSONObject("data");
+        String region = data.getString("city_id");
+
+        // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
+        try {
+
+          weatherParsingData = WeatherApiUtil.weatherTodayApi(region);
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
         }
-        valueMap.put("temp", weatherParsingData.get("P_4"));
-        valueMap.put("humi", weatherParsingData.get("P_5"));
 
-      }catch(Exception e){
-        e.printStackTrace();
-        logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
+        try {
+          String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region=" + region;
+          URL url = new URL(urlForDust);
+          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+          connection.setRequestMethod("GET");
+          connection.setRequestProperty("Content-type", "text/plain");
+          if (connection.getResponseCode() == 200) {
+            StringBuilder result = new StringBuilder();
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line = "";
+            while ((line = in.readLine()) != null) {
+              result.append(line);
+            }
+            in.close();
+            JSONParser parser = new JSONParser();
+            org.json.simple.JSONObject outdoor = (org.json.simple.JSONObject) ((org.json.simple.JSONObject) parser.parse(result.toString())).get("main");
+            weatherData.put("pm10", AES256Util.encrypt(outdoor.get("pm10Value").toString()));
+            weatherData.put("pm25", AES256Util.encrypt(outdoor.get("pm25Value").toString()));
+            valueMap.put("pm10", outdoor.get("pm10Value"));
+            valueMap.put("pm25", outdoor.get("pm25Value"));
+          }
+          valueMap.put("temp", weatherParsingData.get("P_4"));
+          valueMap.put("humi", weatherParsingData.get("P_5"));
+
+        }catch(Exception e){
+          e.printStackTrace();
+          logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
+        }
       }
+
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> elementInfoList = new ArrayList<>();
       for(String weatherElement : weatherElements){
+        if (valueMap.isEmpty()) {
+          break;
+        }
         HashMap<String,Object> elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
         elementInfo.put("value",AES256Util.encrypt(valueMap.get(weatherElement).toString()));
 
@@ -841,10 +852,12 @@ public class Air365StationV3Service {
       resultData.put("deviceType", AES256Util.encrypt(deviceType));
       resultData.put("stationName", AES256Util.encrypt(stationName));
       resultData.put("country_nm",AES256Util.encrypt("대한민국"));
-      resultData.put("sido_nm",AES256Util.encrypt(dfname.split(" ")[0]));
-      resultData.put("sg_nm",AES256Util.encrypt(dfname.split(" ")[1]));
-      resultData.put("emd_nm",AES256Util.encrypt(dfname.split(" ")[2]));
-      resultData.put("hang_cd",AES256Util.encrypt(dcode));
+      if(dfname.split(" ").length >=2 && dfname != null){
+        resultData.put("sido_nm",AES256Util.encrypt(dfname.split(" ")[0]));
+        resultData.put("sg_nm",AES256Util.encrypt(dfname.split(" ")[1]));
+        resultData.put("emd_nm",AES256Util.encrypt(dfname.split(" ")[2]));
+        resultData.put("hang_cd",AES256Util.encrypt(dcode));
+      }
       resultData.put("lat",AES256Util.encrypt(lat));
       resultData.put("lon",AES256Util.encrypt(lon));
       resultData.put("total", AES256Util.encrypt(!collectionData.containsKey(ci) ? "NA" : Math.round(Double.parseDouble(collectionData.get(ci).toString()))+""));
