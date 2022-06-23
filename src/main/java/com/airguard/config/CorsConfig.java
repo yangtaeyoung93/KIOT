@@ -43,5 +43,11 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins("http://localhost")
             .allowedOrigins("*")
             .allowedMethods("*").allowCredentials(true);
+
+
+    registry.addMapping("/api/collection/list/airmap/")
+            .allowedOrigins("http://220.95.232.210:8078")
+            .allowedOrigins("*")
+            .allowedMethods("*").allowCredentials(true);
   }
 }
