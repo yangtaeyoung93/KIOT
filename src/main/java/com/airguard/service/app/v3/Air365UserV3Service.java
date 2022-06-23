@@ -18,12 +18,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,6 +40,7 @@ public class Air365UserV3Service {
 
   @Value("${spring.profiles.active}")
   private String SERVER_PROFILE;
+
 
   @Autowired
   private FCMPushManageUtil pushUtil;
@@ -221,6 +228,10 @@ public class Air365UserV3Service {
             if (!"".equals(token)) {
               pushUtil.pushControlDataGenerateF(token, userType, userId, deviceSerials);
             }
+
+          }catch (RedisConnectionFailureException e) {
+            //telegramMsg();
+            throw new RedisConnectionFailureException("레디스 서버 접속오류.");
 
           } catch (Exception e) {
             throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
@@ -562,7 +573,12 @@ public class Air365UserV3Service {
                 pushUtil.pushControlDataGenerateF(token, userType, userId, deviceSerials);
               }
 
-            } catch (Exception e) {
+            }catch (RedisConnectionFailureException e) {
+              //telegramMsg();
+              logger.error("EXCEPTION ============{}",e.getMessage(),e);
+              throw new RedisConnectionFailureException("레디스 서버 접속오류.테스트입니다.");
+
+            }catch (Exception e) {
               e.printStackTrace();
               throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
             }
@@ -729,6 +745,33 @@ public class Air365UserV3Service {
 
 
     return res;
+  }
+
+  public void telegramMsg() {
+    String telegram_msg = URLEncoder.encode(CommonConstant.TELEGRAM_MSG);
+    URI uri = URI.create(new StringBuilder(CommonConstant.TELEGRAM_API)
+            .append("?chat_id=").append(CommonConstant.CHAT_ID)
+            .append("&text=").append(telegram_msg).toString());
+
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    factory.setConnectTimeout(10 * 1000);
+    factory.setReadTimeout(30 * 1000);
+    RestTemplate restTemplate = new RestTemplate(factory);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    headers.add("Content-Type", new StringBuilder(MediaType.APPLICATION_JSON_VALUE).append(";charset=UTF-8").toString());
+
+    try {
+      RequestEntity<Object> req = new RequestEntity<>(headers, HttpMethod.GET, uri);
+      ResponseEntity<String> res = restTemplate.exchange(req, String.class);
+      logger.error("res ={}",res.getBody());
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+
+
+
   }
 
 

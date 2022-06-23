@@ -145,4 +145,9 @@ public class CommonConstant {
   public static final String REG_NUMBER = "^[0-9]*$";
   public static final String REG_LAT_LON = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),\\s*[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
 
+
+  //telegram
+  public static final String TELEGRAM_API = "https://api.telegram.org/bot1774721252:AAFeye01l58RsqrNEXIV8iqO0PkMb_xCT0k/sendmessage";
+  public static final String CHAT_ID = "-347380485";
+  public static String TELEGRAM_MSG = "레디스 서버 접속오류 확인 바랍니다.테스트입니다";
 }
