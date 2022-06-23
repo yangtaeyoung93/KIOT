@@ -102,7 +102,7 @@ function deleteGroup(){
 		
 		$("input[class='chBox']:checked").each(function() {
 			checkArr.push($(this).attr("data-cartNum"));
-			nameArr.push($(this).attr("data-groupId"));
+			nameArr.push($(this).attr("data-masterId"));
 		});
 		$.ajax({
 			method : "DELETE",
@@ -114,11 +114,7 @@ function deleteGroup(){
 			
 			contentType : "application/json; charset=utf-8",
 			success : function(d) {
-				if(d.resultCode == 2){
-					alert("등록된 DID가 존재합니다. \n 그룹아이디:"+d.checkName);
-					return false;
-					
-				}else if(d.resultCode == 3){
+				 if(d.resultCode == 3){
 					alert("그룹DID에 포함된 사용자가 존재합니다. \n 그룹아이디:"+d.checkName);
 					return false;
 					

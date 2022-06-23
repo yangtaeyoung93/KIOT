@@ -67,17 +67,17 @@
 			idx = #{idx}
 	</update>
 
-    <!-- 그룹 계정  삭제 -->
+    <!-- 상위그룹 계정  삭제 -->
 	<update id="deleteMaster" parameterType="String">
 		UPDATE
 			TB_MASTER
 		SET
 			use_yn = 'N'
 		WHERE
-			idx = #{idx }
+			idx = #{idx}
 	</update>
 
-	<!-- 그룹 사용자 삭제 -->
+	<!-- 상위그룹 사용자 삭제 -->
 	<delete id="deleteMasterGroup" parameterType="String">
 		DELETE
 			FROM TB_MASTER_GROUP_MANAGE

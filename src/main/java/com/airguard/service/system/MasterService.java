@@ -119,10 +119,7 @@ public class MasterService {
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public int deleteMaster(String idx) {
 
-    if (readOnlyMapper.deleteGroupDidCheck(idx) != 0) {
-      return 2;
-
-    } else if (readOnlyMapper.deleteGroupMemberCheck(idx) != 0) {
+   if (readOnlyMapper.deleteMasterGroupCheck(idx) != 0) {
       return 3;
 
     } else {
