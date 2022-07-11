@@ -87,9 +87,9 @@ public class BiotService {
             : Integer.parseInt(resData.getData().getCo2()));
         iaqMap.put("voc", resData.getData().getVoc() == null ? null
             : Integer.parseInt(resData.getData().getVoc()));
-        iaqMap.put("co", resData.getData().getCo() == null ? null : Integer.parseInt(resData.getData().getCo()));
+        iaqMap.put("co", resData.getData().getCo() == null ? null : Double.parseDouble(resData.getData().getCo()));
         iaqMap.put("hcho", resData.getData().getHcho() == null ? null
-            : Integer.parseInt(resData.getData().getHcho()));
+            : Double.parseDouble(resData.getData().getHcho()));
         iaqMap.put("cici", resData.getData().getCici() == null ? null
             : Integer.parseInt(resData.getData().getCici()));
 
@@ -101,7 +101,6 @@ public class BiotService {
     resMap.put("group_id", id);
     resMap.put("iaq_count", iaqList.size());
     resMap.put("iaq_list", iaqList);
-
     return resMap;
   }
 

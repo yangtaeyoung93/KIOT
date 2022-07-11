@@ -576,7 +576,7 @@ public class Air365UserV3Service {
             }catch (RedisConnectionFailureException e) {
               //telegramMsg();
               logger.error("EXCEPTION ============{}",e.getMessage(),e);
-              throw new RedisConnectionFailureException("레디스 서버 접속오류.테스트입니다.");
+              throw new RedisConnectionFailureException("레디스 서버 접속오류.");
 
             }catch (Exception e) {
               e.printStackTrace();
