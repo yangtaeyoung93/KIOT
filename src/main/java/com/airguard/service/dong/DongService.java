@@ -502,6 +502,7 @@ public class DongService {
       url = URI.create(
           CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + queryString
               + URLEncoder.encode("{sensor=pm*}", "UTF-8"));
+     // logger.error("url ={}", url);
     } else if (type.equals("airKor")) {
       queryString = "?start=" + URLEncoder.encode(startTime, "UTF-8") + "&end=" + URLEncoder
           .encode(endTime, "UTF-8")
@@ -583,7 +584,6 @@ public class DongService {
         }
       }
     }
-
     for (String key : pm10Map.keySet()) {
       DongDetail vo = new DongDetail();
 
@@ -637,7 +637,6 @@ public class DongService {
       }
       oList.add(vo);
     }
-
     return oList;
 
   }
@@ -686,6 +685,7 @@ public class DongService {
 
       for (Dong target : targetList) {
         datas.put(target.getDfname(),
+
             historyData(target.getDcode(), startTime, endTime, paramStandard,
                 "kWeather"));
       }
@@ -716,7 +716,6 @@ public class DongService {
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       OutputStream out = null;
-
       try {
 
         out = res.getOutputStream();
@@ -917,6 +916,7 @@ public class DongService {
       cellHeadDong.setCellValue("읍면동");
 
       int keyIndex = 3;
+
       for (String timeKey : timeKeys) {
         sheet.setColumnWidth(keyIndex, widthSize);
 
@@ -934,7 +934,6 @@ public class DongService {
         keyIndex = 3;
 
         row = sheet.createRow(rowIndex++);
-
         String[] dfNames = s.split("\\s");
 
         Cell cell0 = row.createCell(0);

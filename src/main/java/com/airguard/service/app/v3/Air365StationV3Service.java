@@ -312,7 +312,7 @@ public class Air365StationV3Service {
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
       HashMap<String, Object> valueMap = new HashMap<>();
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
-      if (!dcode.equals("")) {
+      if (dcode != "null" && !dcode.equals("")  ) {
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -320,8 +320,6 @@ public class Air365StationV3Service {
       JSONObject jObj = new JSONObject(res.getBody());
       JSONObject data = jObj.getJSONObject("data");
       String region = data.getString("city_id");
-
-
 
       // App 이용 예외 처리 (기상 api 호출 및 파싱 대행)
       try {
@@ -367,6 +365,14 @@ public class Air365StationV3Service {
         valueMap.put("temp", weatherParsingData.get("P_4"));
         valueMap.put("humi", weatherParsingData.get("P_5"));
 
+      }else{
+        weatherData.put("pm10", CommonConstant.NULL_DATA);
+        weatherData.put("pm25", CommonConstant.NULL_DATA);
+        weatherData.put("date", CommonConstant.NULL_DATA);
+        valueMap.put("pm10", -999);
+        valueMap.put("pm25", -999);
+        valueMap.put("temp",  -999);
+        valueMap.put("humi",  -999);
       }
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> elementInfoList = new ArrayList<>();
@@ -450,6 +456,11 @@ public class Air365StationV3Service {
         resultData.put("sg_nm",dfname.split(" ")[1]);
         resultData.put("emd_nm",dfname.split(" ")[2]);
         resultData.put("hang_cd",dcode);
+      }else{
+        resultData.put("sido_nm",CommonConstant.NULL_DATA);
+        resultData.put("sg_nm",CommonConstant.NULL_DATA);
+        resultData.put("emd_nm",CommonConstant.NULL_DATA);
+        resultData.put("hang_cd",CommonConstant.NULL_DATA);
       }
 
 
@@ -726,7 +737,7 @@ public class Air365StationV3Service {
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
       HashMap<String, Object> valueMap = new HashMap<>();
 
-      if(!dcode.equals("")){
+      if(!dcode.equals("") && !dcode.equals("null")){
         URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
         RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
         ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -773,6 +784,14 @@ public class Air365StationV3Service {
           e.printStackTrace();
           logger.error("================V3 data detail API Weather TODAY API ERROR ============, serial :: {}",serial);
         }
+      }else{
+        weatherData.put("pm10", AES256Util.encrypt(CommonConstant.NULL_DATA));
+        weatherData.put("pm25", AES256Util.encrypt(CommonConstant.NULL_DATA));
+        weatherData.put("date", AES256Util.encrypt(CommonConstant.NULL_DATA));
+        valueMap.put("pm10", -999);
+        valueMap.put("pm25", -999);
+        valueMap.put("temp",  -999);
+        valueMap.put("humi",  -999);
       }
 
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
@@ -857,6 +876,11 @@ public class Air365StationV3Service {
         resultData.put("sg_nm",AES256Util.encrypt(dfname.split(" ")[1]));
         resultData.put("emd_nm",AES256Util.encrypt(dfname.split(" ")[2]));
         resultData.put("hang_cd",AES256Util.encrypt(dcode));
+      }else{
+        resultData.put("sido_nm",AES256Util.encrypt(CommonConstant.NULL_DATA));
+        resultData.put("sg_nm",AES256Util.encrypt(CommonConstant.NULL_DATA));
+        resultData.put("emd_nm",AES256Util.encrypt(CommonConstant.NULL_DATA));
+        resultData.put("hang_cd",AES256Util.encrypt(CommonConstant.NULL_DATA));
       }
       resultData.put("lat",AES256Util.encrypt(lat));
       resultData.put("lon",AES256Util.encrypt(lon));

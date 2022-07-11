@@ -13,7 +13,7 @@
 					(SELECT COUNT(TDAA.allow_ip) FROM TB_DATA_API_AUTH AS TDAA WHERE TDAA.api_type=#{apiType} AND TDAA.id_type=#{idType} AND TDAA.id=#{id} AND TDAA.allow_ip=#{allowIp}) = 0 -- IP 체크 실패
 				THEN 2
 				ELSE 0
-		END AS flag;
+		END AS flag
 	</select>
 
 	<!-- 개인 사용자 연동 Serial 조회,,, KIOT API 이용 -->
