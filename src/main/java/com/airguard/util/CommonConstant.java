@@ -149,5 +149,5 @@ public class CommonConstant {
   //telegram
   public static final String TELEGRAM_API = "https://api.telegram.org/bot1774721252:AAFeye01l58RsqrNEXIV8iqO0PkMb_xCT0k/sendmessage";
   public static final String CHAT_ID = "-347380485";
-  public static String TELEGRAM_MSG = "레디스 서버 접속오류 확인 바랍니다.테스트입니다";
+  public static String TELEGRAM_MSG = "레디스 서버 접속오류 확인 바랍니다.";
 }
