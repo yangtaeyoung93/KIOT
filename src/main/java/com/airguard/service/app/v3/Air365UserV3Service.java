@@ -574,7 +574,7 @@ public class Air365UserV3Service {
               }
 
             }catch (RedisConnectionFailureException e) {
-              //telegramMsg();
+              telegramMsg();
               logger.error("EXCEPTION ============{}",e.getMessage(),e);
               throw new RedisConnectionFailureException("레디스 서버 접속오류.");
 
@@ -737,13 +737,9 @@ public class Air365UserV3Service {
             mapper.insertFcmTokenInfo(cusUser);
           }
         }
-
         RestApiCookieManageUtil.makeAuthCookie(SERVER_PROFILE, userId, userType, response);
-
         res.put("result", CommonConstant.R_SUCC_CODE);
       }
-
-
     return res;
   }
 
@@ -769,9 +765,6 @@ public class Air365UserV3Service {
     }catch (Exception e){
       e.printStackTrace();
     }
-
-
-
   }
 
 
