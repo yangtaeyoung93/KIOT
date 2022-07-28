@@ -49,5 +49,14 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins("http://220.95.232.210:8078")
             .allowedOrigins("*")
             .allowedMethods("*").allowCredentials(true);
+
+    registry.addMapping("/system/member/device/ajax/fileDownload/")
+            .allowedOrigins("http://220.95.232.210:8078")
+            .allowedMethods("*")
+            .allowCredentials(true);
+
+    registry.addMapping("/api/collection/list/**")
+            .allowedOrigins("*")
+            .allowedMethods("*").allowCredentials(true);
   }
 }
