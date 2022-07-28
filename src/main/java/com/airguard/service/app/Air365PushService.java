@@ -45,7 +45,7 @@ public class Air365PushService {
       elObj.put("timeFlag", timeObj);
 
 
-      if (redisUtil.setRedisData("FLAG_".concat(req.get("token").toString()).concat("_").concat(target), elObj.toString())) 
+      if (redisUtil.setRedisData("FLAG_".concat(req.get("token")).concat("_").concat(target), elObj.toString()))
         resultCode = 1;
 
     } catch (JSONException e) {

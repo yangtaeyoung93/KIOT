@@ -507,7 +507,10 @@ public class Air365StationV2Service {
           ventData.put("ventSerial", v.getSerialNum() == null ? CommonConstant.NULL_DATA : v.getSerialNum());
           ventData.put("deviceModel", v.getDeviceModel() == null ? CommonConstant.NULL_DATA : v.getDeviceModel());
           try {
-            URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL).append(CommonConstant.SEARCH_PATH_SENSOR).append(CommonConstant.PARAM_SENSOR_VENT).append("/").append(v.getSerialNum()).toString());
+            URI uri = URI.create(new StringBuilder(CommonConstant.API_SERVER_HOST_TOTAL)
+                    .append(CommonConstant.SEARCH_PATH_SENSOR)
+                    .append(CommonConstant.PARAM_SENSOR_VENT)
+                    .append("/").append(v.getSerialNum()).toString());
             RequestEntity<String> req = null;
             ResponseEntity<String> res = null;
             req = new RequestEntity<>(headers, HttpMethod.GET, uri);
@@ -524,6 +527,8 @@ public class Air365StationV2Service {
       String badTargetElements = "";
       elementDatas = new ArrayList<>();
       elementDatas2 = new ArrayList<>();
+      logger.error("serial = {}",serial);
+      logger.error("region = {}",region);
 
       for (DeviceElements el : dataCenterMapper.selectDeviceModelElements(serial)) {
         elementData = new LinkedHashMap<>();
@@ -671,6 +676,7 @@ public class Air365StationV2Service {
       }
 
       String urlForDust = "http://kapi.kweather.co.kr/getXML_air_fcast_3times_area.php?mode=n&region="+region;
+
       URL url = new URL(urlForDust);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");
