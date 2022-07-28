@@ -360,6 +360,54 @@ public class PlatformService {
     return result;
   }
 
+  public List<StationNameVo> selectSensorAirMap(String siDo) {
+    RestTemplate restTemplate = new RestTemplate();
+    if (siDo == null) {
+      siDo = "00";
+    }
+
+    List<CollectionDto> deviceList = mapper.selectCollectionDevice(siDo, "Y");
+
+
+    List<StationNameVo> resCol = new ArrayList<>();
+
+    HashMap<String, String> siDoMap = new HashMap<>();
+    siDoMap.put("11", "서울");
+    siDoMap.put("26", "부산");
+    siDoMap.put("27", "대구");
+    siDoMap.put("28", "인천");
+    siDoMap.put("29", "광주");
+    siDoMap.put("30", "대전");
+    siDoMap.put("31", "울산");
+    siDoMap.put("36", "세종");
+    siDoMap.put("41", "경기");
+    siDoMap.put("42", "강원");
+    siDoMap.put("43", "충북");
+    siDoMap.put("44", "충남");
+    siDoMap.put("45", "전북");
+    siDoMap.put("46", "전남");
+    siDoMap.put("47", "경북");
+    siDoMap.put("48", "경남");
+    siDoMap.put("50", "제주");
+
+    String deviceType = "OAQ";
+    String deviceType2 = "DOT";
+
+    for (CollectionDto dto : deviceList) {
+      StationNameVo vo = new StationNameVo();
+
+      if (!deviceType.equals(dto.getDeviceType()) && !deviceType2.equals(dto.getDeviceType())) {
+        continue;
+      }
+
+      vo.setSerial(dto.getSerialNum());
+      vo.setStationName(siDoMap.get(dto.getDCode().substring(0, 2)) + "_" + dto.getDeviceIdx());
+
+      resCol.add(vo);
+    }
+    return resCol;
+  }
+
   public List<AirMapOaqVo> selectTotalSensorAirMap(String siDo) throws Exception {
     RestTemplate restTemplate = new RestTemplate();
     List<AirMapOaqVo> resCol = new ArrayList<>();
@@ -938,8 +986,12 @@ public class PlatformService {
           "UTF-8");
     }
 
+
+
     URI url = URI.create(
         CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + queryString);
+
+    logger.error("url ={}",url);
 
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
@@ -1101,20 +1153,30 @@ public class PlatformService {
 
     URI url = URI.create(
         CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + queryString);
+    logger.error("url ={}",url);
+    Double st = Double.valueOf(System.currentTimeMillis());
     RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
     ResponseEntity<String> res = restTemplate.exchange(req, String.class);
+    Double et = Double.valueOf(System.currentTimeMillis());
+
+
+
+    logger.error("restfultime = {},",(et-st)/1000d + "초");
 
     result.put("statusCode", res.getStatusCodeValue());
     result.put("header", res.getHeaders());
     result.put("body", res.getBody());
 
     Gson gson = new Gson();
-    TypeToken<List<Map>> typeToken = new TypeToken<List<Map>>() {
-    };
+    TypeToken<List<Map>> typeToken = new TypeToken<List<Map>>() {};
     List<Map> collectionList = gson.fromJson(res.getBody(), typeToken.getType());
+
     ObjectMapper objectMapper = new ObjectMapper();
 
+
+    logger.error("collectionList size ={}", collectionList.size());
     assert collectionList != null;
+    st = Double.valueOf(System.currentTimeMillis());
     for (Map map : collectionList) {
       JSONObject jObj = getJsonStringFromMap(map);
 
@@ -1483,6 +1545,10 @@ public class PlatformService {
       }
     }
 
+    et = Double.valueOf(System.currentTimeMillis());
+
+    logger.error("iterator = {},",(et-st)/1000d +"초");
+
     Iterator<String> keys2 = tmMap.keySet().iterator();
 
     if (deviceType.equals("vent")) {
@@ -1740,7 +1806,9 @@ public class PlatformService {
     jsonReq.put("queries", datasetArr);
 
     HttpEntity<String> entity = new HttpEntity<>(jsonReq.toString(), headers);
+    long st = System.currentTimeMillis();
     ResponseEntity<String> res = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+    logger.error("requestTime ={}",System.currentTimeMillis()-st);
     List<Map> collectionList = gson.fromJson(res.getBody(), typeToken.getType());
 
     assert collectionList != null;
@@ -1754,7 +1822,7 @@ public class PlatformService {
       Map senMap = objectMapper.convertValue(senOb, Map.class);
 
       String sensor = (String) senMap.get("sensor");
-
+      st = System.currentTimeMillis();
       for (String key : (Iterable<String>) reMap.keySet()) {
         switch (sensor) {
           case "tm":
@@ -2065,7 +2133,7 @@ public class PlatformService {
         }
       }
     }
-
+    logger.error("iterator ={}",System.currentTimeMillis()-st);
     Iterator<String> keys2 = tmMap.keySet().iterator();
 
     if (deviceType.equals("vent")) {
