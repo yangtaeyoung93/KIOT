@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.airguard.model.dong.AirGeoInfo;
 import com.airguard.model.platform.AirMapOaqVo;
+import com.airguard.model.platform.StationNameVo;
 import com.airguard.service.dong.DongService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,6 +249,21 @@ public class CollectionRestController {
     result.put("message", resultMessage);
     result.put("statusCode", httpStatusCode);
     result.put("error", errorFlag);
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/list/airmap/name")
+  public ResponseEntity<Object> getStaionNames( @RequestParam(required = false) String siDo){
+    List<StationNameVo> res = service.selectSensorAirMap(siDo);
+    List<StationNameVo> res2 = dongService.selectAirKorName(siDo);
+    Map<String, Object> result = new HashMap<>();
+    Map<String, Object> data = new HashMap<>();
+
+    data.put("kweather", res);
+    data.put("airkorea", res2);
+    result.put("result", data);
+    result.put("status", HttpStatus.OK.value());
 
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
