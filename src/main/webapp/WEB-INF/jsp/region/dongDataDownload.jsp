@@ -70,9 +70,8 @@
 							<select name="searchStandard" id="searchStandard"
 								class="custom-select custom-select-sm form-control form-control-sm mr10"
 								style="width: 100px; height: 38px;">
-								<option value="sum">전체</option>
+								<option value="sum">10분 평균</option>
 								<option value="hour-standard">정시 데이터</option>
-								<option value="5m-avg-none">5분 평균</option>
 								<option value="1h-avg-none">1시간 평균</option>
 								<option value="1d-avg-none">1일 평균</option>
 								<option value="1n-avg-none">1개월 평균</option>

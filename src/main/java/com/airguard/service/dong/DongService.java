@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
+import com.airguard.model.platform.StationNameVo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -495,6 +496,7 @@ public class DongService {
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
     String queryString;
     URI url = null;
+
     if (type.equals("kWeather")) {
       queryString = "?start=" + URLEncoder.encode(startTime, "UTF-8") + "&end=" + URLEncoder
           .encode(endTime, "UTF-8")
@@ -502,7 +504,6 @@ public class DongService {
       url = URI.create(
           CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + queryString
               + URLEncoder.encode("{sensor=pm*}", "UTF-8"));
-     // logger.error("url ={}", url);
     } else if (type.equals("airKor")) {
       queryString = "?start=" + URLEncoder.encode(startTime, "UTF-8") + "&end=" + URLEncoder
           .encode(endTime, "UTF-8")
@@ -678,7 +679,7 @@ public class DongService {
 
       if (standard.equals("hour-standard")) {
         hourStandardFlag = true;
-        paramStandard = "sum";
+        paramStandard = "1h-first-none";
       }
 
       targetList = readOnlyMapper.selectExcelDownDongList(scode, gcode, dcode, type);
@@ -704,7 +705,7 @@ public class DongService {
       res.setHeader("Content-Disposition",
           "attachment;fileName=DATA" + "_" + pmType.toUpperCase() + "_" + startDtFormat + "_"
               + endDtFormat + ".xlsx");
-      res.setContentType("application/vnd.ms-excel");
+      res.setContentType("application/vnd.ms-excel; charset=UTF-8");
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream());
       workbook.write(out);
@@ -799,13 +800,13 @@ public class DongService {
         while (loopFlag) {
           cal = Calendar.getInstance();
           cal.setTime(parseSdf.parse(startTime));
-          cal.add(Calendar.MINUTE, (index * 10));
+          cal.add(Calendar.MINUTE, (index * 5));
           String time = formatSdf.format(cal.getTime());
 
           if (Long.parseLong(endTimeStr) < Long.parseLong(time)) {
             break;
           }
-
+          logger.error("time ={}",time);
           timeKeys.add(time);
           index++;
         }
@@ -915,16 +916,21 @@ public class DongService {
       cellHeadDong.setCellStyle(styleOfBoardFillFontBlack11);
       cellHeadDong.setCellValue("읍면동");
 
+
+
       int keyIndex = 3;
 
-      for (String timeKey : timeKeys) {
-        sheet.setColumnWidth(keyIndex, widthSize);
-
-        Cell cellHeadTime = row.createCell(keyIndex++);
-        cellHeadTime.setCellStyle(styleOfBoardFillFontBlack11);
-        cellHeadTime.setCellValue(timeKey.substring(0, 4) + "-" + timeKey.substring(4, 6) + "-"
-            + timeKey.substring(6, 8) + (" " + timeKey.substring(8, 10)) + ":" + timeKey
-            .substring(10, 12));
+      for (String s : datas.keySet()) {
+        for (DongDetail d : datas.get(s)) {
+          sheet.setColumnWidth(keyIndex, widthSize);
+          String timeKey = d.getRegDate().substring(0,d.getRegDate().length()-2);
+          Cell cellHeadTime = row.createCell(keyIndex++);
+          cellHeadTime.setCellStyle(styleOfBoardFillFontBlack11);
+          cellHeadTime.setCellValue(timeKey.substring(0, 4) + "-" + timeKey.substring(4, 6) + "-"
+                  + timeKey.substring(6, 8) + (" " + timeKey.substring(8, 10)) + ":" + timeKey
+                  .substring(10, 12));
+        }
+       break;
       }
 
       rowIndex++;
@@ -943,17 +949,16 @@ public class DongService {
         Cell cell2 = row.createCell(2);
         cell2.setCellValue(dfNames[2]);
 
-        List<DongDetail> dongDatas = datas.get(s);
-        for (DongDetail dongData : dongDatas) {
+        for (DongDetail dongData : datas.get(s)) {
           if (hourStandardFlag && !(dongData.getRegDate().substring(10)).equals("0000")) {
             continue;
           }
 
           Cell cellDatas = row.createCell(keyIndex++);
           if ("pm10".equals(pmType)) {
-            cellDatas.setCellValue(dongData.getPm10());
+            cellDatas.setCellValue(setfloor(dongData.getPm10()));
           } else if ("pm25".equals(pmType)) {
-            cellDatas.setCellValue(dongData.getPm25());
+            cellDatas.setCellValue(setfloor(dongData.getPm25()));
           }
 
         }
@@ -963,7 +968,10 @@ public class DongService {
       logger.error("null");
     }
   }
+  public String setfloor(String value){
 
+    return String.format("%.2f", Double.parseDouble(value));
+  }
   public List<AirGeoInfo> selectAirKorApi(String dCode) throws Exception {
 
     if (dCode == null) {
@@ -1021,7 +1029,29 @@ public class DongService {
     return resCol;
   }
 
+  public List<StationNameVo> selectAirKorName(String dCode)  {
 
+    if (dCode == null) {
+      dCode = "0000000000";
+    } else if (dCode.length() == 2) {
+      dCode = dCode + "00000000";
+    }
+
+    List<StationNameVo> resCol = new ArrayList<>();
+    List<AirGeoInfo> airKorList = readOnlyMapper.selectOaqGeo(dCode);
+
+
+    airLoop : for (AirGeoInfo airGeoInfo : airKorList) {
+      StationNameVo vo = new StationNameVo();
+
+      vo.setSerial(airGeoInfo.getAAirCode());
+      vo.setStationName(airGeoInfo.getAAirName());
+
+      resCol.add(vo);
+    }
+
+    return resCol;
+  }
   public List<Map<String, Object>> selectAirKorApiLightly(String dCode) throws Exception {
     List<Map<String, Object>> resCol = new ArrayList<>();
     if (dCode == "") {
