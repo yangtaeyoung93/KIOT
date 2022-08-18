@@ -70,6 +70,8 @@ public class LoginController {
     return "thymeleaf/login2";
   }
 
+
+
   @ApiOperation(value = "로그인 페이지 (Error)", tags = "웹 페이지 Url")
   @RequestMapping(value = "/login")
   public String login(Model model, @RequestParam(value = "error", required = false) String error) {
@@ -327,6 +329,8 @@ public class LoginController {
     return "redirect:/loginSuccess";
   }
 
+
+
   /**
    * 로그인 성공 처리
    *
@@ -344,11 +348,11 @@ public class LoginController {
       }
 
     if (authCookieValue.equals("admin")) {
-      return "redirect:/dashboard/receive";
+      return "redirect:https://datacenter.kweather.co.kr/dashboard/receive";
     }
 
     if (authCookieValue.equals("group")) {
-      return "redirect:/datacenter/list";
+      return "redirect:https://datacenter.kweather.co.kr/datacenter/list";
     } else if (authCookieValue.equals("member")) {
       return "redirect:/datacenter/did";
     }
@@ -429,6 +433,152 @@ public class LoginController {
 
     return "redirect:/";
   }
+  /*air365플랫폼 로그인 (임시)*/
+
+  @ApiOperation(value = "로그인 페이지", tags = "Air365플랫폼 로그인 (임시)")
+  @RequestMapping(value = "/intro")
+  public String platformLogin(Model model, @RequestParam(value = "error", required = false) String error) {
+    model.addAttribute("loginError", error);
+    return "thymeleaf/platformLogin";
+  }
+
+
+  @ApiOperation(value = "로그인 API", tags = "Air365플랫폼 로그인 API")
+  @RequestMapping(value = "/goPlatform", method = RequestMethod.POST)
+  public String goPlatform(HttpServletRequest request, HttpServletResponse response)
+          throws LoginErrorException, UnsupportedEncodingException, GeneralSecurityException, SQLException{
+    logger.info("************ LOGIN ************");
+
+    final String username = request.getParameter("username");
+    final String password = request.getParameter("password");
+    final String loginAuth = request.getParameter("loginAuth");
+
+    logger.info("************ AUTH : " + loginAuth + " ************");
+    logger.info("************ ID : " + username + " ************");
+
+    Cookie authCookie = new Cookie("_USER_AUTH", loginAuth);
+    response.addCookie(authCookie);
+
+    if (loginAuth.equals("admin")) {
+      Admin pAdmin = new Admin();
+      pAdmin.setUserId(username);
+      pAdmin.setUserPw(Sha256EncryptUtil.ShaEncoder(password));
+      int checkCode = adminService.loginCheckAdminId(pAdmin);
+
+      if (checkCode == 1) {
+        return "redirect:/intro?error=1";
+      } else if (checkCode == 2) {
+        return "redirect:/intro?error=2";
+      }
+      Admin admin = adminService.findAdminByLoginId(username);
+
+      if (admin == null || !admin.getUserPw().equals(Sha256EncryptUtil.ShaEncoder(password))) {
+        return "redirect:/intro";
+      }
+
+      Cookie cookie = new Cookie("ADMIN_AUTH", AES256Util.encrypt(username));
+      Cookie air365Cookie = new Cookie("AIR365_ADMIN", AES256Util.encrypt(username));
+
+      cookie.setPath("/");
+      air365Cookie.setPath("/");
+
+      air365Cookie.setDomain("kweather.co.kr");
+
+      response.addCookie(cookie);
+      response.addCookie(air365Cookie);
+
+      Admin adminDto = new Admin();
+      adminDto.setUserId(admin.getUserId());
+      adminDto.setUseYn(admin.getUseYn());
+
+      String connectIp = request.getHeader("X-Forwarded-For");
+      if (connectIp == null) {
+        connectIp = request.getRemoteAddr();
+      }
+
+      adminDto.setLoginIp(connectIp);
+      adminDto.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+      adminService.adminLoginInfoUpdate(adminDto);
+
+    } else if (loginAuth.equals("member")) {
+      Member pMember = new Member();
+      pMember.setUserId(username);
+      pMember.setUserPw(Sha256EncryptUtil.ShaEncoder(password));
+      int checkCode = memberService.loginCheckMemberId(pMember);
+      Member member = memberService.findMemberByLoginId(username);
+
+      if (checkCode == 1) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=1";
+      } else if (checkCode == 2) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=2";
+      } else if (checkCode == 4) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=4";
+      } else if (checkCode == 5) {
+        memberService.updateMemberLoginCount(member.getUserId(),0);
+        return "redirect:/?error=5";
+      }
+
+
+      if (member == null || !member.getUserPw().equals(Sha256EncryptUtil.ShaEncoder(password))) {
+        return "redirect:/intro";
+      }
+
+      Cookie cookie = new Cookie("MEMBER_AUTH", AES256Util.encrypt(member.getUserId()));
+      cookie.setPath("/");
+      cookie.setDomain("kweather.co.kr");
+      response.addCookie(cookie);
+
+      Member memberDto = new Member();
+      memberDto.setIdx(member.getIdx());
+      memberDto.setUserId(member.getUserId());
+      memberDto.setUseYn(member.getUseYn());
+
+      String connectIp = request.getHeader("X-Forwarded-For");
+      if (connectIp == null) {
+        connectIp = request.getRemoteAddr();
+      }
+
+      memberDto.setLoginIp(connectIp);
+      memberDto.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+      memberService.memberLoginInfoUpdate(memberDto);
+      memberService.updateMemberLoginCount(member.getUserId(),1);
+
+    } else {
+      Group pGroup = new Group();
+      pGroup.setGroupId(username);
+      pGroup.setGroupPw(Sha256EncryptUtil.ShaEncoder(password));
+
+      int checkCode = groupService.loginCheckGroupId(pGroup);
+
+      if (checkCode == 1) {
+        return "redirect:/?error=1";
+      } else if (checkCode == 2) {
+        return "redirect:/?error=2";
+      }
+      Group group = groupService.findGroupByLoginId(username);
+      String connectIp = request.getHeader("X-Forwarded-For");
+      if (connectIp == null) {
+        connectIp = request.getRemoteAddr();
+      }
+      group.setLoginIp(connectIp);
+      group.setLoginDt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+      if (group == null || !group.getGroupPw().equals(Sha256EncryptUtil.ShaEncoder(password))) {
+        return "redirect:/";
+      }
+
+      Cookie cookie = new Cookie("GROUP_AUTH", AES256Util.encrypt(group.getGroupId()));
+      cookie.setPath("/");
+      cookie.setDomain("kweather.co.kr");
+      response.addCookie(cookie);
+      groupService.groupLoginInfoUpdate(group);
+    }
+
+    return "redirect:/loginSuccess";
+  }
+
 
   private static class LoginErrorException extends Exception {
 

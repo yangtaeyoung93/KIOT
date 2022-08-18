@@ -1188,7 +1188,6 @@ public class Air365UserV2Service {
         break;
 
       case "member":
-
         try {
 
           Member findMemberData = readOnlyMapper.findMemberByLoginId(userId);
@@ -1271,6 +1270,7 @@ public class Air365UserV2Service {
           datas.put("deviceList", deviceList);
 
         } catch (Exception e) {
+          e.printStackTrace();
           throw new SQLException(SQLException.NULL_TARGET_EXCEPTION);
         }
 

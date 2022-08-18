@@ -1,0 +1,99 @@
+.wrapper{
+    width:100%;
+    display:flex;
+
+}
+header{
+    display: inline-block;
+    transform: translate(85%, 50%);
+}
+header > img{
+    float:left;
+}
+header > p{
+    float: left;
+    font-size: 40px;
+    margin: 0;
+    padding: 0;
+    transform: translate(10px, 20px);
+}
+.row img{
+    height:80px;
+}
+h1{
+    margin:0;
+    padding:0;
+}
+.btnWrap{
+    width:100%;
+    display:inline-block;
+}
+.btnWrap button{
+    width:30%;
+    font-size:18px;
+}
+.btnWrap button:nth-child(1){
+   float:left;
+}
+
+.btnWrap button:nth-child(3){
+   float:right;
+}
+.container{
+    flex:1;
+    margin: 10% auto;
+    padding: 0 1%;
+    text-align:center;
+}
+#login3 p{
+    text-align: left;
+    width: 95%;
+    margin: 100px auto 0 auto;
+}
+.container:not(:last-child){
+    border-right:1px solid #665db5;
+}
+.custom-input {
+    width: 472px;
+    border: none;
+    border-bottom: 1px solid #dddddd;
+    padding: 15px;
+    transition: .3s all;
+
+}
+span.input-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color:#dddddd;
+    transition: .3s all;
+}
+.form-group{
+    position: relative;
+}
+.custom-input:focus + span {
+    color: black;
+}
+.form-custom {
+    width: 500px;
+    margin: auto;
+}
+form {
+    margin-top: 60px;
+}
+.common-btn {
+    width: 500px;
+    font-size: 23px;
+    padding: 14px;
+    margin-top:40px;
+    margin-bottom: 30px;
+    cursor:pointer;
+}
+.row img {
+    margin: auto;
+}
+.row form {
+    margin: auto;
+    margin-top: 60px;
+}

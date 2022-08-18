@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air365 플랫폼</title>
+<link rel="shortcut icon" href="/images/img/k_fav.ico"
+	  type="image/x-icon">
+<link rel="stylesheet" href="/css/common2.css">
+<link rel="stylesheet" href="/css/intro.css">
+<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script th:inline="javascript">
+	$().ready(function() {
+		var message = [[${loginError}]];
+		if 		(message == 1) alert("계정을 확인하세요.");
+		else if (message == 2) alert("암호를 확인하세요.");
+	})
+
+
+
+
+	function goCustomPage(url, groupId) {
+		fetch('/api/client/master/auth', {
+				method: 'POST',
+				cache: 'no-cache',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					groupId: groupId
+				})
+		}).then((response) => response.json()).then((data) => {
+			if(data.resultCode == 1){
+				alert(groupId + " 계정으로 접근하셨습니다.");
+				window.open(url);
+			}
+		});
+	}
+</script>
+</head>
+<body>
+<!--<header>
+	<img src="/images/kweather_logo.png">
+	<p>Air365 플랫폼</p>
+</header>-->
+<div class="wrapper">
+
+	<div id="login" class="container" layout:fragment="content">
+		<div class="row">
+			<img src="/images/kweather_logo.png">
+			<h1>Air365 플랫폼 관리자</h1>
+		</div>
+
+		<div class="row">
+			<form th:action="@{/goPlatform}" method="post">
+				<div class="form-group form-custom">
+					<select name="loginAuth" id="loginAuth">
+						<option value="admin">관리자</option>
+						<option value="member">개인</option>
+						<option value="group">그룹</option>
+					</select>
+				</div>
+				<div class="form-group form-custom">
+					<input type="text" name="username" id="username"
+						   class="custom-input" value="" aria-describedby="emailHelp"
+						   placeholder=" 이메일" /> <span class="input-icon"><i
+						class="fas fa-user"></i></span>
+				</div>
+				<div class="form-group form-custom">
+					<input type="password" name="password" class="custom-input"
+						   id="password" value="" placeholder=" 비밀번호" /> <span
+						class="input-icon"><i class="fas fa-lock"></i></span>
+				</div>
+				<button type="submit" class="submit common-btn">로그인</button>
+			</form>
+		</div>
+
+		<div class="row"></div>
+	</div>
+	<div id="login2" class="container" layout:fragment="content">
+		<div class="row">
+			<img src="/images/kweather_logo.png">
+			<h1>Air365 클라우드 서비스</h1>
+		</div>
+
+		<form th:action="@{/intro}">
+			<div class="form-group form-custom" style="visibility: hidden;">
+				<select name="" id="loginAuth">
+					<option value="admin">관리자</option>
+					<option value="member">개인</option>
+					<option value="group">그룹</option>
+				</select>
+			</div>
+			<div class="form-group form-custom">
+				<input type="text" name="" id="username"
+					   class="custom-input" value="" aria-describedby="emailHelp"
+					   placeholder=" 이메일" /> <span class="input-icon"><i
+					class="fas fa-user"></i></span>
+			</div>
+			<div class="form-group form-custom">
+				<input type="password" name="" class="custom-input"
+					   id="password" value="" placeholder=" 비밀번호" /> <span
+					class="input-icon"><i class="fas fa-lock"></i></span>
+			</div>
+			<button type="" class="submit common-btn">로그인</button>
+		</form>
+
+		<div class="row btnWrap">
+			<button type="button" class="submit common-btn" id="goSeocho" onclick="goCustomPage(`https://cso.kweather.co.kr/admin/`,`cleanseochoair@kweather.co.kr`)">클린서초</button>
+			<button type="button" class="submit common-btn" id="goSuncheon" onclick="goCustomPage('https://suncheon.kweather.co.kr','suncheon@korea.kr')">순천시청</button>
+			<button type="button" class="submit common-btn" id="goSungnam" onclick="goCustomPage('https://sdc.kweather.co.kr/','sn@isdc.co.kr')">성남중앙지하상가</button>
+		</div>
+
+		<div class="row"></div>
+	</div>
+	<div id="login3" class="container" layout:fragment="content">
+		<div class="row">
+			<img src="/images/kweather_logo.png">
+			<h1>Air365 온 프레미스</h1>
+		</div>
+
+		<p>다수의 측정기와 기기로부터 취합된 실시간 정보와 통계 데이터를 다양한 사용자 환경으로 제공합니다.<br/>
+			통합실내쾌적지수, 미세먼지, 초미세먼지, 이산화탄소, 휘발성유기화합물, 온도, 습도 및 지역별 기상 정보 등의 주요 정보를 한 눈에 확인할 수 있습니다.</p>
+		<div class="row">
+		</div>
+
+		<div class="row"></div>
+	</div>
+</div>
+</body>
+</html>

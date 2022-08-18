@@ -313,6 +313,7 @@ public class Air365StationV3Service {
       HashMap<String, Object> valueMap = new HashMap<>();
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
       if (dcode != "null" && !dcode.equals("")  ) {
+      logger.error("DCODE IS NOT NULL");
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+dcode);
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
       ResponseEntity<String> res = restTemplate.exchange(req, String.class);

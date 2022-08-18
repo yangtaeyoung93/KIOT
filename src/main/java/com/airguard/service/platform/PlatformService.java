@@ -963,13 +963,18 @@ public class PlatformService {
 
     Calendar cal = Calendar.getInstance();
     cal.setTime(reqSdf.parse(date));
+    cal.add(Calendar.DATE,-1);
+    logger.error("cal ={}",cal);
     String fromDt = sdf.format(cal.getTime()).concat("-00:00:00");
+    cal.add(Calendar.DATE,1);
     String toDt = sdf.format(cal.getTime()).concat("-23:59:59");
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
     headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
     String queryString;
+
+    logger.error("fromDt ={},toDt={}",fromDt,toDt);
 
     if ("air".equals(deviceType)) {
       queryString = "?start=" + URLEncoder.encode(fromDt, "UTF-8") + "&end="
@@ -1667,6 +1672,655 @@ public class PlatformService {
     return resCol;
   }
 
+
+ /* public List<ResultCollectionHisVo>
+  selectSensorApi2(String deviceType, String serial,String startTime, String endTime, String standard, String connect) throws Exception {
+    RestTemplate restTemplate = new RestTemplate();
+
+    Map<String, Double> tmMap = new LinkedHashMap<>();
+    Map<String, Double> tempMap = new LinkedHashMap<>();
+    Map<String, Double> humiMap = new LinkedHashMap<>();
+    Map<String, Double> co2Map = new LinkedHashMap<>();
+    Map<String, Double> vocMap = new LinkedHashMap<>();
+    Map<String, Double> noiseMap = new LinkedHashMap<>();
+    Map<String, Double> ciciMap = new LinkedHashMap<>();
+    Map<String, Double> pm25Map = new LinkedHashMap<>();
+    Map<String, Double> pm10Map = new LinkedHashMap<>();
+    Map<String, Double> pm01Map = new LinkedHashMap<>();
+    Map<String, Double> pm10RawMap = new LinkedHashMap<>();
+    Map<String, Double> pm25RawMap = new LinkedHashMap<>();
+    Map<String, Double> pm10RatioMap = new LinkedHashMap<>();
+    Map<String, Double> pm25RatioMap = new LinkedHashMap<>();
+    Map<String, Double> pm10OffsetMap = new LinkedHashMap<>();
+    Map<String, Double> pm25OffsetMap = new LinkedHashMap<>();
+
+    Map<String, Double> ciaiMap = new LinkedHashMap<>();
+    Map<String, Double> coaiMap = new LinkedHashMap<>();
+
+    Map<String, Double> ciciPm10Map = new LinkedHashMap<>();
+    Map<String, Double> ciciPm25Map = new LinkedHashMap<>();
+    Map<String, Double> ciciCo2Map = new LinkedHashMap<>();
+    Map<String, Double> ciciVocMap = new LinkedHashMap<>();
+    Map<String, Double> ciciTempMap = new LinkedHashMap<>();
+    Map<String, Double> ciciHumiMap = new LinkedHashMap<>();
+    Map<String, Double> ciciNoiseMap = new LinkedHashMap<>();
+    Map<String, Double> luxMap = new LinkedHashMap<>();
+    Map<String, Double> uvMap = new LinkedHashMap<>();
+    Map<String, Double> wbgtMap = new LinkedHashMap<>();
+    Map<String, Double> coMap = new LinkedHashMap<>();
+    Map<String, Double> hchoMap = new LinkedHashMap<>();
+    Map<String, Double> o3Map = new LinkedHashMap<>();
+    Map<String, Double> rnMap = new LinkedHashMap<>();
+    Map<String, Double> no2Map = new LinkedHashMap<>();
+    Map<String, Double> so2Map = new LinkedHashMap<>();
+    Map<String, Double> accxMap = new LinkedHashMap<>();
+    Map<String, Double> accxMaxMap = new LinkedHashMap<>();
+    Map<String, Double> accyMap = new LinkedHashMap<>();
+    Map<String, Double> accyMaxMap = new LinkedHashMap<>();
+    Map<String, Double> acczMap = new LinkedHashMap<>();
+    Map<String, Double> acczMaxMap = new LinkedHashMap<>();
+    Map<String, Double> winddMap = new LinkedHashMap<>();
+    Map<String, Double> winddMaxMap = new LinkedHashMap<>();
+    Map<String, Double> windsMap = new LinkedHashMap<>();
+    Map<String, Double> windsMaxMap = new LinkedHashMap<>();
+    Map<String, Double> cociMap = new LinkedHashMap<>();
+    Map<String, Double> cociPm10Map = new LinkedHashMap<>();
+    Map<String, Double> cociPm25Map = new LinkedHashMap<>();
+    Map<String, Double> cociTempMap = new LinkedHashMap<>();
+    Map<String, Double> cociHumiMap = new LinkedHashMap<>();
+    Map<String, Double> cociNoiseMap = new LinkedHashMap<>();
+    Map<String, Double> visitorMap = new LinkedHashMap<>();
+    Map<String, Double> rainfallMap = new LinkedHashMap<>();
+    Map<String, Double> dayRainfallMap = new LinkedHashMap<>();
+
+    Map<String, Double> atmMap = new LinkedHashMap<>();
+    Map<String, Double> rainMap = new LinkedHashMap<>();
+
+    Map<String, Double> nh3Map = new LinkedHashMap<>();
+    Map<String, Double> h2sMap = new LinkedHashMap<>();
+    Map<String, Double> gpsLatMap = new LinkedHashMap<>();
+    Map<String, Double> gpsLonMap = new LinkedHashMap<>();
+
+    Map<String, Double> noMap = new LinkedHashMap<>();
+    Map<String, Double> noxMap = new LinkedHashMap<>();
+    Map<String, Double> tspMap = new LinkedHashMap<>();
+
+    Map<String, String> regDateMap = new LinkedHashMap<>();
+    Map<String, String> powerMap = new LinkedHashMap<>();
+    Map<String, String> airVolumeMap = new LinkedHashMap<>();
+    Map<String, String> filterAlarmMap = new LinkedHashMap<>();
+    Map<String, String> airModeMap = new LinkedHashMap<>();
+    Map<String, String> autoModeMap = new LinkedHashMap<>();
+    Map<String, String> exhModeMap = new LinkedHashMap<>();
+
+    Map<String, String> cmdWMap = new LinkedHashMap<>();
+    Map<String, String> cmdPMap = new LinkedHashMap<>();
+    Map<String, String> cmdMMap = new LinkedHashMap<>();
+    Map<String, String> aiModeDevicesMap = new LinkedHashMap<>();
+    Map<String, String> fireAlarmMap = new LinkedHashMap<>();
+    Map<String, String> waterAlarmMap = new LinkedHashMap<>();
+    Map<String, String> devStatMap = new LinkedHashMap<>();
+
+
+
+    Map<String, String> humRtempMap = new LinkedHashMap<>();
+    Map<String, String> humRhumiMap = new LinkedHashMap<>();
+    Map<String, String> humOtempMap = new LinkedHashMap<>();
+    Map<String, String> humOhumiMap = new LinkedHashMap<>();
+    Map<String, String> humCo2Map = new LinkedHashMap<>();
+    Map<String, String> humPm10Map = new LinkedHashMap<>();
+    Map<String, String> humPm25Map = new LinkedHashMap<>();
+    Map<String, String> wattMap = new LinkedHashMap<>();
+    Map<String, String> humErrorAlarmHexMap = new LinkedHashMap<>();
+    Map<String, String> humErrorAlarmKorMap = new LinkedHashMap<>();
+
+    List<ResultCollectionHisVo> resCol = new ArrayList<>();
+    HashMap<String, Object> result = new LinkedHashMap<>();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+    headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("?start=")
+      .append(URLEncoder.encode(startTime,"UTF-8"))
+      .append("&end=")
+      .append(URLEncoder.encode(endTime, "UTF-8"))
+      .append("&m=")
+      .append(
+          URLEncoder.encode(
+                  "avg:" + standard + ":kw-" + ((deviceType.equals("dot")) ? "oaq" : deviceType.toLowerCase())
+                          + "-sensor-"
+                          + ((deviceType.equals("dot")) ? "dot" : "kiot") + "." + serial + "{sensor=*}", "UTF-8")
+      );
+
+    long st = System.currentTimeMillis();
+    URI url = URI.create(
+            CommonConstant.API_SERVER_HOST_DEVICE + CommonConstant.SEARCH_PATH_QUERY + sb.toString());
+    logger.error("url ={}",url);
+    RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, url);
+    ResponseEntity<String> res = restTemplate.exchange(req, String.class);
+    long et = System.currentTimeMillis();
+
+    logger.error("restfultime = {},{},{}",st,et,et-st);
+
+    result.put("statusCode", res.getStatusCodeValue());
+    result.put("header", res.getHeaders());
+    result.put("body", res.getBody());
+
+    Gson gson = new Gson();
+    TypeToken<List<Map>> typeToken = new TypeToken<List<Map>>() {};
+    List<Map> collectionList = gson.fromJson(res.getBody(), typeToken.getType());
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    JSONArray jar = new JSONArray(res.getBody());
+    logger.error("senob ={}",jar.length());
+    for (int i = 0; i < jar.length(); i++) {
+      JSONObject ob = (JSONObject) jar.get(i);
+      JSONObject object = new JSONObject(ob.optString("dps"));
+      JSONObject senob = new JSONObject(ob.optString("tags"));
+
+      Iterator keys = object.keys();
+      List<Double> list = new ArrayList<>();
+      while (keys.hasNext()) {
+        String key = (String) keys.next();
+        list.add((Double) object.get(key));
+      }
+    }
+
+    assert collectionList != null;
+    st = System.currentTimeMillis();
+    for (Map map : collectionList) {
+      JSONObject jObj = getJsonStringFromMap(map);
+
+      Object ob = jObj.get("dps");
+      Object senOb = jObj.get("tags");
+
+      Map reMap = objectMapper.convertValue(ob, Map.class);
+      Map senMap = objectMapper.convertValue(senOb, Map.class);
+
+      String sensor = (String) senMap.get("sensor");
+
+      for (String key : (Iterable<String>) reMap.keySet()) {
+        switch (sensor) {
+          case "tm":
+            tmMap.put(key, (Double) reMap.get(key));
+            break;
+          case "pm25_raw":
+            pm25RawMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "pm10_raw":
+            pm10RawMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "temp":
+            tempMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "humi":
+            humiMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "co2":
+            co2Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "voc":
+            vocMap.put(key,F
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "noise":
+            noiseMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici":
+            ciciMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "pm10":
+            pm10Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "pm25":
+            pm25Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "pm01":
+            pm01Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "pm10_ratio":
+            pm10RatioMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "pm25_ratio":
+            pm25RatioMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "pm10_offset":
+            pm10OffsetMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "pm25_offset":
+            pm25OffsetMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "ciai":
+            ciaiMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "coai":
+            coaiMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "cici_pm10":
+            ciciPm10Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_pm25":
+            ciciPm25Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_co2":
+            ciciCo2Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_voc":
+            ciciVocMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_temp":
+            ciciTempMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_humi":
+            ciciHumiMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "cici_noise":
+            ciciNoiseMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "lux":
+            luxMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "uv":
+            uvMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "wbgt":
+            wbgtMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "co":
+            coMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "hcho":
+            hchoMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "o3":
+            o3Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "rn":
+            rnMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "no2":
+            no2Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "so2":
+            so2Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "accx":
+            accxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "accx_max":
+            accxMaxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "accy":
+            accyMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "accy_max":
+            accyMaxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "accz":
+            acczMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "accz_max":
+            acczMaxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
+          case "windd":
+            winddMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "windd_max":
+            winddMaxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "winds":
+            windsMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "winds_max":
+            windsMaxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "coci":
+            cociMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key) : (double) Math
+                            .round((Double) reMap.get(key)));
+            break;
+          case "coci_pm10":
+            cociPm10Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "coci_pm25":
+            cociPm25Map.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "coci_noise":
+            cociNoiseMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "coci_humi":
+            cociHumiMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "visitor":
+            visitorMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "rainfall":
+            rainfallMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "day_rainfall" :
+            dayRainfallMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+          case "atm":
+            atmMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 10)) / 10.0);
+            break;
+          case "rain":
+            rainMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "nh3":
+            nh3Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "h2s":
+            h2sMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
+            break;
+          case "gps_lat":
+            gpsLatMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
+            break;
+          case "gps_lon":
+            gpsLonMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
+            break;
+          case "no":
+            noMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
+            break;
+          case "nox":
+            noxMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
+            break;
+          case "tsp":
+            tspMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
+            break;
+
+
+          case "coci_temp":
+            cociTempMap.put(key,
+                    (standard.equals("sum")) ? (Double) reMap.get(key)
+                            : (double) Math.round((Double) reMap.get(key)));
+            break;
+          case "reg_date":
+            regDateMap.put(key, reMap.get(key).toString());
+            break;
+          case "power":
+            powerMap.put(key, reMap.get(key).toString());
+            break;
+          case "air_volume":
+            airVolumeMap.put(key, reMap.get(key).toString());
+            break;
+          case "filter_alarm":
+            filterAlarmMap.put(key, reMap.get(key).toString());
+            try {
+              String filterAlarm = String
+                      .valueOf(Math.round(Double.parseDouble(reMap.get(key).toString())));
+              if (filterAlarm.length() == 5) {
+                humErrorAlarmHexMap.put("humErrorHex",
+                        getHumErrorHexCodeParsingToString(filterAlarm, "hexCodeStr"));
+                humErrorAlarmKorMap
+                        .put("humErrorKor", getHumErrorHexCodeParsingToString(filterAlarm, "code"));
+              }
+
+            } catch (Exception e) {
+              logger.error("ERROR :: {}", e.getMessage());
+            }
+
+            break;
+          case "air_mode":
+            airModeMap.put(key, reMap.get(key).toString());
+            break;
+          case "auto_mode":
+            autoModeMap.put(key, reMap.get(key).toString());
+            break;
+          case "exh_mode":
+            exhModeMap.put(key, reMap.get(key).toString());
+            break;
+          case "cmd_w":
+            cmdWMap.put(key, reMap.get(key).toString());
+            break;
+          case "cmd_p":
+            cmdPMap.put(key, reMap.get(key).toString());
+            break;
+          case "cmd_m":
+            cmdMMap.put(key, reMap.get(key).toString());
+            break;
+          case "ai_mode_devices":
+            aiModeDevicesMap.put(key, reMap.get(key).toString());
+            break;
+          case "fire_alarm":
+            fireAlarmMap.put(key, reMap.get(key).toString());
+            break;
+          case "water_alarm":
+            waterAlarmMap.put(key, reMap.get(key).toString());
+            break;
+          case "dev_stat":
+            devStatMap.put(key, reMap.get(key).toString());
+            break;
+          case "hum_rtemp":
+            humRtempMap.put(key, reMap.get(key).toString());
+            break;
+          case "hum_rhumi":
+            humRhumiMap.put(key, reMap.get(key).toString());
+            break;
+          case "hum_otemp":
+            humOtempMap.put(key, reMap.get(key).toString());
+            break;
+          case "hum_ohumi":
+            humOhumiMap.put(key, reMap.get(key).toString());
+            break;
+          case "hum_co2":
+            humCo2Map.put(key, reMap.get(key).toString());
+            break;
+          case "hum_pm10":
+            humPm10Map.put(key, reMap.get(key).toString());
+            break;
+          case "hum_pm25":
+            humPm25Map.put(key, reMap.get(key).toString());
+            break;
+          case "watt":
+            wattMap.put(key, reMap.get(key).toString());
+            break;
+        }
+      }
+    }
+
+    et = System.currentTimeMillis();
+
+    logger.error("iterator = {},{},{}",st,et,et-st);
+
+    Iterator<String> keys2 = tmMap.keySet().iterator();
+
+    if (deviceType.equals("vent")) {
+      keys2 = regDateMap.keySet().iterator();
+    }
+
+    if (connect.equals("1")) {
+      keys2 = cmdWMap.keySet().iterator();
+    }
+
+    while (keys2.hasNext()) {
+      String key = keys2.next();
+      ResultCollectionHisVo vo = new ResultCollectionHisVo();
+
+      vo.setTimestamp(key);
+
+      long timestamp = Long.parseLong(key);
+      Date date = new java.util.Date(timestamp * 1000L);
+      SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+9"));
+      String formattedDate = sdf.format(date);
+
+      vo.setFormatTimestamp(formattedDate);
+
+      vo.setTm(tmMap.get(key));
+      vo.setPm25_raw(pm25RawMap.get(key));
+      vo.setPm10_raw(pm10RawMap.get(key));
+      vo.setTemp(tempMap.get(key));
+      vo.setHumi(humiMap.get(key));
+      vo.setCo2(co2Map.get(key));
+      vo.setVoc(vocMap.get(key));
+      vo.setNoise(noiseMap.get(key));
+      vo.setCici(ciciMap.get(key));
+      vo.setPm10(pm10Map.get(key));
+      vo.setPm25(pm25Map.get(key));
+      vo.setPm01(pm01Map.get(key));
+      vo.setPm10_ratio(pm10RatioMap.get(key));
+      vo.setPm25_ratio(pm25RatioMap.get(key));
+      vo.setPm10_offset(pm10OffsetMap.get(key));
+      vo.setPm25_offset(pm25OffsetMap.get(key));
+      vo.setCiai(ciaiMap.get(key));
+      vo.setCoai(coaiMap.get(key));
+      vo.setCici_pm10(ciciPm10Map.get(key));
+      vo.setCici_pm25(ciciPm25Map.get(key));
+      vo.setCici_co2(ciciCo2Map.get(key));
+      vo.setCici_voc(ciciVocMap.get(key));
+      vo.setCici_temp(ciciTempMap.get(key));
+      vo.setCici_humi(ciciHumiMap.get(key));
+      vo.setCici_noise(ciciNoiseMap.get(key));
+      vo.setLux(luxMap.get(key));
+      vo.setUv(uvMap.get(key));
+      vo.setWbgt(wbgtMap.get(key));
+      vo.setCo(coMap.get(key));
+      vo.setHcho(hchoMap.get(key));
+      vo.setO3(o3Map.get(key));
+      vo.setRn(rnMap.get(key));
+      vo.setNo2(no2Map.get(key));
+      vo.setSo2(so2Map.get(key));
+      vo.setAccx(accxMap.get(key));
+      vo.setAccx_max(accxMaxMap.get(key));
+      vo.setAccy(accyMap.get(key));
+      vo.setAccy_max(accyMaxMap.get(key));
+      vo.setAccz(acczMap.get(key));
+      vo.setAccz_max(acczMaxMap.get(key));
+      vo.setWindd(winddMap.get(key));
+      vo.setWindd_max(winddMaxMap.get(key));
+      vo.setWinds(windsMap.get(key));
+      vo.setWinds_max(windsMaxMap.get(key));
+      vo.setCoci(cociMap.get(key));
+      vo.setCoci_pm10(cociPm10Map.get(key));
+      vo.setCoci_pm25(cociPm25Map.get(key));
+      vo.setCoci_humi(cociHumiMap.get(key));
+      vo.setCoci_temp(cociTempMap.get(key));
+      vo.setCoci_noise(cociNoiseMap.get(key));
+      vo.setVisitor(visitorMap.get(key));
+      vo.setRainfall(rainfallMap.get(key));
+      vo.setDay_rainfall(dayRainfallMap.get(key));
+      vo.setAtm(atmMap.get(key));
+      vo.setRain(rainMap.get(key));
+      vo.setNh3(nh3Map.get(key));
+      vo.setH2s(h2sMap.get(key));
+      vo.setGps_lat(gpsLatMap.get(key));
+      vo.setGps_lon(gpsLonMap.get(key));
+      vo.setNo(noMap.get(key));
+      vo.setNox(noxMap.get(key));
+      vo.setTsp(tspMap.get(key));
+      vo.setReg_date(regDateMap.get(key));
+      vo.setPower(powerMap.get(key));
+      vo.setAir_volume(airVolumeMap.get(key));
+      vo.setFilter_alarm(filterAlarmMap.get(key));
+      vo.setAir_mode(airModeMap.get(key));
+      vo.setAuto_mode(autoModeMap.get(key));
+      vo.setExh_mode(exhModeMap.get(key));
+      vo.setCmd_w(cmdWMap.get(key));
+      vo.setCmd_p(cmdPMap.get(key));
+      vo.setCmd_m(cmdMMap.get(key));
+      vo.setAi_mode_devices(aiModeDevicesMap.get(key));
+      vo.setFire_alarm(fireAlarmMap.get(key));
+      vo.setWater_alarm(waterAlarmMap.get(key));
+      vo.setDev_stat(devStatMap.get(key));
+
+      vo.setHum_rtemp(humRtempMap.get(key));
+      vo.setHum_rhumi(humRhumiMap.get(key));
+      vo.setHum_otemp(humOtempMap.get(key));
+      vo.setHum_ohumi(humOhumiMap.get(key));
+      vo.setHum_co2(humCo2Map.get(key));
+      vo.setHum_pm10(humPm10Map.get(key));
+      vo.setHum_pm25(humPm25Map.get(key));
+      vo.setWatt(wattMap.get(key));
+      vo.setHum_err_hex(humErrorAlarmHexMap.get("humErrorHex"));
+      vo.setHum_err_kor(humErrorAlarmKorMap.get("humErrorKor"));
+
+      resCol.add(vo);
+    }
+
+    return resCol;
+  }
+*/
   public List<ResultCollectionHisVo> selectSensorHistoryDayMonth(String deviceType, String serial,
       String startTime,
       String endTime, String standard, String connect) throws Exception {
