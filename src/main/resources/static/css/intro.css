@@ -46,8 +46,9 @@ h1{
     text-align:center;
 }
 #login3 p{
-    text-align: left;
+    text-align: justify;
     width: 95%;
+    font-size : 18px;
     margin: 100px auto 0 auto;
 }
 .container:not(:last-child){
