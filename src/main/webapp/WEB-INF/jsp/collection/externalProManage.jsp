@@ -99,7 +99,7 @@ $(document).ready(function() {
         columnDefs : [{
             targets : 1,
             render : function (data){
-                return "<a href='"+data+"'>"+data+"</a>";
+                return "<a href='"+data+"' target='_blank'>"+data+"</a>";
             }
             }
         ]
