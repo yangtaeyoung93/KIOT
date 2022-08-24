@@ -230,7 +230,7 @@ public class Air365UserV3Service {
             }
 
           }catch (RedisConnectionFailureException e) {
-            //telegramMsg();
+            telegramMsg();
             throw new RedisConnectionFailureException("레디스 서버 접속오류.");
 
           } catch (Exception e) {

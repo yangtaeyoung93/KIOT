@@ -348,11 +348,11 @@ public class LoginController {
       }
 
     if (authCookieValue.equals("admin")) {
-      return "redirect:https://datacenter.kweather.co.kr/dashboard/receive";
+      return "redirect:/dashboard/receive";
     }
 
     if (authCookieValue.equals("group")) {
-      return "redirect:https://datacenter.kweather.co.kr/datacenter/list";
+      return "redirect:/datacenter/list";
     } else if (authCookieValue.equals("member")) {
       return "redirect:/datacenter/did";
     }
