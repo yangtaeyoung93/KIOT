@@ -192,6 +192,14 @@ public class CustomService {
         vo.setReceiveFlag(((Long.parseLong(resData.getService().getTimestamp()))
             + (5 * 60)) > (System.currentTimeMillis() / 1000));
         vo.setTimestamp(resData.getService().getTimestamp());
+        if(resData.getData().getGps_lat() != null){
+          vo.setLat(resData.getData().getGps_lat());
+        }
+
+        if(resData.getData().getGps_lon() != null){
+          vo.setLon(resData.getData().getGps_lon());
+        }
+
       }
 
       resCol.add(vo);
