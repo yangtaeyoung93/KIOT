@@ -30,12 +30,15 @@ h1{
 }
 .btnWrap button{
     width:30%;
-    font-size:18px;
+    font-size:16px;
+    margin-bottom:30px;
 }
 .btnWrap button:nth-child(1){
    float:left;
 }
-
+.ftBtn button{
+    margin-top:0;
+}
 .btnWrap button:nth-child(3){
    float:right;
 }
