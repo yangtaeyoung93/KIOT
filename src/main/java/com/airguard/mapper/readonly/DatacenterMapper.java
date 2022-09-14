@@ -1,7 +1,9 @@
 package com.airguard.mapper.readonly;
 
+import java.util.HashMap;
 import java.util.List;
 
+import com.airguard.model.system.PopupVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.airguard.model.datacenter.DatacenterConnectDto;
@@ -23,4 +25,7 @@ public interface DatacenterMapper {
   List<DeviceElements> selectDeviceModelElements(String serial);
 
   List<String> selectMemberDeviceSerialList(@Param("type") String type, @Param("userId") String userId);
+
+  PopupVO getPopUp();
+
 }

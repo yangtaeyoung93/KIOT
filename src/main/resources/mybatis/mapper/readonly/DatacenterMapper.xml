@@ -135,5 +135,24 @@
 				</if>
 			)
 		</where>
-	</select>	
+	</select>
+
+	<select id="getPopUp" resultType="PopupVO">
+		SELECT
+		ARTICLE_IDX AS articleIdx,
+		TITLE,
+		CONTENT,
+		CREATE_DT as createDt,
+		UPDATE_DT as updateDt,
+		START_DT as startDt,
+		END_DT as endDt,
+		USE_YN as useYn
+		FROM re_air365.TB_AIR365_ARTICLE taa
+		where taa.article_type = 'NO'
+		and taa.end_dt >= SYSDATE()
+		and taa.use_yn = 'Y'
+		order by taa.update_dt desc
+		limit 1
+	</select>
+
 </mapper>

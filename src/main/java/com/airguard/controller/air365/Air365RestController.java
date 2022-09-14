@@ -1,14 +1,15 @@
 package com.airguard.controller.air365;
 
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import com.airguard.model.system.PopupVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.airguard.service.datacenter.DatacenterService;
 import com.airguard.service.system.MemberDeviceService;
 import io.swagger.annotations.ApiOperation;
@@ -75,4 +76,12 @@ public class Air365RestController {
 
     return result;
   }
+
+  @GetMapping("/popup")
+  public HashMap<String,Object> getPopupService(HttpServletRequest request) throws Exception {
+    HashMap<String, Object> result = new HashMap<String, Object>();
+      result.put("result",service.getPopupService());
+    return result;
+  }
+
 }

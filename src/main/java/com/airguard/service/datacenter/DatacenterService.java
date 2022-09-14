@@ -1,12 +1,10 @@
 package com.airguard.service.datacenter;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.airguard.exception.SQLException;
+import com.airguard.model.system.PopupVO;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -450,4 +448,9 @@ public class DatacenterService {
     result.put("updateDt", updateDt);
     return result;
   }
+
+    public PopupVO getPopupService() {
+      return mapper.getPopUp();
+    }
+
 }
