@@ -138,7 +138,7 @@
 		TB_MEMBER_DEVICE_MANAGE AS TMDM
 		WHERE
 		TMDM.device_idx IS NOT NULL
-		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx})) A ) AA
+		AND device_idx in (select idx from TB_DEVICE td where td.device_type_idx = #{deviceTypeIdx}and td.use_yn = 'Y')) A ) AA
 		left outer JOIN (select tg.group_id,master_name,master_idx from TB_MASTER_GROUP_MANAGE tmgm
 		left outer join TB_GROUP tg
 		on tmgm.GROUP_IDX = tg.idx
