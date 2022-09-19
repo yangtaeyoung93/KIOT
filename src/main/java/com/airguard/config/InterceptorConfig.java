@@ -30,6 +30,7 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter {
         .excludePathPatterns("/system/push/message/**") // 파일 미리보기, 다운로드
         .excludePathPatterns("/system/member/device/ajax/fileDownload/**") // 파일 미리보기, 다운로드
         .excludePathPatterns("/system/member/device/fileAllUpload")
+        .excludePathPatterns("/system/group/**")
         .excludePathPatterns("/intro")
         .excludePathPatterns("/goPlatform")
         // API .

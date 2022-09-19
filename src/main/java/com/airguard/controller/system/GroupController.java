@@ -169,6 +169,30 @@ public class GroupController {
         return new ResponseEntity<>(reqBody, HttpStatus.OK);
     }
 
+
+    @ApiOperation(value = "그룹 계정 등록 API", tags = "시스템 관리 API")
+    @RequestMapping(value = "/getSet", method = RequestMethod.GET)
+    public void  groupset(HttpServletRequest req) throws Exception {
+        logger.info("tttt");
+        try {
+            Search search = new Search();
+            search.setSearchUseYn("Y");
+            List<Group> groupData = service.selectGroupList(search);
+            //String groupId = groupData.get(0).getGroupId();
+            //platformService.publisherPlatform2(groupId, "GROUP", true, "220.95.238.39");
+            //platformService.publisherPlatform3(groupId, "GROUP", true, "220.95.238.39");
+           // platformService.publisherPlatform2(groupId, "GROUP", false, "220.95.238.39");
+            for (int i = 0; i < groupData.size(); i++) {
+                String groupId = groupData.get(i).getGroupId();
+
+                platformService.publisherPlatform(groupId, "GROUP", true, "220.95.238.39");
+                platformService.publisherPlatform(groupId, "GROUP", false, "220.95.238.39");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @ApiOperation(value = "그룹 계정 수정 API", tags = "시스템 관리 API")
     @RequestMapping(value = "/put", method = RequestMethod.PUT)
     public ResponseEntity<Group> groupUpdate(HttpServletRequest req, @RequestBody Group reqBody) throws Exception {

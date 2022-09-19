@@ -199,8 +199,206 @@ public class PlatformService {
     return resObj;
   }
 
-  public int publisherPlatform(String id, String type, boolean clearFlag, String domain)
+  public int publisherPlatform2(String id, String type, boolean clearFlag, String domain)
       throws Exception {
+    int result = 0;
+
+    if (id == null || id.equals("null") || id.equals("")) {
+      return 1;
+    }
+
+    RestTemplate restTemplate = new RestTemplate();
+    URI url = URI.create(CommonConstant.API_SERVER_HOST_REDIS + CommonConstant.SEARCH_PATH_REDIS);
+    JSONObject jsonReq = new JSONObject();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", "*/*");
+    headers.add("Content-Type", "application/json;charset=UTF-8");
+
+    JSONArray datasetArr = new JSONArray();
+    JSONObject dataset = new JSONObject();
+    JSONObject serviceObj = new JSONObject();
+    JSONObject dataArrayData = new JSONObject();
+    JSONArray dataArray = new JSONArray();
+    JSONArray channelArray = new JSONArray();
+
+    serviceObj.put("id", CommonConstant.REDIS_PUB_ID);
+
+    channelArray.put(0, "ir-sensor-data-monitor/v1/groupmanager.put:ir-mon/groups/v1/update");
+    //dataArrayData.put("data", groupingFormat(id, type, clearFlag, domain).toString());
+    JSONObject keysObj = new JSONObject();
+    JSONObject iskp1Obj = new JSONObject();
+    JSONObject iske1Obj = new JSONObject();
+    JSONObject oskp1Obj = new JSONObject();
+    JSONObject oske1Obj = new JSONObject();
+    JSONObject osde1Obj = new JSONObject();
+    JSONObject vskp1Obj = new JSONObject();
+    JSONObject ickp1 = new JSONObject();
+    JSONObject icke1 = new JSONObject();
+    JSONObject ockp = new JSONObject();
+    JSONObject ocke = new JSONObject();
+    JSONObject ocd = new JSONObject();
+    JSONObject ivk = new JSONObject();
+    JSONObject ise = new JSONObject();
+    JSONObject ose = new JSONObject();
+    JSONObject osk = new JSONObject();
+
+    JSONObject obj = new JSONObject();
+    obj.put("all",true);
+    JSONObject ne = new JSONObject();
+    iske1Obj.put("kw-iske1",obj);
+    oske1Obj.put("kw-oske1",obj);
+    osde1Obj.put("kw-osde1", obj);
+    icke1.put("kw-icke1", obj);
+    ocke.put("kw-ocke1", obj);
+    ocd.put("kw-ocde1", obj);
+    vskp1Obj.put("kw-vskp1", obj);
+    ivk.put("kw-ivkp1", obj);
+    ise.put("kw-isep1", obj);
+    ose.put("kw-osep1", obj);
+
+
+    keysObj.put("kw-isk",iske1Obj);
+    keysObj.put("kw-osk",oske1Obj);
+    keysObj.put("kw-osd",osde1Obj);
+    keysObj.put("kw-ick",icke1);
+    keysObj.put("kw-ock",ocke);
+    keysObj.put("kw-ocd",ocd);
+    keysObj.put("kw-vsk",vskp1Obj);
+    keysObj.put("kw-ivk",ivk);
+    keysObj.put("kw-ise",ise);
+    keysObj.put("kw-ose",ose);
+
+    //dataArrayData.put("data", groupingFormat(id, type, clearFlag, domain).toString());
+    dataArrayData.put("data",keysObj);
+    dataArrayData.put("channel", channelArray);
+
+    dataArray.put(0, dataArrayData);
+
+    dataset.put("data", dataArray);
+    dataset.put("service", serviceObj);
+
+    datasetArr.put(0, dataset);
+
+    jsonReq.put("dataset", datasetArr);
+
+    HttpEntity<String> entity = new HttpEntity<>(jsonReq.toString(), headers);
+    logger.error("=================================================");
+    logger.error("*** Platform GROUP ==> Id :: {} SendData :: {} ***", id, jsonReq.toString());
+
+    ResponseEntity<String> responseMsg = restTemplate
+        .exchange(url, HttpMethod.POST, entity, String.class);
+    if (responseMsg.getStatusCode() == HttpStatus.ACCEPTED) {
+      result = 1;
+    }
+
+    logger.error("jsonReq ={}",jsonReq);
+
+    logger.error("*** Platform GROUP RESULT :: {}", result);
+    logger.error("=================================================");
+    return result;
+  }
+  public int publisherPlatform3(String id, String type, boolean clearFlag, String domain)
+          throws Exception {
+    int result = 0;
+
+    if (id == null || id.equals("null") || id.equals("")) {
+      return 1;
+    }
+
+    RestTemplate restTemplate = new RestTemplate();
+    URI url = URI.create(CommonConstant.API_SERVER_HOST_REDIS + CommonConstant.SEARCH_PATH_REDIS);
+    JSONObject jsonReq = new JSONObject();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", "*/*");
+    headers.add("Content-Type", "application/json;charset=UTF-8");
+
+    JSONArray datasetArr = new JSONArray();
+    JSONObject dataset = new JSONObject();
+    JSONObject serviceObj = new JSONObject();
+    JSONObject dataArrayData = new JSONObject();
+    JSONArray dataArray = new JSONArray();
+    JSONArray channelArray = new JSONArray();
+
+    serviceObj.put("id", CommonConstant.REDIS_SET_ID);
+
+    channelArray.put(0, "ir-sensor-data-monitor/v1/memstore:ir-mon/groups/v1/config");
+    //dataArrayData.put("data", groupingFormat(id, type, clearFlag, domain).toString());
+    JSONObject keysObj = new JSONObject();
+    JSONObject iskp1Obj = new JSONObject();
+    JSONObject iske1Obj = new JSONObject();
+    JSONObject oskp1Obj = new JSONObject();
+    JSONObject oske1Obj = new JSONObject();
+    JSONObject osde1Obj = new JSONObject();
+    JSONObject vskp1Obj = new JSONObject();
+    JSONObject ickp1 = new JSONObject();
+    JSONObject icke1 = new JSONObject();
+    JSONObject ockp = new JSONObject();
+    JSONObject ocke = new JSONObject();
+    JSONObject ocd = new JSONObject();
+    JSONObject ivk = new JSONObject();
+    JSONObject ise = new JSONObject();
+    JSONObject ose = new JSONObject();
+    JSONObject osk = new JSONObject();
+
+    JSONObject obj = new JSONObject();
+    obj.put("all",true);
+    JSONObject ne = new JSONObject();
+    iske1Obj.put("kw-iske1",obj);
+    oske1Obj.put("kw-oske1",obj);
+    osde1Obj.put("kw-osde1", obj);
+    icke1.put("kw-icke1", obj);
+    ocke.put("kw-ocke1", obj);
+    ocd.put("kw-ocde1", obj);
+    vskp1Obj.put("kw-vskp1", obj);
+    ivk.put("kw-ivkp1", obj);
+    ise.put("kw-isep1", obj);
+    ose.put("kw-osep1", obj);
+
+
+    keysObj.put("kw-isk",iske1Obj);
+    keysObj.put("kw-osk",oske1Obj);
+    keysObj.put("kw-osd",osde1Obj);
+    keysObj.put("kw-ick",icke1);
+    keysObj.put("kw-ock",ocke);
+    keysObj.put("kw-ocd",ocd);
+    keysObj.put("kw-vsk",vskp1Obj);
+    keysObj.put("kw-ivk",ivk);
+    keysObj.put("kw-ise",ise);
+    keysObj.put("kw-ose",ose);
+
+    //dataArrayData.put("data", groupingFormat(id, type, clearFlag, domain).toString());
+    dataArrayData.put("data",keysObj);
+    dataArrayData.put("channel", channelArray);
+
+    dataArray.put(0, dataArrayData);
+
+    dataset.put("data", dataArray);
+    dataset.put("service", serviceObj);
+
+    datasetArr.put(0, dataset);
+
+    jsonReq.put("dataset", datasetArr);
+
+    HttpEntity<String> entity = new HttpEntity<>(jsonReq.toString(), headers);
+    logger.error("=================================================");
+    logger.error("*** Platform GROUP ==> Id :: {} SendData :: {} ***", id, jsonReq.toString());
+
+    ResponseEntity<String> responseMsg = restTemplate
+            .exchange(url, HttpMethod.POST, entity, String.class);
+    if (responseMsg.getStatusCode() == HttpStatus.ACCEPTED) {
+      result = 1;
+    }
+
+    logger.error("jsonReq ={}",jsonReq);
+
+    logger.error("*** Platform GROUP RESULT :: {}", result);
+    logger.error("=================================================");
+    return result;
+  }
+  public int publisherPlatform(String id, String type, boolean clearFlag, String domain)
+          throws Exception {
     int result = 0;
 
     if (id == null || id.equals("null") || id.equals("")) {
@@ -241,17 +439,16 @@ public class PlatformService {
     logger.error("=================================================");
     logger.error("*** Platform GROUP ==> Id :: {} SendData :: {} ***", id, jsonReq.toString());
 
-    ResponseEntity<String> responseMsg = restTemplate
-        .exchange(url, HttpMethod.POST, entity, String.class);
+   /* ResponseEntity<String> responseMsg = restTemplate
+            .exchange(url, HttpMethod.POST, entity, String.class);
     if (responseMsg.getStatusCode() == HttpStatus.ACCEPTED) {
       result = 1;
-    }
+    }*/
 
     logger.error("*** Platform GROUP RESULT :: {}", result);
     logger.error("=================================================");
     return result;
   }
-
   public String timeStampToString(String timestamp){
     Date st = new Date(Integer.parseInt(timestamp)*1000L);
     SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

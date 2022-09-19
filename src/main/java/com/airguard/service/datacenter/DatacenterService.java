@@ -450,7 +450,15 @@ public class DatacenterService {
   }
 
     public PopupVO getPopupService() {
-      return mapper.getPopUp();
+      PopupVO popupVO = new PopupVO();
+      PopupVO popUp = mapper.getPopUp();
+      if (popUp == null) {
+        popupVO.setTitle("NA");
+        popupVO.setContent("NA");
+        popupVO.setArticleIdx("NA");
+        popupVO.setEndDt("NA");
+      }else popupVO = popUp;
+      return popupVO;
     }
 
 }
