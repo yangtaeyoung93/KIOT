@@ -925,7 +925,7 @@ public class Air365StationV3Service {
     LinkedHashMap<String, Object> ventDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> stationDataObj = new LinkedHashMap<String, Object>();
     SensorDataDto ventData, iaqData;
-
+    Map<String, Object> kesrOutInfo = new LinkedHashMap<>();
     Calendar calendar = Calendar.getInstance();
     Date date = calendar.getTime();
     String today = (new SimpleDateFormat("yyyyMMddHHmm").format(date));
@@ -946,6 +946,22 @@ public class Air365StationV3Service {
       stationDataObj.put("sg_nm",dfName.split(" ")[1]);
       stationDataObj.put("emd_nm",dfName.split(" ")[2]);
       stationDataObj.put("hang_cd",hangCd);
+
+      if(iaqInfo.get("oaq_lat") != null){
+        kesrOutInfo = appVentService.getKesrOutInfo(ventSerial);
+      }
+
+      stationDataObj.put("lat",kesrOutInfo.getOrDefault("lat","NA"));
+      stationDataObj.put("lon",kesrOutInfo.getOrDefault("lon","NA"));
+      stationDataObj.put("oaq",kesrOutInfo.getOrDefault("oaq","NA"));
+      stationDataObj.put("distance",kesrOutInfo.getOrDefault("distance","NA"));
+      stationDataObj.put("outsideType",kesrOutInfo.getOrDefault("outsideType","NA"));
+
+      String oaqSerial = kesrOutInfo.getOrDefault("oaq", "NA").toString();
+
+      if (!oaqSerial.equals("NA")) {
+        hangCd = readOnlyMapper.selectDcode(oaqSerial);
+      }
 
       Long currentDateTime = Long.parseLong(today);
       Long collectionDateTime = Long.parseLong(
@@ -1076,7 +1092,6 @@ public class Air365StationV3Service {
       JSONObject jObj = new JSONObject(res.getBody());
       JSONObject data = jObj.getJSONObject("data");
       String regionCode = data.getString("city_id");
-
       //동 날씨 데이터 pm10, pm25 구하기(동별미세먼지)
       HashMap<String,Object> valueMap = new HashMap<>();
       Map<String, Object> weatherData = new LinkedHashMap<>();
@@ -1205,6 +1220,7 @@ public class Air365StationV3Service {
     LinkedHashMap<String, Object> resDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> ventDataObj = new LinkedHashMap<String, Object>();
     LinkedHashMap<String, Object> stationDataObj = new LinkedHashMap<String, Object>();
+    Map<String, Object> kesrOutInfo = new LinkedHashMap<>();
     SensorDataDto ventData, iaqData;
 
     Calendar calendar = Calendar.getInstance();
@@ -1227,6 +1243,27 @@ public class Air365StationV3Service {
       stationDataObj.put("sg_nm",AES256Util.encrypt(dfName.split(" ")[1]));
       stationDataObj.put("emd_nm",AES256Util.encrypt(dfName.split(" ")[2]));
       stationDataObj.put("hang_cd",AES256Util.encrypt(hangCd));
+
+      if(iaqInfo.get("oaq_lat") != null){
+        kesrOutInfo = appVentService.getKesrOutInfo(ventSerial);
+      }
+
+      String oaqSerial = kesrOutInfo.getOrDefault("oaq", "NA").toString();
+
+      if (!oaqSerial.equals("NA")) {
+        hangCd = readOnlyMapper.selectDcode(oaqSerial);
+      }
+
+
+      stationDataObj.put("lat", AES256Util.encrypt(String.valueOf(kesrOutInfo.getOrDefault("lat", "NA"))));
+      stationDataObj.put("lon", AES256Util.encrypt(String.valueOf(kesrOutInfo.getOrDefault("lon", "NA"))));
+      stationDataObj.put("oaq", AES256Util.encrypt(String.valueOf(kesrOutInfo.getOrDefault("oaq", "NA"))));
+      stationDataObj.put("distance", AES256Util.encrypt(String.valueOf(kesrOutInfo.getOrDefault("distance", "NA"))));
+      stationDataObj.put("outsideType", AES256Util.encrypt(String.valueOf(kesrOutInfo.getOrDefault("outsideType", "NA"))));
+
+      if (!kesrOutInfo.getOrDefault("oaq", "NA").toString().equals("NA")) {
+
+      }
 
       Long currentDateTime = Long.parseLong(today);
       Long collectionDateTime = Long.parseLong(
@@ -1373,8 +1410,6 @@ public class Air365StationV3Service {
       Date eTime = new Date();
       Date sTime = dongFormat.parse(dongOutDateTime);
       long dongTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
-
-
 
       //동 날씨 데이터 humi, temp 구하기
       Map<String, Object> weatherParsingData = new LinkedHashMap<>();
