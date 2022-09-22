@@ -113,7 +113,7 @@ public class Air365PushRestController {
 
     return res;
   }
-
+  @ApiOperation(value = "필터알림 레디스 토큰정보 조회 ")
   @PostMapping(value = "/get/redis")
   public HashMap<String, List<String>> getFlagList(FilterVO filterVO){
     List<String> filterTokenList = new ArrayList<String>();
