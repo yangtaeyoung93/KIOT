@@ -9,6 +9,7 @@ import com.airguard.mapper.main.system.MemberDeviceMapper;
 import com.airguard.mapper.readonly.DatacenterMapper;
 import com.airguard.mapper.readonly.ReadOnlyMapper;
 import com.airguard.model.platform.SensorDataDto;
+import com.airguard.model.system.Device;
 import com.airguard.model.system.DeviceElements;
 import com.airguard.model.system.MemberDevice;
 import com.airguard.model.system.Vent;
@@ -933,7 +934,7 @@ public class Air365StationV3Service {
     try {
 
       String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
-
+      String ventModel = readOnlyMapper.selectDeviceModelByVentSerial(ventSerial);
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
       String hangCd = readOnlyMapper.selectDcode(iaqSerial);
@@ -947,18 +948,17 @@ public class Air365StationV3Service {
       stationDataObj.put("emd_nm",dfName.split(" ")[2]);
       stationDataObj.put("hang_cd",hangCd);
 
-      if(iaqInfo.get("oaq_lat") != null){
+      if(iaqInfo.get("oaq_lat") != null && ventModel.equals("KESR")){
         kesrOutInfo = appVentService.getKesrOutInfo(ventSerial);
       }
 
-      stationDataObj.put("lat",kesrOutInfo.getOrDefault("lat","NA"));
-      stationDataObj.put("lon",kesrOutInfo.getOrDefault("lon","NA"));
+      stationDataObj.put("lat",kesrOutInfo.getOrDefault("oaq_lat","NA"));
+      stationDataObj.put("lon",kesrOutInfo.getOrDefault("oaq_lon","NA"));
       stationDataObj.put("oaq",kesrOutInfo.getOrDefault("oaq","NA"));
       stationDataObj.put("distance",kesrOutInfo.getOrDefault("distance","NA"));
       stationDataObj.put("outsideType",kesrOutInfo.getOrDefault("outsideType","NA"));
 
       String oaqSerial = kesrOutInfo.getOrDefault("oaq", "NA").toString();
-
       if (!oaqSerial.equals("NA")) {
         hangCd = readOnlyMapper.selectDcode(oaqSerial);
       }
@@ -987,7 +987,7 @@ public class Air365StationV3Service {
 
 
       }
-      String ventModel = readOnlyMapper.selectDeviceModelByVentSerial(ventSerial);
+
 
       ventDataObj.put("receiveError", ventReceiveError);
       ventDataObj.put("dateTime", ventData.getReg_date() == null ? CommonConstant.NULL_DATA : ventData.getReg_date());
@@ -1083,7 +1083,7 @@ public class Air365StationV3Service {
       headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
       headers.add("auth", "a3dlYXRoZXItYXBwLWF1dGg=");
 
-
+      logger.info("hangCd ={}",hangCd);
       URI kwapiUrl = URI.create("https://kwapi.kweather.co.kr/v1/gis/geo/hangaddr?hangCd="+hangCd);
 
       RequestEntity<String> req = new RequestEntity<>(headers, HttpMethod.GET, kwapiUrl);
@@ -1230,7 +1230,7 @@ public class Air365StationV3Service {
     try {
 
       String iaqSerial = readOnlyMapper.ventForIaq(ventSerial);
-
+      String ventModel = readOnlyMapper.selectDeviceModelByVentSerial(ventSerial);
       ventData = appVentService.selectVentCollectionApi(ventSerial);
       iaqData = appVentService.selectIaqCollectionApi(iaqSerial);
       String hangCd = readOnlyMapper.selectDcode(iaqSerial);
@@ -1244,7 +1244,7 @@ public class Air365StationV3Service {
       stationDataObj.put("emd_nm",AES256Util.encrypt(dfName.split(" ")[2]));
       stationDataObj.put("hang_cd",AES256Util.encrypt(hangCd));
 
-      if(iaqInfo.get("oaq_lat") != null){
+      if(iaqInfo.get("oaq_lat") != null && ventModel.equals("KESR")){
         kesrOutInfo = appVentService.getKesrOutInfo(ventSerial);
       }
 
@@ -1292,7 +1292,6 @@ public class Air365StationV3Service {
                 new SimpleDateFormat("yyyyMMddHHmm").format(new Date(ventTs)), ventReceiveError);
       }
 
-      String ventModel = readOnlyMapper.selectDeviceModelByVentSerial(ventSerial);
       ventDataObj.put("receiveError", AES256Util.encrypt(String.valueOf(ventReceiveError)));
       ventDataObj.put("dateTime", AES256Util.encrypt(ventData.getReg_date() == null ? CommonConstant.NULL_DATA : ventData.getReg_date()));
       ventDataObj.put("ventModel",AES256Util.encrypt(ventModel));

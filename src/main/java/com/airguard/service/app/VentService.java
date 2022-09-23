@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
+import com.airguard.model.system.Device;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
@@ -316,6 +317,8 @@ public class VentService {
       result.put("lat",iaqInfo.getOrDefault("lat","NA"));
       result.put("lon",iaqInfo.getOrDefault("lon","NA"));
       result.put("oaq", iaqInfo.getOrDefault("related_device_serial", "NA"));
+      result.put("oaq_lat", iaqInfo.getOrDefault("oaq_lat", "NA"));
+      result.put("oaq_lon", iaqInfo.getOrDefault("oaq_lon", "NA"));
       if (!result.get("oaq").equals("NA")) {
         HashMap<String, Double> lat = DMSCalculationForDistance(
                 Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("degree").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("minutes").toString()), Double.parseDouble(getDmsByLatLon(iaqInfo.get("lat")).get("seconds").toString()),
