@@ -23,12 +23,13 @@ function initDataTableCustom() {
 		},
 		dom : '<"top"lfB>rt<"bottom"ip><"clear">',
         buttons : [ {
-        	extend : 'csv',
-        	charset : 'UTF-8',
+        	/*extend : 'csv',
+        	charset : 'MS949',
         	text : '엑셀 다운로드',
         	footer : false,
         	bom : true,
-        	filename : '측정요소_다운로드',
+        	filename : '측정요소_다운로드',*/
+        	text : '엑셀 다운로드',
         	className : 'btn-primary btn excelDownBtn'
         } ],
         destroy: true,
@@ -121,6 +122,16 @@ function initDataTableCustom() {
     });
     
     $(".dataTables_filter").hide();
+
+    $('.excelDownBtn').click(function(){
+
+        let url ='/system/device/elements/down';
+        let form = document.createElement("form");
+        form.setAttribute('method','get');
+        form.setAttribute('action',url);
+        document.body.appendChild(form);
+        form.submit();
+    });
     
 }
 
