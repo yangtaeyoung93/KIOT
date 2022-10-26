@@ -978,6 +978,7 @@ public class PlatformService {
       vo.setMasterName(collectionDto.getMasterName());
       vo.setStationName(collectionDto.getStationName());
       vo.setProductDt(collectionDto.getProductDt());
+      vo.setDeviceModel(collectionDto.getDeviceModel());
       if (!jObj.isNull(serial)) {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
 

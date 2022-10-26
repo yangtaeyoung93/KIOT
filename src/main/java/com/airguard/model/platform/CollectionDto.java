@@ -39,5 +39,5 @@ public class CollectionDto {
   private String westImage;
   private String southImage;
   private String northImage;
-
+  private String deviceModel;
 }

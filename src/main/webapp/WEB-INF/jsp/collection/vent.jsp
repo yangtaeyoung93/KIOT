@@ -55,6 +55,12 @@
                                         style="max-width:180px;height:38px;">
                                     <option value="">전체</option>
                                 </select>
+                            <label for="searchVent"> VENT 모델 </label>
+                            <select name="searchVent" id="searchVent"
+                                    class="select2 custom-select custom-select-sm form-control form-control-sm ml5 mr10"
+                                    style="max-width:180px;height:38px;">
+                                <option value="">전체</option>
+                            </select>
                         </div>
                             <div class="search_bottom mt10" style="max-width:900px;">
 

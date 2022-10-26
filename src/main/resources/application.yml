@@ -2,7 +2,7 @@ spring:
   application:
     name: 케이웨더, 데이터센터
   profiles:
-    active: prod
+    active: local
   boot:
     admin:
       client:

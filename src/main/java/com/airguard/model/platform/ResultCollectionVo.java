@@ -56,4 +56,5 @@ public class ResultCollectionVo {
   private String airMapYn;
   private List<PlatformVentDto> vents;
   private boolean receiveFlag;
+  private String deviceModel;
 }

@@ -29,9 +29,26 @@ function viewData2(serialNum, productDt, standard) {
   newWindow.focus();
 }
 
+function setVentModels(table) {
+  $("#searchVent .vent_model_item").remove();
+
+  var data = table.rows({filter: 'applied'}).data();
+
+  if (data.length > 0) {
+    var ventModles = $.unique(($.map(data, function (o) {
+      return o["deviceModel"];
+    })).sort());
+
+    $.each(ventModles, function (index, name) {
+      $("#searchVent").append("<option class='vent_model_item' value='" + name + "'>" + name + "</option>");
+    });
+  }
+}
+
 function initDataTableCustom() {
   let fontWeight = "";
   let searchGroupId = "";
+  let searchVentId = "";
   let searchMaster = document.getElementById('searchMaster');
   let masterIdx = searchMaster.value;
   const table = $('#ventTable').DataTable({
@@ -61,6 +78,7 @@ function initDataTableCustom() {
     },
     columns: [
       {orderable: false},
+      {data: "serial"},
       {data: "serial"},
       {data: "serial"},
       {data: "serial"},
@@ -457,9 +475,8 @@ function initDataTableCustom() {
       },
       {
         targets: 17,
-        visible: false,
         render: function (data, type, full, meta) {
-          return full.testYn;
+          return full.deviceModel;
         },
       },
       {
@@ -483,19 +500,28 @@ function initDataTableCustom() {
         },
       },
       {
-              targets: 20,
-              visible: false,
-              render: function (data, type, full, meta) {
-                return full.masterName;
-              },
+        targets: 20,
+        visible: false,
+        render: function (data, type, full, meta) {
+          return full.masterName;
+        },
+      },
+      {
+        targets: 21,
+        visible: false,
+        render: function (data, type, full, meta) {
+          return full.testYn;
+        },
       },
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
-        const js = settings.json.data;
+        const js = table.rows({filter:"applied"}).data();
         let reCnt = 0;
         let unReCnt = 0;
-        for (const idx in js) {
+
+
+        for (let idx = 0; idx < js.length; idx++) {
           if ($('#searchGroup').val() != "") { //선택한 그룹이 있는 경우
                 if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId) reCnt++;
                 else if (  !js[idx].receiveFlag &&  "g_" + js[idx].groupId == searchGroupId) unReCnt++;
@@ -510,7 +536,7 @@ function initDataTableCustom() {
           }
         }
 
-let groupSelect = document.querySelector("#searchGroup");
+        let groupSelect = document.querySelector("#searchGroup");
         var txtGroupId;
         if($('#searchMaster').val() != "" && $('#searchGroup').val() == ""){
             txtGroupId = $('#searchMaster option:selected').text();
@@ -547,7 +573,17 @@ let groupSelect = document.querySelector("#searchGroup");
             unreceivePercentage +
             "%)"
         );      }
-    }
+    },
+    initComplete: function (settings, data) {
+      console.log(data);
+      setVentModels(table);
+
+      $("#searchVent").on("change", function() {
+        searchVentId = $("option:selected", this).attr("value");
+        console.log(searchVentId);
+        table.column(17).search(searchVentId).draw();
+      });
+    },
   });
 
   $('.search_bottom input').unbind().bind('keyup', function () {
@@ -594,7 +630,8 @@ let groupSelect = document.querySelector("#searchGroup");
     getGroupList(masterIdx);
     table.column(20).search(searchMasterId).draw();
     table.column(19).search("").draw();
-
+    table.column(17).search("").draw();
+    setVentModels(table);
   });
 
   $("#searchGroup").change(function () {
@@ -604,8 +641,10 @@ let groupSelect = document.querySelector("#searchGroup");
       $(item).removeClass("filter-cli");
     }).first().addClass("filter-cli");
 
+    table.column(17).search("").draw();
     table.column(18).search(searchGroupId).draw();
     table.column(19).search("").draw();
+    setVentModels(table);
   });
 
   $('#searchTestYn').click(function () {
