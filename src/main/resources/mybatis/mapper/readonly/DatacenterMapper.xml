@@ -64,6 +64,7 @@
 			TB_MEMBER_DEVICE_MANAGE AS TMDM
 		WHERE 
 			TMDM.member_idx = (SELECT TM.idx FROM TB_MEMBER AS TM WHERE TM.user_id=#{userId} AND TMDM.device_idx IS NOT NULL)
+		ORDER BY  PRODUCT_DT,DEVICE_IDX
 	</select>
 
 	<select id="selectUserVentDevice" parameterType="String" resultType="DatacenterConnectDto">
