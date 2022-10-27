@@ -476,7 +476,8 @@ function initDataTableCustom() {
       {
         targets: 17,
         render: function (data, type, full, meta) {
-          return full.deviceModel;
+          return "<span style='font-weight:" + fontWeight + "; '>"
+              + full.deviceModel + "</span>";
         },
       },
       {
@@ -516,22 +517,26 @@ function initDataTableCustom() {
     ],
     drawCallback: function (settings) {
       if (settings.json != null) {
-        const js = table.rows({filter:"applied"}).data();
+        const js = settings.json.data;
         let reCnt = 0;
         let unReCnt = 0;
 
+        const matchVent = function(data) {
+          const ventModel = $('#searchVent > option:selected').val();
+          return ventModel == "" || (ventModel != "" && ventModel == data.deviceModel);
+        }
 
         for (let idx = 0; idx < js.length; idx++) {
           if ($('#searchGroup').val() != "") { //선택한 그룹이 있는 경우
-                if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId) reCnt++;
-                else if (  !js[idx].receiveFlag &&  "g_" + js[idx].groupId == searchGroupId) unReCnt++;
+                if (js[idx].receiveFlag && "g_" + js[idx].groupId == searchGroupId && matchVent(js[idx])) reCnt++;
+                else if (  !js[idx].receiveFlag &&  "g_" + js[idx].groupId == searchGroupId && matchVent(js[idx])) unReCnt++;
           }else { //선택한 그룹이 없는 경우
                 if($('#searchMaster').val() != ""){ //선택한 상위그룹이 있는 경우
-                    if(js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()){ reCnt++;}
-                    else if (!js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val()) unReCnt++;
+                    if(js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val() && matchVent(js[idx])){ reCnt++;}
+                    else if (!js[idx].receiveFlag && js[idx].masterIdx == $('#searchMaster').val() && matchVent(js[idx])) unReCnt++;
                 }else{
-                    if (js[idx].receiveFlag) reCnt++;
-                    else if (!js[idx].receiveFlag) unReCnt++;
+                    if (js[idx].receiveFlag && matchVent(js[idx])) reCnt++;
+                    else if (!js[idx].receiveFlag && matchVent(js[idx])) unReCnt++;
                 }
           }
         }
@@ -617,6 +622,7 @@ function initDataTableCustom() {
 
   $("#searchMaster").change(function () {
     $('#searchGroup').val('');
+    $('#searchVent').val('');
     table.column(18).search("").draw();
     table.column(19).search("").draw();
     const masterIdx = $('#searchMaster').val();
@@ -635,6 +641,7 @@ function initDataTableCustom() {
   });
 
   $("#searchGroup").change(function () {
+    $('#searchVent').val('');
     searchGroupId = "g_" + this.value;
     if(this.value == "") searchGroupId = "";
     $(".filterDiv").each(function (index, item) {

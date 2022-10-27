@@ -11,6 +11,9 @@
         color: white;
         border-radius: 5px;
     }
+    #ventTable {
+        font-size: 11px;
+    }
 .content-wrapper{
     width:1655px;
 }
@@ -115,6 +118,7 @@
                                 <th class="bgGray1">화재 경보</th>
                                 <th class="bgGray1">수위 경보</th>
                                 <th class="bgGray1">장비 상태</th>
+                                <th class="bgGray1">VENT</th>
                                 <th class="bgGray1"></th>
                             </tr>
                             </thead>
