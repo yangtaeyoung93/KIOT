@@ -151,10 +151,46 @@ public class BiotService {
             : Integer.parseInt(resData.getData().getNoise()));
         oaqMap.put("coci", resData.getData().getCoci() == null ? null
             : Integer.parseInt(resData.getData().getCoci()));
+        oaqMap.put("windd", resData.getData().getWindd() == null ? null
+                : Double.parseDouble(resData.getData().getWindd()));
+        oaqMap.put("windd_max", resData.getData().getWindd_max() == null ? null
+                : Double.parseDouble(resData.getData().getWindd_max()));
+        oaqMap.put("winds", resData.getData().getWinds() == null ? null
+                : Double.parseDouble(resData.getData().getWinds()));
+        oaqMap.put("winds_max", resData.getData().getWinds_max() == null ? null
+                : Double.parseDouble(resData.getData().getWinds_max()));
+        oaqMap.put("lux", resData.getData().getLux() == null ? null
+                : Integer.parseInt(resData.getData().getLux()));
+        oaqMap.put("uv", resData.getData().getUv() == null ? null
+                : Double.parseDouble(resData.getData().getUv()));
+        oaqMap.put("accx", resData.getData().getAccx() == null ? null
+                : Double.parseDouble(resData.getData().getAccx()));
+        oaqMap.put("accx_max", resData.getData().getAccx_max() == null ? null
+                : Double.parseDouble(resData.getData().getAccx_max()));
+        oaqMap.put("accy", resData.getData().getAccy() == null ? null
+                : Double.parseDouble(resData.getData().getAccy()));
+        oaqMap.put("accy_max", resData.getData().getAccy_max() == null ? null
+                : Double.parseDouble(resData.getData().getAccy_max()));
+        oaqMap.put("accz", resData.getData().getAccz() == null ? null
+                : Double.parseDouble(resData.getData().getAccz()));
+        oaqMap.put("accz_max", resData.getData().getAccz_max() == null ? null
+                : Double.parseDouble(resData.getData().getAccz_max()));
+        oaqMap.put("wbgt", resData.getData().getWbgt() == null ? null
+                : Double.parseDouble(resData.getData().getWbgt()));
+        oaqMap.put("co", resData.getData().getCo() == null ? null
+                : Integer.parseInt(resData.getData().getCo()));
+        oaqMap.put("o3", resData.getData().getO3() == null ? null
+                : Double.parseDouble(resData.getData().getO3()));
+        oaqMap.put("so2", resData.getData().getSo2() == null ? null
+                : Integer.parseInt(resData.getData().getSo2()));
+        oaqMap.put("h2s", resData.getData().getH2s() == null ? null
+                : Integer.parseInt(resData.getData().getH2s()));
+        oaqMap.put("o2", resData.getData().getO2() == null ? null
+                : Double.parseDouble(resData.getData().getO2()));
 
-        /*
+       /* *//*
          * 산림복지진흥원 요청 데이터
-         * */
+         * *//*
         if (resData.getData().getWindd() != null) {
           oaqMap.put("wd", resData.getData().getWindd());
         }
@@ -169,7 +205,7 @@ public class BiotService {
         }
         if (resData.getData().getWbgt() != null) {
           oaqMap.put("wbgt", resData.getData().getWbgt());
-        }
+        }*/
 
         oaqList.add(oaqMap);
       }

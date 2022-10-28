@@ -52,6 +52,7 @@ public class SensorDataDto {
   private String rn;
   private String no2;
   private String so2;
+  private String o2;
 
   private String accx;
   private String accx_max;
