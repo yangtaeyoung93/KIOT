@@ -134,6 +134,7 @@ public class BiotService {
       String serial = device.get("serial_num");
       String stationName = device.get("station_name");
 
+
       if (!jObj.isNull(serial)) {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
         oaqMap.put("serial_no", serial);
