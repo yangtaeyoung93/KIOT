@@ -128,69 +128,69 @@ public class BiotService {
 
     JSONObject jObj = new JSONObject(res.getBody());
 
-    for (HashMap<String, String> device : deviceList) {
-      Map<String, Object> oaqMap = new LinkedHashMap<>();
-      Gson gson = new Gson();
-      String serial = device.get("serial_num");
-      String stationName = device.get("station_name");
+  for (HashMap<String, String> device : deviceList) {
+    Map<String, Object> oaqMap = new LinkedHashMap<>();
+    Gson gson = new Gson();
+    String serial = device.get("serial_num");
+    String stationName = device.get("station_name");
 
-      if (!jObj.isNull(serial)) {
-        PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
-        oaqMap.put("serial_no", serial);
-        oaqMap.put("station_name", stationName);
-        oaqMap.put("date", resData.getData().getTm());
-        oaqMap.put("temp", resData.getData().getTemp() == null ? null
-            : Double.parseDouble(resData.getData().getTemp()));
-        oaqMap.put("humi", resData.getData().getHumi() == null ? null
-            : Integer.parseInt(resData.getData().getHumi()));
-        oaqMap.put("pm10", resData.getData().getPm10() == null ? null
-            : Integer.parseInt(resData.getData().getPm10()));
-        oaqMap.put("pm25", resData.getData().getPm25() == null ? null
-            : Integer.parseInt(resData.getData().getPm25()));
-        oaqMap.put("noise", resData.getData().getNoise() == null ? null
-            : Integer.parseInt(resData.getData().getNoise()));
-        oaqMap.put("coci", resData.getData().getCoci() == null ? null
-            : Integer.parseInt(resData.getData().getCoci()));
-        oaqMap.put("windd", resData.getData().getWindd() == null ? null
-                : Double.parseDouble(resData.getData().getWindd()));
-        oaqMap.put("windd_max", resData.getData().getWindd_max() == null ? null
-                : Double.parseDouble(resData.getData().getWindd_max()));
-        oaqMap.put("winds", resData.getData().getWinds() == null ? null
-                : Double.parseDouble(resData.getData().getWinds()));
-        oaqMap.put("winds_max", resData.getData().getWinds_max() == null ? null
-                : Double.parseDouble(resData.getData().getWinds_max()));
-        oaqMap.put("lux", resData.getData().getLux() == null ? null
-                : Integer.parseInt(resData.getData().getLux()));
-        oaqMap.put("uv", resData.getData().getUv() == null ? null
-                : Double.parseDouble(resData.getData().getUv()));
-        oaqMap.put("accx", resData.getData().getAccx() == null ? null
-                : Double.parseDouble(resData.getData().getAccx()));
-        oaqMap.put("accx_max", resData.getData().getAccx_max() == null ? null
-                : Double.parseDouble(resData.getData().getAccx_max()));
-        oaqMap.put("accy", resData.getData().getAccy() == null ? null
-                : Double.parseDouble(resData.getData().getAccy()));
-        oaqMap.put("accy_max", resData.getData().getAccy_max() == null ? null
-                : Double.parseDouble(resData.getData().getAccy_max()));
-        oaqMap.put("accz", resData.getData().getAccz() == null ? null
-                : Double.parseDouble(resData.getData().getAccz()));
-        oaqMap.put("accz_max", resData.getData().getAccz_max() == null ? null
-                : Double.parseDouble(resData.getData().getAccz_max()));
-        oaqMap.put("wbgt", resData.getData().getWbgt() == null ? null
-                : Double.parseDouble(resData.getData().getWbgt()));
-        oaqMap.put("co", resData.getData().getCo() == null ? null
-                : Integer.parseInt(resData.getData().getCo()));
-        oaqMap.put("o3", resData.getData().getO3() == null ? null
-                : Double.parseDouble(resData.getData().getO3()));
-        oaqMap.put("so2", resData.getData().getSo2() == null ? null
-                : Integer.parseInt(resData.getData().getSo2()));
-        oaqMap.put("h2s", resData.getData().getH2s() == null ? null
-                : Integer.parseInt(resData.getData().getH2s()));
-        oaqMap.put("o2", resData.getData().getO2() == null ? null
-                : Double.parseDouble(resData.getData().getO2()));
+    if (!jObj.isNull(serial)) {
+      PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);
+      oaqMap.put("serial_no", serial);
+      oaqMap.put("station_name", stationName);
+      oaqMap.put("date", resData.getData().getTm());
+      oaqMap.put("temp", resData.getData().getTemp() == null ? null
+              : Double.parseDouble(resData.getData().getTemp()));
+      oaqMap.put("humi", resData.getData().getHumi() == null ? null
+              : Integer.parseInt(resData.getData().getHumi()));
+      oaqMap.put("pm10", resData.getData().getPm10() == null ? null
+              : Integer.parseInt(resData.getData().getPm10()));
+      oaqMap.put("pm25", resData.getData().getPm25() == null ? null
+              : Integer.parseInt(resData.getData().getPm25()));
+      oaqMap.put("noise", resData.getData().getNoise() == null ? null
+              : Integer.parseInt(resData.getData().getNoise()));
+      oaqMap.put("coci", resData.getData().getCoci() == null ? null
+              : Integer.parseInt(resData.getData().getCoci()));
+      oaqMap.put("windd", resData.getData().getWindd() == null ? null
+              : Double.parseDouble(resData.getData().getWindd()));
+      oaqMap.put("windd_max", resData.getData().getWindd_max() == null ? null
+              : Double.parseDouble(resData.getData().getWindd_max()));
+      oaqMap.put("winds", resData.getData().getWinds() == null ? null
+              : Double.parseDouble(resData.getData().getWinds()));
+      oaqMap.put("winds_max", resData.getData().getWinds_max() == null ? null
+              : Double.parseDouble(resData.getData().getWinds_max()));
+      oaqMap.put("lux", resData.getData().getLux() == null ? null
+              : Integer.parseInt(resData.getData().getLux()));
+      oaqMap.put("uv", resData.getData().getUv() == null ? null
+              : Double.parseDouble(resData.getData().getUv()));
+      oaqMap.put("accx", resData.getData().getAccx() == null ? null
+              : Double.parseDouble(resData.getData().getAccx()));
+      oaqMap.put("accx_max", resData.getData().getAccx_max() == null ? null
+              : Double.parseDouble(resData.getData().getAccx_max()));
+      oaqMap.put("accy", resData.getData().getAccy() == null ? null
+              : Double.parseDouble(resData.getData().getAccy()));
+      oaqMap.put("accy_max", resData.getData().getAccy_max() == null ? null
+              : Double.parseDouble(resData.getData().getAccy_max()));
+      oaqMap.put("accz", resData.getData().getAccz() == null ? null
+              : Double.parseDouble(resData.getData().getAccz()));
+      oaqMap.put("accz_max", resData.getData().getAccz_max() == null ? null
+              : Double.parseDouble(resData.getData().getAccz_max()));
+      oaqMap.put("wbgt", resData.getData().getWbgt() == null ? null
+              : Double.parseDouble(resData.getData().getWbgt()));
+      oaqMap.put("co", resData.getData().getCo() == null ? null
+              : Double.parseDouble(resData.getData().getCo()));
+      oaqMap.put("o3", resData.getData().getO3() == null ? null
+              : Double.parseDouble(resData.getData().getO3()));
+      oaqMap.put("so2", resData.getData().getSo2() == null ? null
+              : Double.parseDouble(resData.getData().getSo2()));
+      oaqMap.put("h2s", resData.getData().getH2s() == null ? null
+              : Double.parseDouble(resData.getData().getH2s()));
+      oaqMap.put("o2", resData.getData().getO2() == null ? null
+              : Double.parseDouble(resData.getData().getO2()));
 
-       /* *//*
-         * 산림복지진흥원 요청 데이터
-         * *//*
+      /* *//*
+       * 산림복지진흥원 요청 데이터
+       * *//*
         if (resData.getData().getWindd() != null) {
           oaqMap.put("wd", resData.getData().getWindd());
         }
@@ -207,9 +207,10 @@ public class BiotService {
           oaqMap.put("wbgt", resData.getData().getWbgt());
         }*/
 
-        oaqList.add(oaqMap);
-      }
+      oaqList.add(oaqMap);
     }
+  }
+
 
     resMap.put("result", 1L);
     resMap.put("group_id", id);
