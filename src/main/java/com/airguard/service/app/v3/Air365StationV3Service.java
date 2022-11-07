@@ -1144,6 +1144,7 @@ public class Air365StationV3Service {
       String outsideType = kesrOutInfo.getOrDefault("outsideType", "NA").toString();
       if(outsideType.equals("1")){
         Map<String, Object> oaq = getSerialToPlatFormData("OAQ", oaqSerial);
+
         for (String weatherElement : weatherElements){
           elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
           int elIndex;
@@ -1215,6 +1216,7 @@ public class Air365StationV3Service {
           elementInfo.put("index", (elIndex == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(elIndex)));
           outElements.add(elementInfo);
         }
+        stationDataObj.put("outDateTime", !oaq.containsKey("cusTm") ? "NA" : oaq.get("cusTm").toString());
       }else{
 
         for(String weatherElement : weatherElements){
@@ -1262,6 +1264,7 @@ public class Air365StationV3Service {
           elementInfo.put("index", (grade == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(grade)));
           outElements.add(elementInfo);
         }
+        stationDataObj.put("outDateTime",dongOutDateTime);
       }
 
 
@@ -1269,7 +1272,7 @@ public class Air365StationV3Service {
       ventDataObj.put("waterAlarm", ventData.getWater_alarm() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getWater_alarm()));
       ventDataObj.put("devStat", ventData.getDev_stat() == null ? CommonConstant.NULL_DATA : Integer.valueOf(ventData.getDev_stat()));
 
-      stationDataObj.put("outDateTime",dongOutDateTime);
+
       stationDataObj.put("airReceiveError",dongTimeGap >= 30 ? true : false);
       stationDataObj.put("weatherReceiveError",weatherTimeGap >= 120 ? true : false);
       stationDataObj.put("outElements",outElements);
