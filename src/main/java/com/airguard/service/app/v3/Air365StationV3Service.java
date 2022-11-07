@@ -1136,54 +1136,132 @@ public class Air365StationV3Service {
       sTime = weatherFormat.parse(weatherDateTime);
       long weatherTimeGap= (eTime.getTime() - sTime.getTime()) / 1000 / 60;
 
-
+      String ci =  "coci";
 
       String[] weatherElements = {"pm10", "pm25","temp","humi"};
       List<HashMap<String,Object>> outElements = new ArrayList<>();
-      for(String weatherElement : weatherElements){
-        HashMap<String,Object> elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
-        elementInfo.put("value",valueMap.get(weatherElement));
+      HashMap<String,Object> elementInfo = null;
+      String outsideType = kesrOutInfo.getOrDefault("outsideType", "NA").toString();
+      if(outsideType.equals("1")){
+        Map<String, Object> oaq = getSerialToPlatFormData("OAQ", oaqSerial);
+        for (String weatherElement : weatherElements){
+          elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
+          int elIndex;
+          int elIndexOld;
 
-        // value로 score 구하기
-        int score = weatherElement.equals("temp") || weatherElement.equals("humi") ? -999 : KweatherElemeniUtil.elementCiCalculator(Integer.valueOf(valueMap.get(weatherElement).toString()),weatherElement);
-        elementInfo.put("score",score != -999 ? score : "NA");
+          Object elData;
+          Object tempElData;
 
-        // value로 grade 구하기
-        int grade = 0;
-        if ("temp".equals(weatherElement) || "humi".equals(weatherElement)){
-          grade = KweatherElementMessageManageUtil.elementLevel("", weatherElement, Double.parseDouble(
-                  valueMap.get(weatherElement).toString()));
-        } else{
-          grade = KweatherElementMessageManageUtil.elementLevel(Double.valueOf(score));
+          int ciValue = -999;
+
+          elData = (!oaq.containsKey(weatherElement) ? null :
+                  Integer.valueOf(String.valueOf(Math.round(Double.parseDouble(oaq.get(weatherElement).toString())))));
+
+          tempElData = (!oaq.containsKey(weatherElement) ? null :
+                  Math.round(Double.parseDouble(oaq.get(weatherElement).toString()) * 10) / 10.0);
+
+          if (elData != null && weatherElement.equals("pm25") || weatherElement.equals("pm10")){
+            ciValue = KweatherElemeniUtil.elementCiCalculator(
+                    Integer.valueOf((int) Math.round(Double.valueOf(elData.toString()))), weatherElement);
+          }
+
+          if ("temp".equals(weatherElement) || "humi".equals(weatherElement)) {
+            elIndex = !oaq.containsKey(ci.concat("_").concat(weatherElement)) ? 0
+                    : KweatherElementMessageManageUtil.elementLevel("", weatherElement, Double.parseDouble(
+                    oaq.get(weatherElement).toString()));
+
+          } else {
+            if (ciValue != -999) {
+              elIndex = KweatherElementMessageManageUtil.elementLevel(Double.valueOf(ciValue));
+
+            } else {
+              elIndex = !oaq.containsKey(ci.concat("_").concat(weatherElement)) ? 0
+                      : KweatherElementMessageManageUtil.elementLevel(Double.parseDouble(
+                      oaq.get(ci.concat("_").concat(weatherElement)).toString()));
+            }
+          }
+          elementInfo.put("value", !oaq.containsKey(weatherElement) ? "NA" : (!"temp".equals(weatherElement) ? elData : tempElData));
+          elementInfo.put("score", oaq.containsKey(ci.concat("_").concat(weatherElement)) ?
+                  Math.round(Double.parseDouble(oaq.get(ci.concat("_").concat(weatherElement)).toString()))
+                  : (ciValue != -999 ? ciValue : "NA"));
+
+          elementInfo.put("grade", (elIndex == 0) ? "NA" : elIndex);
+
+          switch (elIndex) {
+            case 3:
+              elIndexOld = 3;
+              break;
+            case 4:
+              elIndexOld = 3;
+              break;
+            case 5:
+              elIndexOld = 4;
+              break;
+            case 6:
+              elIndexOld = 4;
+              break;
+            default:
+              elIndexOld = elIndex;
+              break;
+          }
+
+          if ("temp".equals(weatherElement) || "humi".equals(weatherElement)) {
+            elementInfo.put("grade4", (elIndexOld == 0) ? "NA" : elIndexOld);
+
+          } else {
+            elementInfo.put("grade4", (elIndex == 0) ? "NA" : elIndex);
+          }
+
+          elementInfo.put("index", (elIndex == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(elIndex)));
+          outElements.add(elementInfo);
         }
-        elementInfo.put("grade",grade);
+      }else{
 
-        int grade4;
-        switch (grade) {
-          case 3:
-            grade4 = 3;
-            break;
-          case 4:
-            grade4 = 3;
-            break;
-          case 5:
-            grade4 = 4;
-            break;
-          case 6:
-            grade4 = 4;
-            break;
-          default:
-            grade4 = grade;
-            break;
-        }
-        if ("temp".equals(weatherElement) || "humi".equals(weatherElement)) {
-          elementInfo.put("grade4", (grade4 == 0) ? "NA" : grade4);
-        } else {
-          elementInfo.put("grade4", (grade4 == 0) ? "NA" : grade);
-        }
+        for(String weatherElement : weatherElements){
+          elementInfo = readOnlyMapper.selectElementInfo(weatherElement);
+          elementInfo.put("value",valueMap.get(weatherElement));
 
-        elementInfo.put("index", (grade == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(grade)));
-        outElements.add(elementInfo);
+          // value로 score 구하기
+          int score = weatherElement.equals("temp") || weatherElement.equals("humi") ? -999 : KweatherElemeniUtil.elementCiCalculator(Integer.valueOf(valueMap.get(weatherElement).toString()),weatherElement);
+          elementInfo.put("score",score != -999 ? score : "NA");
+
+          // value로 grade 구하기
+          int grade = 0;
+          if ("temp".equals(weatherElement) || "humi".equals(weatherElement)){
+            grade = KweatherElementMessageManageUtil.elementLevel("", weatherElement, Double.parseDouble(
+                    valueMap.get(weatherElement).toString()));
+          } else{
+            grade = KweatherElementMessageManageUtil.elementLevel(Double.valueOf(score));
+          }
+          elementInfo.put("grade",grade);
+
+          int grade4;
+          switch (grade) {
+            case 3:
+              grade4 = 3;
+              break;
+            case 4:
+              grade4 = 3;
+              break;
+            case 5:
+              grade4 = 4;
+              break;
+            case 6:
+              grade4 = 4;
+              break;
+            default:
+              grade4 = grade;
+              break;
+          }
+          if ("temp".equals(weatherElement) || "humi".equals(weatherElement)) {
+            elementInfo.put("grade4", (grade4 == 0) ? "NA" : grade4);
+          } else {
+            elementInfo.put("grade4", (grade4 == 0) ? "NA" : grade);
+          }
+
+          elementInfo.put("index", (grade == 0) ? "NA" : KweatherElementMessageManageUtil.setElementLevelKorName(weatherElement, String.valueOf(grade)));
+          outElements.add(elementInfo);
+        }
       }
 
 
