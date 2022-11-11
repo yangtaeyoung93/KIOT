@@ -1014,24 +1014,23 @@
   </select>
 
   <select id="selectMemberDeviceListAi365" resultType="HashMap">
-    SELECT TMDM.station_name                                                          AS stationName,
-           TMDM.member_idx                                                            AS memberIdx,
-           TMDM.device_idx                                                            AS deviceIdx,
-           (SELECT TM.user_id FROM TB_MEMBER AS TM WHERE TM.idx = TMDM.member_idx)    AS memberId,
-           (SELECT (SELECT TG.group_id FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx)
-            FROM TB_GROUP_MEMBER_MANAGE AS TGMM
-            WHERE TGMM.member_idx = TMDM.member_idx)                                  AS groupId,
-           (SELECT (SELECT TG.group_name FROM TB_GROUP AS TG WHERE TG.idx = TGMM.group_idx)
-            FROM TB_GROUP_MEMBER_MANAGE AS TGMM
-            WHERE TGMM.member_idx = TMDM.member_idx)                                  AS groupName,
-           (SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TD.idx = TMDM.device_idx) AS serialNum,
-           (SELECT (SELECT TDT.device_type
-                    FROM TB_DEVICE_TYPE AS TDT
-                    WHERE TDT.idx = TD.device_type_idx)
-            FROM TB_DEVICE AS TD
-            WHERE TD.idx = TMDM.device_idx)                                           AS deviceType
+    SELECT
+      TMDM.station_name AS stationName,
+      TMDM.member_idx AS memberIdx,
+      TMDM.device_idx AS deviceIdx,
+      TM.user_id AS memberId,
+      TG.idx AS groupIdx,
+      TG.group_id AS groupId,
+      TG.group_name AS groupName,
+      TD.serial_num AS serialNum,
+      TDT.device_type AS deviceType
     FROM TB_MEMBER_DEVICE_MANAGE AS TMDM
-
+    LEFT JOIN TB_MEMBER AS TM ON TM.idx = TMDM.member_idx
+    LEFT JOIN TB_GROUP_MEMBER_MANAGE AS TGMM ON TGMM.member_idx = TMDM.member_idx
+    LEFT JOIN TB_GROUP AS TG ON TGMM.group_idx = TG.idx
+    LEFT JOIN TB_DEVICE AS TD ON TD.idx = TMDM.device_idx
+    LEFT JOIN TB_DEVICE_TYPE AS TDT ON TDT.idx = TD.device_type_idx
+    ORDER BY deviceIdx
   </select>
 
   <select id="selectMemberDeviceCnt" parameterType="String" resultType="MemberDevice">
