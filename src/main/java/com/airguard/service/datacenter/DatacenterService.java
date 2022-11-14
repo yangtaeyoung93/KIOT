@@ -326,6 +326,8 @@ public class DatacenterService {
       vo.setProductDt(datacenterConnectDto.getProductDt());
       vo.setAiMode(datacenterConnectDto.getAiMode());
       vo.setDeviceType("VENT");
+      vo.setLat(datacenterConnectDto.getLat());
+      vo.setLon(datacenterConnectDto.getLon());
 
       if (!jObj.isNull(serial)) {
         PlatformSensorDto resData = gson.fromJson(jObj.getString(serial), PlatformSensorDto.class);

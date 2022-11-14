@@ -81,7 +81,9 @@
 			(SELECT TD.test_yn FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS test_yn,
 			(SELECT TD.serial_num FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS serial_num,
 			(SELECT TDM.device_model from TB_DEVICE_MODEL AS TDM WHERE idx=(SELECT TD.device_model_idx FROM TB_DEVICE AS TD WHERE TD.idx = TMDCM.vent_device_idx)) AS vent_model,
-		    (SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name, 
+		    (SELECT TMDM.station_name FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS station_name,
+			(SELECT TMDM.lat FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS lat,
+			(SELECT TMDM.lon FROM TB_MEMBER_DEVICE_MANAGE AS TMDM WHERE TMDM.device_idx=TMDCM.iaq_device_idx) AS lon,
 			(SELECT TD.product_dt FROM TB_DEVICE AS TD WHERE TMDCM.vent_device_idx=TD.idx) AS product_dt
 		FROM 
 			TB_MEMBER_DEVICE_CONTROL_MANAGE AS TMDCM
