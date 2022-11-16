@@ -38,7 +38,10 @@
 		update
 			TB_MEMBER_DEVICE_MANAGE
 		set
+		<if test=" standardTemp != '' ">
 			set_temp =#{standardTemp},
+		</if>
+
 			related_device_serial=#{oaqSerial}
 		where
 			device_idx = (select idx from TB_DEVICE td where serial_num = #{iaqSerial})
