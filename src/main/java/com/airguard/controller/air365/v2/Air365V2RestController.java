@@ -530,7 +530,7 @@ public class Air365V2RestController {
   @ApiOperation(value = "NET인증 VENT 설정 정보 설정", tags = "AIR365, 프로젝트")
   @ApiImplicitParams({
           @ApiImplicitParam(name = "serial", value = "vent 시리얼", required = true),
-          @ApiImplicitParam(name = "standardTemp", value = "기준온도", required = true),
+          @ApiImplicitParam(name = "standardTemp", value = "기준온도", required = false),
           @ApiImplicitParam(name = "outsideType", value = "0:동별미세먼지/1:OAQ", required = true),
           @ApiImplicitParam(name = "oaq", value = "oaq 시리얼(outsideType이 0일 때는 무시", required = true),
   })
@@ -544,7 +544,7 @@ public class Air365V2RestController {
     String outsideType = request.getParameter("outsideType") == null ? "" : request.getParameter("outsideType");
     String oaq = request.getParameter("oaq") == null ? "" : request.getParameter("oaq");
 
-    if ("".equals(ventSerial) || "".equals(standardTemp) || "".equals(outsideType)) {
+    if ("".equals(ventSerial) || "".equals(outsideType)) {
       throw new ParameterException(ParameterException.NULL_ID_PARAMETER_EXCEPTION);
     }if(outsideType.equals("1") && oaq.equals("")){
       throw new ParameterException(ParameterException.NULL_SERIAL_PARAMETER_EXCEPTION);
