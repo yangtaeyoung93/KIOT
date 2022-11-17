@@ -62,7 +62,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h3>
-                            <strong>사용자 정보</strong>
+                            <strong></strong>
                         </h3>
                         <div class="opt_wrap">
                             <hr/>
@@ -72,6 +72,8 @@
                                         <div class="col-3">
                                             <div class="row"><strong>사용자아이디</strong></div>
                                             <div id="txtUserId">${memberDataList.userId }</div>
+                                            <div class="row"><strong> 그룹 명 </strong></div>
+                                            <div id="txtgroupName">${memberDataList.groupName }</div>
                                         </div>
                                         <div class="col-3">
                                             <div class="row"><strong>스테이션 공유여부 </strong></div>

@@ -541,6 +541,7 @@ function initDataTableCustom() {
           }
         }
 
+
         let groupSelect = document.querySelector("#searchGroup");
         var txtGroupId;
         if($('#searchMaster').val() != "" && $('#searchGroup').val() == ""){

@@ -175,7 +175,7 @@ public class JspController {
   public String pageConnect(Model model) throws Exception {
 
     model.addAttribute("superItem", "수집데이터");
-    model.addAttribute("item", "IAQ-VENT 연동");
+    model.addAttribute("item", "IAQ-VENT-OAQ 연동");
     model.addAttribute("oneDepth", "collection");
     model.addAttribute("twoDepth", "connect");
     return "/collection/connect";
