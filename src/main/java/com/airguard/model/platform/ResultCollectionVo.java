@@ -57,4 +57,5 @@ public class ResultCollectionVo {
   private List<PlatformVentDto> vents;
   private boolean receiveFlag;
   private String deviceModel;
+  private String relatedDeviceSerial;
 }

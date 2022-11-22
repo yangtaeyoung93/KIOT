@@ -33,6 +33,7 @@ public class CollectionDto {
   private String airMapYn;
   private String equipAddr;
   private String equipAddr2;
+  private String relatedDeviceSerial;
 
   private String mainImage;
   private String eastImage;

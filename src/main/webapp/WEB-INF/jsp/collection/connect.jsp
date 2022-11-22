@@ -102,8 +102,9 @@
                             <thead>
                             <tr>
                                 <th class="bgGray1">번호</th>
-                                <th class="bgGray1">시리얼번호</th>
-                                <th class="bgGray1">환기청정기</th>
+                                <th class="bgGray1">IAQ</th>
+                                <th class="bgGray1">VENT</th>
+                                <th class="bgGray1">OAQ</th>
                                 <th class="bgGray1">연동 시간</th>
                                 <th class="bgGray1">미세먼지<br/>(㎍/㎥)</th>
                                 <th class="bgGray1">초미세먼지<br/>(㎍/㎥)</th>

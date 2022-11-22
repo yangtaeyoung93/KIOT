@@ -1100,6 +1100,7 @@ public class PlatformService {
         vo.setUserId(collectionDto.getUserId());
         vo.setStationName(collectionDto.getStationName());
         vo.setProductDt(collectionDto.getProductDt());
+        vo.setRelatedDeviceSerial(collectionDto.getRelatedDeviceSerial());
         resCol.add(vo);
       }
     }

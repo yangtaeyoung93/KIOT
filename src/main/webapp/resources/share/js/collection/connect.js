@@ -87,6 +87,7 @@ function initDataTableCustom() {
           {data: "serial"},
           {data: "serial"},
           {data: "serial"},
+          {data: "serial"},
           {data: "serial"}
         ],
         createdRow: function (row, data) {
@@ -150,7 +151,15 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 3,
+              targets: 3,
+              orderable: true,
+              render: function (data, type, full, meta) {
+                return "<span style='font-weight:bold;'>" + full.relatedDeviceSerial
+                    + "</span>";
+              },
+            },
+          {
+            targets: 4,
             orderable: true,
             render: function (data, type, full, meta) {
               const date = new Date(full.timestamp * 1000);
@@ -187,7 +196,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 4,
+            targets: 5,
             orderable: false,
             render: function (data, type, full, meta) {
               let pm10;
@@ -205,7 +214,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 5,
+            targets: 6,
             orderable: false,
             render: function (data, type, full, meta) {
               let pm25;
@@ -223,7 +232,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 6,
+            targets: 7,
             orderable: false,
             render: function (data, type, full, meta) {
               let co2;
@@ -241,7 +250,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 7,
+            targets: 8,
             orderable: false,
             render: function (data, type, full, meta) {
               let voc;
@@ -259,7 +268,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 8,
+            targets: 9,
             orderable: false,
             render: function (data, type, full, meta) {
               let noise;
@@ -277,7 +286,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 9,
+            targets: 10,
             orderable: false,
             render: function (data, type, full, meta) {
               let temp;
@@ -295,7 +304,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 10,
+            targets: 11,
             orderable: false,
             render: function (data, type, full, meta) {
               let humi;
@@ -313,7 +322,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 11,
+            targets: 12,
             orderable: false,
             render: function (data, type, full, meta) {
               let cici;
@@ -331,7 +340,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 12,
+            targets: 13,
             orderable: true,
             render: function (data, type, full, meta) {
               return "<span style='font-weight:bold;'>" + full.stationName
@@ -339,7 +348,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 13,
+            targets: 14,
             orderable: true,
             render: function (data, type, full, meta) {
               return "<span style='font-weight:bold;'>" + full.sensor.cmd_p
@@ -347,7 +356,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 14,
+            targets: 15,
             orderable: false,
             render: function (data, type, full, meta) {
               return "<span style='font-weight:bold;'>" + full.sensor.cmd_w
@@ -355,7 +364,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 15,
+            targets: 16,
             orderable: false,
             render: function (data, type, full, meta) {
               let driveMode = full.sensor.cmd_m;
@@ -373,7 +382,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 16,
+            targets: 17,
             orderable: false,
             render: function (data, type, full, meta) {
               let groupName = full.groupName;
@@ -386,7 +395,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 17,
+            targets: 18,
             orderable: true,
             render: function (data, type, full, meta) {
               let etc = full.etc;
@@ -397,28 +406,28 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 18,
+            targets: 19,
             visible: false,
             render: function (data, type, full, meta) {
               return full.userId;
             },
           },
           {
-            targets: 19,
+            targets: 20,
             visible: false,
             render: function (data, type, full, meta) {
               return "g_" + full.groupId;
             },
           },
           {
-            targets: 20,
+            targets: 21,
             visible: false,
             render: function (data, type, full, meta) {
               return full.testYn;
             },
           },
           {
-            targets: 21,
+            targets: 22,
             visible: false,
             render: function (data, type, full, meta) {
               let parentSpaceName = full.parentSpaceName;
@@ -429,7 +438,7 @@ function initDataTableCustom() {
             },
           },
           {
-            targets: 22,
+            targets: 23,
             visible: false,
             render: function (data, type, full, meta) {
               let spaceName = full.spaceName;
@@ -440,7 +449,7 @@ function initDataTableCustom() {
             },
           },
 {
-            targets: 23,
+            targets: 24,
             visible: false,
             render: function (data, type, full, meta) {
 
@@ -456,13 +465,13 @@ function initDataTableCustom() {
     } else if (colIndex === 1) {
       table.column(1).search(this.value).draw();
     } else if (colIndex === 2) {
-      table.column(12).search(this.value).draw();
+      table.column(13).search(this.value).draw();
     } else if (colIndex === 3) {
-      table.column(18).search(this.value).draw();
+      table.column(19).search(this.value).draw();
     } else if (colIndex === 4) {
-      table.column(17).search(this.value).draw();
+      table.column(18).search(this.value).draw();
     } else if (colIndex === 5) {
-      table.column(16).search(this.value).draw();
+      table.column(17).search(this.value).draw();
     }
   });
 
@@ -471,10 +480,10 @@ function initDataTableCustom() {
        switch(previousSearchType){
                   case 0 : table.search("").draw(); break;
                   case 1 : table.column(1).search("").draw(); break;
-                  case 2 : table.column(12).search("").draw(); break;
-                  case 3 : table.column(18).search("").draw(); break;
-                  case 4 : table.column(17).search("").draw(); break;
-                  case 5 : table.column(16).search("").draw(); break;
+                  case 2 : table.column(13).search("").draw(); break;
+                  case 3 : table.column(19).search("").draw(); break;
+                  case 4 : table.column(18).search("").draw(); break;
+                  case 5 : table.column(17).search("").draw(); break;
        }
        previousSearchType = colIndex;
     $("#searchValue").val("");
@@ -482,8 +491,8 @@ function initDataTableCustom() {
 
   $("#searchMaster").change(function () {
       $('#searchGroup').val('');
-      table.column(19).search("").draw();
-      table.column(21).search("").draw();
+      table.column(20).search("").draw();
+      table.column(22).search("").draw();
       const masterIdx = $('#searchMaster').val();
       searchMasterId = $('#searchMaster option:selected').text();
       if(this.value == "") searchMasterId = "";
@@ -493,13 +502,13 @@ function initDataTableCustom() {
       $(".filterDiv").first().addClass("filter-cli");
 
       getGroupList(masterIdx);
-      table.column(23).search(searchMasterId).draw();
-      table.column(21).search("").draw();
+      table.column(24).search(searchMasterId).draw();
+      table.column(22).search("").draw();
 
   });
 
   $("#searchGroup").change(function () {
-    table.column(19).search("g_" + this.value).draw();
+    table.column(20).search("g_" + this.value).draw();
   });
 
   $("#searchParentSpace").change(function () {
@@ -514,11 +523,11 @@ function initDataTableCustom() {
       search_space_val = spaceVal_name;
     }
 
-    table.column(21).search(search_space_val).draw();
+    table.column(22).search(search_space_val).draw();
   });
 
   $("#searchSpace").change(function () {
-    table.column(22).search(this.value).draw();
+    table.column(23).search(this.value).draw();
   });
 
   $('#searchTestYn').click(function () {
@@ -529,9 +538,9 @@ function initDataTableCustom() {
     }
 
     if ($(this).val() === "Y") {
-      table.column(20).search("Y").draw();
+      table.column(21).search("Y").draw();
     } else {
-      table.column(20).search("").draw();
+      table.column(21).search("").draw();
     }
   })
 
