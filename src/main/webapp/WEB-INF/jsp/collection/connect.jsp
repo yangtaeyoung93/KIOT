@@ -105,7 +105,7 @@
                                 <th class="bgGray1">IAQ</th>
                                 <th class="bgGray1">VENT</th>
                                 <th class="bgGray1">OAQ</th>
-                                <th class="bgGray1">연동 시간</th>
+                                <th class="bgGray1">제어 시간</th>
                                 <th class="bgGray1">미세먼지<br/>(㎍/㎥)</th>
                                 <th class="bgGray1">초미세먼지<br/>(㎍/㎥)</th>
                                 <th class="bgGray1">이산화탄소<br/>(ppm)</th>
