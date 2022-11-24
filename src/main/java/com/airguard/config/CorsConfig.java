@@ -39,7 +39,7 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedMethods("*").allowCredentials(true);
 
     registry.addMapping("/api/air365/v3/data/detail")
-            .allowedOrigins("http://localhost")
+            .allowedOrigins("https://map.air365.co.kr")
             .allowedMethods("*").allowCredentials(true);
 
 
