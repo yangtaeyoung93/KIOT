@@ -34,23 +34,18 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedMethods("*")
             .allowCredentials(true);
 
-    registry.addMapping("/system/member/device/ajax/fileDownload/**")
-            .allowedOrigins("http://localhost")
+    registry.addMapping("/system/member/device/ajax/fileDownload/")
+            .allowedOrigins("http://220.95.232.210:8078","https://map.air365.co.kr","http://localhost")
             .allowedMethods("*").allowCredentials(true);
 
     registry.addMapping("/api/air365/v3/data/detail")
-            .allowedOrigins("https://map.air365.co.kr")
+            .allowedOrigins("http://220.95.232.210:8078","https://map.air365.co.kr","http://localhost")
             .allowedMethods("*").allowCredentials(true);
 
 
     registry.addMapping("/api/collection/list/airmap/")
-            .allowedOrigins("http://220.95.232.210:8078")
+            .allowedOrigins("http://220.95.232.210:8078","https://map.air365.co.kr","http://localhost")
             .allowedMethods("*").allowCredentials(true);
-
-    registry.addMapping("/system/member/device/ajax/fileDownload/")
-            .allowedOrigins("http://220.95.232.210:8078")
-            .allowedMethods("*")
-            .allowCredentials(true);
 
     registry.addMapping("/api/collection/list/**")
             .allowedOrigins("*")
