@@ -58,6 +58,7 @@ public class ResultCollectionHisVo {
   private Double rain;
   private Double nh3;
   private Double h2s;
+  private Double o2;
   private Double gps_lat;
   private Double gps_lon;
 

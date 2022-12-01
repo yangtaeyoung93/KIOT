@@ -1305,6 +1305,7 @@ public class PlatformService {
 
     Map<String, Double> nh3Map = new LinkedHashMap<>();
     Map<String, Double> h2sMap = new LinkedHashMap<>();
+    Map<String, Double> o2Map = new LinkedHashMap<>();
     Map<String, Double> gpsLatMap = new LinkedHashMap<>();
     Map<String, Double> gpsLonMap = new LinkedHashMap<>();
 
@@ -1638,6 +1639,10 @@ public class PlatformService {
             h2sMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
             break;
+          case "o2":
+            o2Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
           case "gps_lat":
             gpsLatMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
@@ -1834,6 +1839,7 @@ public class PlatformService {
       vo.setRain(rainMap.get(key));
       vo.setNh3(nh3Map.get(key));
       vo.setH2s(h2sMap.get(key));
+      vo.setO2(o2Map.get(key));
       vo.setGps_lat(gpsLatMap.get(key));
       vo.setGps_lon(gpsLonMap.get(key));
       vo.setNo(noMap.get(key));
@@ -2584,6 +2590,7 @@ public class PlatformService {
     Map<String, Double> rainMap = new LinkedHashMap<>();
     Map<String, Double> nh3Map = new LinkedHashMap<>();
     Map<String, Double> h2sMap = new LinkedHashMap<>();
+    Map<String, Double> o2Map = new LinkedHashMap<>();
     Map<String, Double> gpsLatMap = new LinkedHashMap<>();
     Map<String, Double> gpsLonMap = new LinkedHashMap<>();
 
@@ -2924,6 +2931,10 @@ public class PlatformService {
             h2sMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 1000)) / 1000.0);
             break;
+          case "o2":
+            o2Map.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
+                    : (double) Math.round(((Double) reMap.get(key) * 100)) / 100.0);
+            break;
           case "gps_lat":
             gpsLatMap.put(key, (standard.equals("sum")) ? (Double) reMap.get(key)
                 : (double) Math.round(((Double) reMap.get(key) * 100000)) / 100000.0);
@@ -2986,7 +2997,8 @@ public class PlatformService {
         }
       }
     }
-    logger.error("iterator ={}",System.currentTimeMillis()-st);
+
+
     Iterator<String> keys2 = tmMap.keySet().iterator();
 
     if (deviceType.equals("vent")) {
@@ -3067,6 +3079,7 @@ public class PlatformService {
       vo.setRain(rainMap.get(key));
       vo.setNh3(nh3Map.get(key));
       vo.setH2s(h2sMap.get(key));
+      vo.setO2(o2Map.get(key));
       vo.setGps_lat(gpsLatMap.get(key));
       vo.setGps_lon(gpsLonMap.get(key));
       vo.setNo(noMap.get(key));
@@ -3088,7 +3101,7 @@ public class PlatformService {
 
       resCol.add(vo);
     }
-
+logger.error("rescol =={}",resCol);
     return resCol;
   }
 
