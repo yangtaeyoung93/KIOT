@@ -1,21 +1,23 @@
 package com.airguard.controller.datacenter;
 
+import com.airguard.model.datacenter.SeoulMetaData;
 import com.airguard.model.platform.ResultCollectionVo;
 import com.airguard.model.system.DeviceElements;
 import com.airguard.service.datacenter.DatacenterService;
 import com.airguard.util.AES256Util;
 import com.airguard.util.CommonConstant;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(CommonConstant.URL_API_DATACENTER)
@@ -147,6 +149,17 @@ public class DatacenterRestController {
     public AuthCookieException() {
       super();
     }
+  }
+
+  @ApiOperation(value = "서울시 모든 장비 메타데이터 API (국가관측망 포함 , IAQ만 서경대 장비)")
+  @GetMapping(value = "/seoul/device/list")
+  public ResponseEntity<Object> getSeoulDeviceList(){
+
+    Map<String, Object> map = new LinkedHashMap<>();
+    List<List<SeoulMetaData>>  list = service.seoulMetaDataList();
+    map.put("result",list);
+
+    return new ResponseEntity(map, HttpStatus.OK);
   }
 
   @ExceptionHandler(value = AuthCookieException.class)

@@ -3,6 +3,7 @@ package com.airguard.mapper.readonly;
 import java.util.HashMap;
 import java.util.List;
 
+import com.airguard.model.datacenter.SeoulMetaData;
 import com.airguard.model.system.PopupVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,7 @@ public interface DatacenterMapper {
 
   PopupVO getPopUp();
 
+  List<SeoulMetaData> airDeviceList();
+  List<SeoulMetaData> OaqDeviceList();
+  List<SeoulMetaData> IaqDeviceList();
 }

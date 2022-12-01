@@ -157,5 +157,76 @@
 		order by taa.update_dt desc
 		limit 1
 	</select>
-
+	<select id="airDeviceList" resultType="SeoulMetaData">
+		SELECT
+			TDAI.AIR_CODE SERIAL,
+			'air' as TYPE,
+			TDAI.LAT,
+			TDAI.LON
+		FROM  TB_DONG_AIRKOR_INFO TDAI
+		WHERE AIR_CITY = '서울'
+	</select>
+	<select id="OaqDeviceList" resultType="SeoulMetaData">
+		SELECT
+			TD.SERIAL_NUM  SERIAL,
+			CASE
+				WHEN(DEVICE_TYPE_IDX=2) THEN'OAQ'
+				WHEN (DEVICE_TYPE_IDX=3)THEN 'DOT'
+			END TYPE,
+			B.LAT,
+			B.LON
+		FROM TB_DEVICE TD
+		INNER JOIN
+		(
+			SELECT
+				TMDM.DEVICE_IDX,
+				TMDM.LAT,
+				TMDM.LON
+			FROM
+			TB_MEMBER_DEVICE_MANAGE TMDM
+			WHERE DCODE
+				IN(
+					SELECT
+						DCODE
+					FROM TB_DONG_HCODE TDH
+					WHERE DFNAME LIKE '서울특별시%'
+				)
+		) AS B
+		ON TD.IDX = B.DEVICE_IDX
+		WHERE TD.USE_YN = 'Y'
+		AND DEVICE_TYPE_IDX IN(2,3)
+	</select>
+	<select id="IaqDeviceList" resultType="SeoulMetaData">
+		SELECT
+			TD.SERIAL_NUM  SERIAL,
+			CASE
+				WHEN(DEVICE_TYPE_IDX=1 )THEN 'IAQ'
+			END TYPE,
+			B.LAT,
+			B.LON
+		FROM TB_DEVICE TD
+		INNER JOIN
+		(
+			SELECT
+				TMDM.DEVICE_IDX,
+				TMDM.LAT,
+				TMDM.LON
+			FROM
+				TB_MEMBER_DEVICE_MANAGE TMDM
+			WHERE
+			MEMBER_IDX
+			IN(
+				SELECT MEMBER_IDX
+				FROM TB_GROUP_MEMBER_MANAGE TGMM
+				WHERE TGMM.GROUP_IDX
+					IN(
+						SELECT IDX
+						FROM TB_GROUP TG
+						WHERE TG.GROUP_ID = 'seokyeong@skuniv.ac.kr'
+					)
+			)
+		) AS B
+		ON TD.IDX = B.DEVICE_IDX
+		WHERE TD.USE_YN = 'Y'
+	</select>
 </mapper>

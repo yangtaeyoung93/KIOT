@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.*;
 
 import com.airguard.exception.SQLException;
+import com.airguard.model.datacenter.SeoulMetaData;
 import com.airguard.model.system.PopupVO;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -463,4 +464,18 @@ public class DatacenterService {
       return popupVO;
     }
 
+  public  List<List<SeoulMetaData>>  seoulMetaDataList() {
+
+    List<List<SeoulMetaData>> list = new LinkedList<>();
+
+    List<SeoulMetaData> air = mapper.airDeviceList();
+    List<SeoulMetaData> oaq = mapper.OaqDeviceList();
+    List<SeoulMetaData> iaq = mapper.IaqDeviceList();
+
+    list.add(iaq);
+    list.add(oaq);
+    list.add(air);
+
+    return list;
+  }
 }
